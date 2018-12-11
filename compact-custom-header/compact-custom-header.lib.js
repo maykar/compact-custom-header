@@ -105,7 +105,7 @@ if (!window.cch_header) {
     tabs_container.style.cssText = `margin-left:${clock_w + 15}px;`;
   }
 
-  if (window.cch_clock && clock == null) {
+  if (window.cch_clock && clock == null && typeof(iron_icon) != 'undefined') {
     let create_clock = document.createElement('p');
     create_clock.setAttribute('id','cch_clock');
     create_clock.style.cssText = `
