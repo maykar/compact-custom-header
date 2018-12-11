@@ -1,31 +1,52 @@
 class CompactCustomHeader extends HTMLElement {
   set hass(hass) {
-    window.cch_header = this.config.header == undefined ? true : this.config.header;
-    window.cch_menu = this.config.menu == undefined ? true : this.config.menu;
-    window.cch_notify = this.config.notification == undefined ? true : this.config.notification;
-    window.cch_voice = this.config.voice == undefined ? true : this.config.voice;
-    window.cch_options = this.config.options == undefined ? true : this.config.options;
-    window.cch_clock = this.config.clock == undefined ? false : this.config.clock;
-    window.cch_clock_format = this.config.clock_format == undefined ? 12 : this.config.clock_format;
-    window.cch_am_pm = this.config.clock_am_pm == undefined ? true : this.config.clock_am_pm;
+    let header = String(
+      this.config.header).replace(/\s+/g, '').split(',');
+    let menu = String(
+      this.config.menu).replace(/\s+/g, '').split(',');
+    let notify = String(
+      this.config.notification).replace(/\s+/g, '').split(',');
+    let voice = String(
+      this.config.voice).replace(/\s+/g, '').split(',');
+    let options = String(
+      this.config.options).replace(/\s+/g, '').split(',');
+    let clock = String(
+      this.config.clock).replace(/\s+/g, '').split(',');
+    let clock_format = String(
+      this.config.clock_format).replace(/\s+/g, '').split(',');
+    let clock_am_pm = String(
+      this.config.clock_am_pm).replace(/\s+/g, '').split(',');
 
-    let user_agent = this.config.user_agent || 'Mobi|Android';
-    let regex = new RegExp(user_agent, 'i');
-
-    if (regex.test(navigator.userAgent)) {
-      window.cch_header = this.config.m_header == undefined ? this.config.header : this.config.m_header;
-      window.cch_menu = this.config.m_menu == undefined ? this.config.menu : this.config.m_menu;
-      window.cch_notify = this.config.m_notification == undefined ? this.config.notification : this.config.m_notification;
-      window.cch_voice = this.config.m_voice == undefined ? this.config.voice : this.config.m_voice;
-      window.cch_options = this.config.m_options == undefined ? this.config.options : this.config.m_options;
-      window.cch_clock = this.config.m_clock == undefined ? this.config.clock : this.config.m_clock;
-      window.cch_clock_format = this.config.m_clock_format == undefined ? this.config.clock_format : this.config.m_clock_format;
-      window.cch_am_pm = this.config.m_clock_am_pm == undefined ? this.config.clock_am_pm : this.config.m_clock_am_pm;
+    let user_agent = ',' + this.config.user_agent;
+    user_agent = user_agent.split(',');
+    let agent = 0;
+    for (let i = 0; i < user_agent.length; i++) {
+      let regex = new RegExp(user_agent[i], 'i');
+      if (regex.test(navigator.userAgent)) {
+        agent = i;
+      }
     }
-
+    window.cch_header = config_default(
+      header[0], header[agent], true, true);
+    window.cch_menu = config_default(
+      menu[0], menu[agent], true, true);
+    window.cch_notify = config_default(
+      notify[0], notify[agent], true, true);
+    window.cch_voice = config_default(
+      voice[0], voice[agent], true, true);
+    window.cch_options = config_default(
+      options[0], options[agent], true, true);
+    window.cch_clock = config_default(
+      clock[0], clock[agent], false, false);
+    window.cch_clock_format = config_default(
+      clock_format[0], clock_format[agent], 12, false);
+    window.cch_am_pm = config_default(
+      clock_am_pm[0], clock_am_pm[agent], true, true);
     const script = document.createElement('script');
-    script.src = '/local/custom-lovelace/compact-custom-header/compact-custom-header.lib.js?v0.0.3';
+    script.src = '/local/custom-lovelace/compact-custom-header/' +
+                 'compact-custom-header.lib.js?v0.0.3009';
     document.head.appendChild(script);
+    window.dispatchEvent(new Event('resize'));
   }
   setConfig(config) {
     this.config = config;
@@ -34,4 +55,19 @@ class CompactCustomHeader extends HTMLElement {
     return 0;
   }
 }
+
+function config_default(default_agent, this_agent, default_value, is_bool) {
+  if (this_agent == undefined) {
+    if (default_agent == undefined) {
+      return default_value;
+    } else {
+      let x = is_bool ? (default_agent == 'true') : default_agent;
+      return x;
+    }
+  } else {
+    let x = is_bool ? (this_agent == 'true') : this_agent;
+    return x;
+  }
+}
+
 customElements.define('compact-custom-header', CompactCustomHeader);
