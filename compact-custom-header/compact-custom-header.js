@@ -24,7 +24,7 @@ class CompactCustomHeader extends HTMLElement {
     }
 
     const script = document.createElement('script');
-    script.src = '/local/custom-lovelace/compact-custom-header/cch_v002.js';
+    script.src = '/local/custom-lovelace/compact-custom-header/compact-custom-header.lib.js?v0.0.3';
     document.head.appendChild(script);
   }
   setConfig(config) {
