@@ -115,9 +115,10 @@ Then in any config option you add a new option after a comma. These options happ
 
 If any option is not set or empty it will fall back to the first option or default. So "true, , false" with the second option empty is essentially "true,true,false" and just "true" will be true for all user agents. If a device matches more than one user_agent, for example: ```user_agent: Mobile, Android``` then the last matched user agent is the one used, so in this case "Android".
 
-Here's a config showing the default view with menu button shown and "notifications" as a 24 hour clock,<br>
-my phone "SM-G955U" with menu button hidden and "options" as a 12 hour clock with AM/PM shown,<br>
-and my wifes phone "NHG47Q" with menu button shown and "menu" as a 12 hour clock without AM/PM.
+Here's an example config showing:<br>
+**default view:** menu button shown and "notifications" as a 24 hour clock,<br>
+**my phone "SM-G955U":** menu button hidden and "options" as a 12 hour clock with AM/PM shown,<br>
+**my wifes phone "NHG47Q":** menu button shown and "menu" as a 12 hour clock without AM/PM.
 
 ```
       - type: custom:compact-custom-header
