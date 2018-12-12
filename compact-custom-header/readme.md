@@ -29,11 +29,6 @@ This goes into one of your views under "cards:" in the same file. Place as the l
   - type: custom:compact-custom-header
 ```
 
-To use with [custom-updater](https://github.com/custom-components/custom_updater) add this url to it's card url's:
-```
-https://raw.githubusercontent.com/maykar/custom-lovelace/master/tracker.json
-```
-
 When updating, if not using [custom-updater](https://github.com/custom-components/custom_updater), be sure add to a version number at the end of your lovelace resources, like so:
 
 ```
@@ -41,7 +36,10 @@ resources:
 - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
   type: js
 ```
-
+To use with [custom-updater](https://github.com/custom-components/custom_updater) add this url to it's "card_urls:" section:
+```
+https://raw.githubusercontent.com/maykar/custom-lovelace/master/tracker.json
+```
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
 
 
