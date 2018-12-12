@@ -27,8 +27,8 @@ class CompactCustomHeader extends HTMLElement {
     window.cch_am_pm = conf_def(clock_am_pm[0], clock_am_pm[ua], true);
     const script = document.createElement('script');
     script.src = '/local/custom-lovelace/compact-custom-header/' +
-                 'compact-custom-header.lib.js?v0.0.4';
-    document.head.appendChild(script);
+                 'compact-custom-header.lib.js?v0.0.5';
+    document.head.appendChild(script).parentNode.removeChild(script);
     window.dispatchEvent(new Event('resize'));
   }
   setConfig(config) {
