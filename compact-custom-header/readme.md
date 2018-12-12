@@ -103,15 +103,17 @@ Example shows some default values for illustration purposes, it is unnecessary t
 
 ## User Agent Config:
 
-You can have a different set of settings per device by using user agent. To find the user agent of a device [search on google for "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is my result on my phone:
+You can have a different set of settings per device by using user agent. To find the user agent [google "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
 
 <img src="https://i.imgur.com/BWs8zj8.jpg" width="300px">
 
-I could choose a few things here like "Mobile" if I wanted to use a custom header for all mobile, or "Android" if I wanted to get just android devices, but instead I want to have one for only my phone so I'll use the model number from the results "SM-G955U".
+I could choose a few things here like "Mobile" if I wanted to use a custom header for all mobile devices, or "Android" if I wanted all android devices, but instead I want to have one for just my phone so I'll use the model number from the results "SM-G955U".
 
-I'll add "user_agent: SM-G955U" to my configuration, but I'll add my wifes phone as well (model number "NHG47Q"). So I'll use "user_agent: SM-G955U, NHG47Q". Seperate each different user agent with a comma.
+I'll add "SM-G955U" to "user_agent" in my config and I'll add my wifes phone as well (model number "NHG47Q"). So I'll use ```user_agent: SM-G955U, NHG47Q```. Seperate each user agent with a comma.
 
-Then in any config option you just add a new option after a comma. These options happen in order, the first one being the default, the second being the first user_agent in config, the third being the second user_agent in config and so on. If any option is not set or empty it will fall back to the first option or default. So "true, , false" with the second option empty is essentially "true,true,false" and just "true" will be true for all user agents.
+Then in any config option you add a new option after a comma. These options happen in order, the first one being the default, the second being the first user_agent in config, the third being the second user_agent in config and so on.
+
+If any option is not set or empty it will fall back to the first option or default. So "true, , false" with the second option empty is essentially "true,true,false" and just "true" will be true for all user agents. If a device matches more than one user_agent, for example: ```user_agent: Mobile, Android``` then the last matched user agent is the one used, so in this case "Android".
 
 Here's a config showing the default view with menu button shown and "notifications" as a 24 hour clock,<br>
 my phone "SM-G955U" with menu button hidden and "options" as a 12 hour clock with AM/PM shown,<br>
