@@ -51,7 +51,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * If you find that the default header appears again (happens especially on mobile when leaving and returning to the app) include the code in each of your views.
 
-* When changing options in your lovelace config, you may need to do a full browser refresh after to get it to display correctly. ('ctrl + shift + R' on windows). A cache clear might help as well.
+* When changing options in your lovelace config, you may need to do a full browser refresh after to get it to display correctly. ('ctrl + shift + R' on windows). Clear your cache and close, then reopen the tab/window.
 
 * Do not put inside a stack or any other container cards unless using panel view.
 
