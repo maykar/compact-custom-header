@@ -53,7 +53,20 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * Do not put inside a stack or any other container cards unless using panel view.
 
-* To use with panel view, place as the last card of a vertical stack containing the panel card and this "card".
+* To use with panel view, place as the last card of a vertical stack containing the panel card and this "card" like so:
+```
+    views:
+      - id: home
+        icon: mdi:home
+        title: 'Home'
+        panel: true
+        cards:
+        - type: vertical-stack
+          cards:
+          - type: weather-forecast
+            entity: weather.yweather
+          - type: custom:compact-custom-header
+```
 
 # Config:
 
