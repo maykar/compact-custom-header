@@ -83,7 +83,7 @@ Example shows some default values for illustration purposes, it is unnecessary t
 
 ## User Agent Config:
 
-You can have a different set of settings per device by using user agent. To find the user agent of a device [search on google for "get user agent"](http://www.google.com/search?q=get+user+agent). This is my result on my phone:
+You can have a different set of settings per device by using user agent. To find the user agent of a device [search on google for "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is my result on my phone:
 
 <img src="https://i.imgur.com/BWs8zj8.jpg" width="300px">
 
