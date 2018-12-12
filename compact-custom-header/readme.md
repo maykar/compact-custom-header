@@ -7,9 +7,11 @@ Inspired by a [gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5
 
 
 ## Features:
-* Compact design.
+* Per device settings with user agents.
 * Hide any icon or the entire header altogether.
 * Replace any icon button with a clock while keeping the buttons functionality.
+* Compact design.
+* Removes header text.
 * 12 or 24 hour display for time.
 
 ## Installation:
