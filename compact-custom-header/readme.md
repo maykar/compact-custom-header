@@ -120,8 +120,8 @@ Here's an example config showing:<br>
 |User Agent|Config
 |-|-
 |**default** |menu button shown and "notifications" as a 24 hour clock,<br>
-|**my phone "SM-G955U":** |menu button hidden and "options" as a 12 hour clock with AM/PM shown,<br>
-|**wifes phone "NHG47Q":** |menu button shown and "menu" as a 12 hour clock without AM/PM.
+|**my phone "SM-G955U"** |menu button hidden and "options" as a 12 hour clock with AM/PM shown,<br>
+|**wifes phone "NHG47Q"** |menu button shown and "menu" as a 12 hour clock without AM/PM.
 
 
 ```
