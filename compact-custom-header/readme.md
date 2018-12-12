@@ -1,7 +1,7 @@
 # Compact Custom Header
 
 ### Customize the Lovelace header!<br/><br/>
-Inspired by a [gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
+Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
 
 <img src="https://i.imgur.com/kz0gnZm.jpg" width="500px"> 
 
