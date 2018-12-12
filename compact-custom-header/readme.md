@@ -7,7 +7,7 @@ Inspired by a [gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5
 
 
 ## Features:
-* Per device settings with user agents.
+* Per device settings using user agents.
 * Hide any icon or the entire header altogether.
 * Replace any icon button with a clock while keeping the buttons functionality.
 * Compact design.
