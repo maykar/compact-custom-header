@@ -1,24 +1,29 @@
 // Avoid "already defined" errors when navigating away from Lovelace and back.
-if (typeof doc_root === 'undefined') {
+if (typeof doc_root == 'undefined') {
   var clock, clock_format, clock_w, doc_root, drawer_layout, hui_root, icon,
       iron_icon, love_lace, main, menu_btn_sr, menu_button, menu_icon,
       menu_icon_sr, menu_iron_icon, notify_btn_sr, notify_button, notify_icon,
       notify_icon_sr, notify_indicator, notify_iron_icon, options_button,
       options_icon, options_icon_sr, options_iron_icon, pages, shadow_root,
       tabs, tabs_sr, tabs_container, tab_chevron, voice_btn_sr, voice_button,
-      tab_count, voice_icon, voice_icon_sr, voice_iron_icon, pad;
+      tab_count, voice_icon, voice_icon_sr, voice_iron_icon, pad, proceed;
 }
-doc_root = document.querySelector('home-assistant').shadowRoot;
-main = doc_root.querySelector('home-assistant-main').shadowRoot;
-drawer_layout = main.querySelector('app-drawer-layout');
-pages = drawer_layout.querySelector('partial-panel-resolver').shadowRoot;
-love_lace = pages.querySelector('ha-panel-lovelace').shadowRoot;
-hui_root = love_lace.querySelector('hui-root').shadowRoot;
-
-if (!window.cch_header) {
+try {
+  doc_root = document.querySelector('home-assistant').shadowRoot;
+  main = doc_root.querySelector('home-assistant-main').shadowRoot;
+  drawer_layout = main.querySelector('app-drawer-layout');
+  pages = drawer_layout.querySelector('partial-panel-resolver').shadowRoot;
+  love_lace = pages.querySelector('ha-panel-lovelace').shadowRoot;
+  hui_root = love_lace.querySelector('hui-root').shadowRoot;
+  proceed = true;
+} catch (e) {
+  proceed = false;
+  console.log(e);
+}
+if (!window.cch_header && proceed) {
   hui_root.querySelector('app-header').style.cssText = 'display:none;';
   window.dispatchEvent(new Event('resize'));
-} else {
+} else if (proceed) {
   menu_button = hui_root.querySelector('ha-menu-button');
   menu_btn_sr = menu_button.shadowRoot;
   menu_icon = menu_btn_sr.querySelector('paper-icon-button');
@@ -70,7 +75,7 @@ if (!window.cch_header) {
     icon = notify_icon;
     shadow_root = notify_icon_sr;
     iron_icon = notify_iron_icon;
-    notify_indicator.style.cssText = 'margin-right:25px;margin-top:22px;';
+    notify_indicator.style.cssText = 'top:14.5px;left:-7px';
   } else if (window.cch_clock == 'voice') {
     icon = voice_icon;
     shadow_root = voice_icon_sr;
@@ -105,7 +110,7 @@ if (!window.cch_header) {
     tabs_container.style.cssText = `margin-left:${clock_w + 15}px;`;
   }
 
-  if (window.cch_clock && clock == null && typeof(iron_icon) != 'undefined') {
+  if (window.cch_clock && clock == null && iron_icon != undefined) {
     let create_clock = document.createElement('p');
     create_clock.setAttribute('id','cch_clock');
     create_clock.style.cssText = `
