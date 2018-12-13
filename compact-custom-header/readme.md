@@ -82,10 +82,12 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |notification|boolean|true|<img src="https://github.com/google/material-design-icons/blob/master/social/2x_web/ic_notifications_black_18dp.png?raw=true">|Display or hide the notification icon |
 |voice|boolean|true|<img src="https://github.com/google/material-design-icons/blob/master/av/2x_web/ic_mic_black_18dp.png?raw=true">|Display or hide the voice icon|
 |options|boolean|true|<img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true">|Display or hide the options icon|
+|tabs|boolean|true||Display or hide the tabs/views|
 |clock|string|no default||Change icon to clock. Choices are menu, notification, voice, and options.|
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
 |clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|
 |user_agent|string|no default||Use a different config per device using user agent info. More on this below.
+|disable|boolean|false||Disable Compact Custom Header. To use default header on a certain user agent.
 
 ## Example Config:
 Example shows some default values for illustration purposes, it is unnecessary to define options that have the desired effect as default.
