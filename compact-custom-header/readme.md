@@ -132,7 +132,7 @@ Here's an example config showing:<br>
         menu: true, false
         clock: notification, options, menu
         clock_format: 24, 12, 12
-        clock_am_pm: false, true  # don't need to set a third one, falls back to the first (false) when not set
+        clock_am_pm: false, true  # don't need to set a third one, falls back to the first option (false) when not set
 ```
 
 <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee</span></a><br/><br/><br/>
