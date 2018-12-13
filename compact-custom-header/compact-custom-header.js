@@ -10,7 +10,8 @@ class CompactCustomHeader extends HTMLElement {
     let clock_format = format_config(this.config.clock_format);
     let clock_am_pm = format_config(this.config.clock_am_pm);
     let disable = format_config(this.config.disable);
-    let user_agent = ',' + this.config.user_agent.split(',');
+    let user_agent = ',' + this.config.user_agent;
+    user_agent = user_agent.split(',');
     let ua = 0;
     // Find user agent's index number to grab it's config.
     for (let i = 1; i < user_agent.length; i++) {
@@ -33,7 +34,7 @@ class CompactCustomHeader extends HTMLElement {
     // Insert the main script in head, run, and remove for cleanup.
     const script = document.createElement('script');
     script.src = '/local/custom-lovelace/compact-custom-header/' +
-                 'compact-custom-header.lib.js?v0.0.6';
+                 'compact-custom-header.lib.js?v0.0.7';
     document.head.appendChild(script).parentNode.removeChild(script);
     // Resize the window to redraw header
     window.dispatchEvent(new Event('resize'));
