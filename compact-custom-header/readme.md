@@ -115,7 +115,7 @@ I'll add "SM-G955U" to "user_agent" in my config and I'll add my wifes phone as 
 
 Then in any config option you add a new option after a comma. These options happen in order, the first one being the default, the second being the first user_agent in config, the third being the second user_agent in config and so on.
 
-If any option is not set or empty it will fall back to the first option or default. So "true, , false" with the second option empty is essentially "true,true,false" and just "true" will be true for all user agents. If a device matches more than one user_agent, for example: ```user_agent: Mobile, Android``` then the last matched user agent is the one used, so in this case "Android".
+If any option is not set or empty it will fall back to the first option or default. So ```true, , false``` with the second option empty is essentially ```true, true, false``` and just ```true``` will be true for all user agents. If a device matches more than one user agent, for example: ```user_agent: Mobile, Android``` then the last matched user agent is the one used, so in this case ```Android```.
 
 Here's an example config showing:<br>
 
