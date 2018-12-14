@@ -53,9 +53,9 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * When changing options in your lovelace config, you may need to do a full browser refresh after to get it to display correctly. ('ctrl + shift + R' on windows). May even need to clear your cache and close/reopen the tab/window.
 
-* Putting this card inside a stack or any other container cards may cause layout issues, but can also fix some issues using panel view or 0.84.
-
 * The clock will only display if you have set an icon to be the clock in the config.
+
+* Putting this card inside a stack or any other container cards may cause layout issues, but can also fix some issues using panel view or 0.84.
 
 * To use with panel view or fix 0.84 layout issues, place as the last card of a vertical stack:
 ```
