@@ -55,9 +55,9 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
-* Putting this card inside a stack or any other container cards may cause layout issues, but can also fix some issues using panel view or 0.84.
+* Putting this card inside a stack or any other container cards may cause layout issues, but can also fix some issues using panel view or HA version > 0.84.
 
-* To use with panel view or fix 0.84 layout issues, place as the last card of a vertical stack:
+* To use with panel view or fix > 0.84 layout issues, place as the last card of a vertical stack:
 ```
     views:
       - id: home
