@@ -53,7 +53,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
-* To use with panel view place this card in a vertical stack like the example below. If you're using another type of container card in panel view you can just insert this card into it and not worry about the vertical stack. This is to make it part of the panel, otherwise the "card" isn't "displayed" and won't load. 
+* To use with panel view place this card in a vertical stack like the example below (or another "container card"). If you're using another type of container card in panel view you can just insert this card into it and not worry about the vertical stack. This is to make it part of the panel, otherwise the "card" isn't "displayed" and won't load. 
 
 ```
     views:
