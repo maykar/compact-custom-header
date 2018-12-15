@@ -25,7 +25,7 @@ This goes into ui-lovelace.yaml under "resources:"
   type: js
 ```
 
-This goes into one of your views under "cards:" in the same file. Place as the last "card" in a view.
+This goes into one of your views under "cards:" in the same file.
 
 ```
   - type: custom:compact-custom-header
@@ -47,13 +47,13 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 ## Important notes:
 
-* If you find that the default header appears again (happens especially on mobile when leaving and returning to the app) include the code in each of your views.
+* If you find that the default header appears again (happens especially on mobile when leaving and returning to the browser) include the code in each of your views.
 
-* When changing options in your lovelace config, you may need to do a full browser refresh after to get it to display correctly. ('ctrl + shift + R' on windows). May even need to clear your cache and/or close HA tabs/windows.
+* When changing options in your lovelace config, you may need to do a full browser refresh after to get it to display correctly ('ctrl + shift + R' on windows). May even need to clear your cache and/or close any open HA tabs/windows.
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
-* To use with panel view place this card as the last one in a vertical stack like so:
+* To use with panel view place this card in a vertical stack like so:
 
 ```
     views:
