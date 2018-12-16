@@ -1,7 +1,7 @@
 {
     "compact-custom-header": {
       "updated_at": "2018-12-15",
-      "version": "0.0.9",
+      "version": "0.10.0",
       "remote_location": "https://raw.githubusercontent.com/maykar/custom-lovelace/master/compact-custom-header/compact-custom-header.js",
       "visit_repo": "https://github.com/maykar/custom-lovelace/tree/master/compact-custom-header",
       "changelog": "https://github.com/maykar/custom-lovelace/releases"
