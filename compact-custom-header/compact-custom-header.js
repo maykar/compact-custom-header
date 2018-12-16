@@ -46,7 +46,7 @@ class CompactCustomHeader extends HTMLElement {
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
     script.src = '/local/custom-lovelace/compact-custom-header/' +
-                 'compact-custom-header.lib.js?v0.1.0';
+                 'compact-custom-header.lib.js?v0.1.1';
     document.head.appendChild(script).parentNode.removeChild(script);
     // Resize the window to redraw header
     window.dispatchEvent(new Event('resize'));
