@@ -19,7 +19,7 @@ class CompactCustomHeader extends HTMLElement {
     let clock_format = format_config(this.config.clock_format);
     let clock_am_pm = format_config(this.config.clock_am_pm);
     let disable = format_config(this.config.disable);
-    let yaml_mode = format_config(this.yaml_mode);
+    let yaml_mode = this.config.yaml_mode || false;
     // Empty agent for main config at start to keep index numbers consistant.
     let user_agent = ',' + this.config.user_agent;
     user_agent = user_agent.split(',');
@@ -42,11 +42,11 @@ class CompactCustomHeader extends HTMLElement {
     window.cch_clock_format = conf_def(clock_format[0], clock_format[uai], 12);
     window.cch_am_pm = conf_def(clock_am_pm[0], clock_am_pm[uai], true);
     window.cch_disable = conf_def(disable[0], disable[uai], false);
-    window.cch_yaml_mode = conf_def(yaml_mode[0], yaml_mode[uai], false);
+    window.cch_yaml_mode = yaml_mode;
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
     script.src = '/local/custom-lovelace/compact-custom-header/' +
-                 'compact-custom-header.lib.js?v0.0.9';
+                 'compact-custom-header.lib.js?v0.1.0';
     document.head.appendChild(script).parentNode.removeChild(script);
     // Resize the window to redraw header
     window.dispatchEvent(new Event('resize'));
