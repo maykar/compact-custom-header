@@ -73,7 +73,7 @@ if (!window.cch_header && !window.cch_disable && proceed) {
   }
   // If multiple toolbars exist & 2nd one is displayed, edit mode is active.
   // If length is 1 then toolbar[1] doesn't exist and will error, check first.
-  if (toolbar.length > 1) { 
+  if (toolbar.length > 1 && !window.cch_yaml_mode) { 
     if (toolbar[1].style.display != 'none') {
       edit_mode = true;
       // Show card in edit mode.
