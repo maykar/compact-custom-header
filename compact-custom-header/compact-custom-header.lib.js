@@ -8,7 +8,7 @@ if (typeof doc_root == 'undefined') {
       tabs, tabs_sr, tabs_container, tab_chevron, voice_btn_sr, voice_button,
       tab_count, voice_icon, voice_icon_sr, voice_iron_icon, pad, proceed,
       toolbar, shift_amount, edit_mode, cch_container, column_container, app_layout,
-      div_view, hui_view, column, alone;
+      div_view, hui_view, column, alone, card_found;
 }
 try {
   // Try so that if we're not on a lovelace page it won't continue to run...
@@ -24,9 +24,7 @@ try {
   proceed = false;
   console.log(e);
 }
-if (!window.cch_header && !window.cch_disable && proceed) {
-  hui_root.querySelector('app-header').style.cssText = 'display:none;';
-} else if (!window.cch_disable && proceed) {
+if (!window.cch_disable && !window.cch_disable && proceed) {
   // Drill through CSS to get the elements we want to style.
   app_layout = hui_root.querySelector('ha-app-layout');
   div_view = app_layout.querySelector('[id="view"]');
@@ -63,38 +61,46 @@ if (!window.cch_header && !window.cch_disable && proceed) {
   tab_chevron[0].style.cssText = 'display:none;';
   tab_chevron[1].style.cssText = 'display:none;';
 
+  // Hide header if set to false in config
+  if (!window.cch_header) {
+    hui_root.querySelector('app-header').style.cssText = 'display:none;';
+  }
+  
   // Find the column that contains this card.
+  card_found = false;
   for (let i = 0; i < column.length; i++) {
     if (column[i].querySelector('compact-custom-header')) {
       cch_container = column[i].querySelector('compact-custom-header');
       // Is the card the only one in the column?
       alone = (column[i].children.length == 1);
+      card_found = true;
     }
   }
+  
   // If multiple toolbars exist & 2nd one is displayed, edit mode is active.
   // If length is 1 then toolbar[1] doesn't exist and will error, check first.
-  if (toolbar.length > 1 && !window.cch_yaml_mode) { 
-    if (toolbar[1].style.display != 'none') {
-      edit_mode = true;
-      // Show card in edit mode.
-      cch_container.style.cssText = 'display:initial';
-    } else {
-      // Hide card outside of edit mode.
-      cch_container.style.cssText = 'display:none';
-      // Hide whole column if it only contains this card.
-      cch_container.parentNode.style.cssText = alone? 'display:none' : '';
-      edit_mode = false;
-    }
+  if (toolbar.length > 1 && !window.cch_yaml_mode && card_found) {
+    edit_mode = toolbar[1].style.cssText != 'display: none;' ? true : false;
   } else {
-    cch_container.style.cssText = 'display:none';
-    cch_container.parentNode.style.cssText = alone? 'display:none' : '';
     edit_mode = false;
   }
+
+  if (edit_mode && card_found) {
+    // Show card in edit mode.
+    cch_container.style.cssText = 'display:initial';
+  } else if (card_found) {
+    // Hide card outside of edit mode.
+    cch_container.style.cssText = 'display:none';
+    // Hide whole column if it only contains this card.
+    cch_container.parentNode.style.cssText = alone? 'display:none' : '';
+  }
+
   // Shift the header up to hide unused portion, but only with multiple tabs.
   // When there is only one tab the header is already collapsed.
   if (tab_count.length > 1) {
     hui_root.querySelector('app-toolbar').style.cssText = 'margin-top:-64px;';
   }
+  
   // Add width of all visable elements to size the tabs container.
   pad = 20;  // Default padding.
   pad += window.cch_notify && window.cch_clock != 'notification' ? 40 : 0;
@@ -105,12 +111,14 @@ if (!window.cch_header && !window.cch_disable && proceed) {
     pad += 60;
   }
   tabs.style.cssText = `margin-right:${pad}px;`;
+  
   // Shift tab container to the right if the menu button is a clock.
   if (window.cch_menu && window.cch_clock != 'menu') {
     tabs_container.style.cssText = 'margin-left:60px;';
   } else if (window.cch_menu && window.cch_clock == 'menu') {
     tabs_container.style.cssText = `margin-left:${clock_width + 15}px;`;
   }
+  
   // Hide/show buttons and tab container
   element_style(window.cch_menu, menu_button, true);
   element_style(window.cch_notify, notify_button, true);
@@ -119,6 +127,7 @@ if (!window.cch_header && !window.cch_disable && proceed) {
   for (let i = 0; i < tab_count.length; i++) {
     element_style(window.cch_tabs, tab_count[i], false);
   }
+  
   // Get elements to style for clock choice.
   if (window.cch_clock == 'notification') {
     icon = notify_icon;
@@ -138,6 +147,7 @@ if (!window.cch_header && !window.cch_disable && proceed) {
     shadow_root = menu_icon_sr;
     iron_icon = menu_iron_icon;
   }
+  
   // Look for the inserted clock element.
   if (window.cch_clock) {
     try {
@@ -172,8 +182,10 @@ if (!window.cch_header && !window.cch_disable && proceed) {
     `;
     iron_icon.style.cssText = 'display:none;';
   }
+  
   window.dispatchEvent(new Event('resize'));
 }
+
 // Style or hide buttons and tabs.
 function element_style(config, element, shift) {
   if (edit_mode) {
@@ -191,6 +203,7 @@ function element_style(config, element, shift) {
       'display:none' ;
   }
 }
+
 // Create and insert text for the clock.
 function icon_clock() {
   let date = new Date();
