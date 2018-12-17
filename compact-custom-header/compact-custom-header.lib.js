@@ -9,7 +9,7 @@ if (typeof doc_root == 'undefined') {
       tab_count, voice_icon, voice_icon_sr, voice_iron_icon, pad, proceed,
       toolbar, shift_amount, edit_mode, cch_card, column_container,
       app_layout, div_view, hui_view, column, alone, panel, container,
-      container_div, card_options, container_edit;
+      container_div, card_options;
 }
 try {
   // Try so that if we're not on a lovelace page it won't continue to run...
@@ -62,6 +62,7 @@ if (!window.cch_disable && !window.cch_disable && proceed) {
 
   let card_in_panel = false;
   let card_found = false;
+  let container_edit = false;
 
   // If outside of panel view, get column elements
   if (div_view.querySelector('hui-view') != null) {
@@ -91,7 +92,9 @@ if (!window.cch_disable && !window.cch_disable && proceed) {
   
   // Card placement changes depending on location and if in edit view.
   // If inside a container card and in edit view:
-  container_edit = (column[0].querySelector('hui-card-options') != null);
+  if (!card_in_panel && !card_found) {
+    container_edit = (column[0].querySelector('hui-card-options') != null);
+  } 
   if (!card_in_panel && !card_found && container_edit) {
     card_options = column[0].querySelector('hui-card-options');
     container = card_options.querySelector('*').shadowRoot;
