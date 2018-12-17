@@ -55,7 +55,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * Avoid using ```header: false``` unless you're using lovelace yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
 
-* To use with panel view place this card in a vertical stack like the example below (or another "container card"). If you're using another type of container card in panel view you can just insert this card into it and not worry about the vertical stack. This is to make it part of the panel, otherwise the "card" isn't "displayed" and won't load. 
+* To use with panel view place this card in a vertical stack (or another "container card") like the example below. If you're using another type of container card in panel view you can just insert this card into it and not worry about the vertical stack. This is to make it part of the panel, otherwise the "card" isn't "displayed" and won't load. 
 
 ```
     views:
