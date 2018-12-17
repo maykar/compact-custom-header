@@ -41,7 +41,6 @@ class CompactCustomHeader extends HTMLElement {
     window.cch_clock_format = conf_def(clock_format[0], clock_format[uai], 12);
     window.cch_am_pm = conf_def(clock_am_pm[0], clock_am_pm[uai], true);
     window.cch_disable = conf_def(disable[0], disable[uai], false);
-    window.cch_yaml_mode = yaml_mode;
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
     script.src = '/local/custom-lovelace/compact-custom-header/' +
