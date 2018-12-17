@@ -114,7 +114,7 @@ if (!window.cch_disable && !window.cch_disable && proceed) {
 
   // If multiple toolbars exist & 2nd one is displayed, edit mode is active.
   // If length is 1 then toolbar[1] doesn't exist and will error, check first.
-  if (toolbar.length > 1 && !window.cch_yaml_mode) {
+  if (toolbar.length > 1) {
     edit_mode = toolbar[1].style.cssText != 'display: none;' ? true : false;
   } else {
     edit_mode = false;
