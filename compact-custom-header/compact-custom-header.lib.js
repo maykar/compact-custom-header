@@ -7,8 +7,9 @@ if (typeof doc_root == 'undefined') {
       options_icon, options_icon_sr, options_iron_icon, pages, shadow_root,
       tabs, tabs_sr, tabs_container, tab_chevron, voice_btn_sr, voice_button,
       tab_count, voice_icon, voice_icon_sr, voice_iron_icon, pad, proceed,
-      toolbar, shift_amount, edit_mode, cch_container, column_container, app_layout,
-      div_view, hui_view, column, alone, card_found;
+      toolbar, shift_amount, edit_mode, cch_card, column_container,
+      app_layout, div_view, hui_view, column, alone, panel, container,
+      container_div, card_options, container_edit;
 }
 try {
   // Try so that if we're not on a lovelace page it won't continue to run...
@@ -17,8 +18,11 @@ try {
   main = doc_root.querySelector('home-assistant-main').shadowRoot;
   drawer_layout = main.querySelector('app-drawer-layout');
   pages = drawer_layout.querySelector('partial-panel-resolver').shadowRoot;
-  love_lace = pages.querySelector('ha-panel-lovelace').shadowRoot;
+  panel = pages.querySelector('[id="panel"]');
+  love_lace = panel.querySelector('ha-panel-lovelace').shadowRoot;
   hui_root = love_lace.querySelector('hui-root').shadowRoot;
+  app_layout = hui_root.querySelector('ha-app-layout');
+  div_view = app_layout.querySelector('[id="view"]');
   proceed = true;
 } catch (e) {
   proceed = false;
@@ -26,11 +30,6 @@ try {
 }
 if (!window.cch_disable && !window.cch_disable && proceed) {
   // Drill through CSS to get the elements we want to style.
-  app_layout = hui_root.querySelector('ha-app-layout');
-  div_view = app_layout.querySelector('[id="view"]');
-  hui_view = div_view.querySelector('hui-view').shadowRoot;
-  column_container = hui_view.querySelector('[id="columns"]');
-  column = column_container.querySelectorAll('[class="column"]');
   menu_button = hui_root.querySelector('ha-menu-button');
   menu_btn_sr = menu_button.shadowRoot;
   menu_icon = menu_btn_sr.querySelector('paper-icon-button');
@@ -61,38 +60,75 @@ if (!window.cch_disable && !window.cch_disable && proceed) {
   tab_chevron[0].style.cssText = 'display:none;';
   tab_chevron[1].style.cssText = 'display:none;';
 
+  let card_in_panel = false;
+  let card_found = false;
+
+  // If outside of panel view, get column elements
+  if (div_view.querySelector('hui-view') != null) {
+    hui_view = div_view.querySelector('hui-view').shadowRoot;
+    column_container = hui_view.querySelector('[id="columns"]');
+    column = column_container.querySelectorAll('[class="column"]');
+  } else {
+    card_in_panel = true;
+  }
+
   // Hide header if set to false in config
   if (!window.cch_header) {
     hui_root.querySelector('app-header').style.cssText = 'display:none;';
   }
   
-  // Find the column that contains this card.
-  card_found = false;
-  for (let i = 0; i < column.length; i++) {
-    if (column[i].querySelector('compact-custom-header')) {
-      cch_container = column[i].querySelector('compact-custom-header');
-      // Is the card the only one in the column?
-      alone = (column[i].children.length == 1);
-      card_found = true;
+  // Find the compact-custom-header card under normal circumstances.
+  if (div_view.querySelector('hui-view') != null) {
+    for (let i = 0; i < column.length; i++) {
+      if (column[i].querySelector('compact-custom-header')) {
+        cch_card = column[i].querySelector('compact-custom-header');
+        // Is the card the only one in the column?
+        alone = (column[i].children.length == 1);
+        card_found = true;
+      }
     }
   }
   
+  // Card placement changes depending on location and if in edit view.
+  // If inside a container card and in edit view:
+  container_edit = (column[0].querySelector('hui-card-options') != null);
+  if (!card_in_panel && !card_found && container_edit) {
+    card_options = column[0].querySelector('hui-card-options');
+    container = card_options.querySelector('*').shadowRoot;
+    container_div = container.querySelector('div');
+    cch_card = container_div.querySelector('compact-custom-header');
+    alone = false;
+  // If inside container card not in edit view
+  } else if (!card_found && !card_in_panel) {
+    container = column[0].querySelector('*').shadowRoot;
+    container_div = container.querySelector('div');
+    cch_card = container_div.querySelector('compact-custom-header');
+    alone = false;
+  // If inside panel view.
+  } else if (card_in_panel){
+    container = div_view.querySelector('*').shadowRoot;
+    container_div = container.querySelector('div');
+    cch_card = container_div.querySelector('compact-custom-header');
+    alone = false;
+  }
+
   // If multiple toolbars exist & 2nd one is displayed, edit mode is active.
   // If length is 1 then toolbar[1] doesn't exist and will error, check first.
-  if (toolbar.length > 1 && !window.cch_yaml_mode && card_found) {
+  if (toolbar.length > 1 && !window.cch_yaml_mode) {
     edit_mode = toolbar[1].style.cssText != 'display: none;' ? true : false;
   } else {
     edit_mode = false;
   }
-
-  if (edit_mode && card_found) {
+  
+  if (edit_mode) {
     // Show card in edit mode.
-    cch_container.style.cssText = 'display:initial';
-  } else if (card_found) {
+    cch_card.style.cssText = 'display:initial';
+    cch_card.parentNode.style.cssText = 'display:initial';
+  } else {
     // Hide card outside of edit mode.
-    cch_container.style.cssText = 'display:none';
+    cch_card.style.cssText = 'display:none';
     // Hide whole column if it only contains this card.
-    cch_container.parentNode.style.cssText = alone? 'display:none' : '';
+    cch_card.parentNode.style.cssText = alone? 'display:none' : '';
   }
 
   // Shift the header up to hide unused portion, but only with multiple tabs.
