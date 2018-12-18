@@ -122,7 +122,7 @@ if (proceed) {
     edit_mode = false;
   }
 
-  if (edit_mode) {
+  if (edit_mode && cch_card != null) {
     // Show card in edit mode (remove 'display:none').
     cch_card.style.cssText = '';
     cch_card.innerHTML = `
@@ -133,7 +133,7 @@ if (proceed) {
       <h2 style="margin:auto;padding:20px;">Compact Custom Header</h2>
     `;
     cch_card.parentNode.style.cssText = 'background-color:var(--primary-color)';
-  } else {
+  } else if (cch_card != null) {
     // Hide card outside of edit mode.
     cch_card.style.cssText = 'display:none';
     cch_card.innerHTML = '';
