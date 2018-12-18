@@ -53,6 +53,8 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
+* If you notice your cards shifting a few pixels when switching tabs, place this card as the last card in the view.
+
 * Avoid using ```header: false``` unless you're using lovelace yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
 
 * To use with panel view place this card in a vertical stack (or another "container card") like the example below. If you're using another type of container card in panel view you can just insert this card into it and not worry about the vertical stack. This is to make it part of the panel, otherwise the "card" isn't "displayed" and won't load. 
