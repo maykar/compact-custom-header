@@ -18,7 +18,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`.
 
-This goes into ui-lovelace.yaml under "resources:"
+This goes into under "resources:" in ui-lovelace.yaml or using the raw config editor.
 
 ```
 - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v0
