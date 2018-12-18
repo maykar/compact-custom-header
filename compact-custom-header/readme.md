@@ -47,7 +47,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 ## Important notes:
 
-* If you find that the default header appears again (happens especially on mobile when leaving and returning to the browser) include the code in each of your views.
+* If you find that the default header appears again or views without the card don't look right add this card to each view.
 
 * When changing options in your lovelace config, you may need to do a full browser refresh after to get it to display correctly ('ctrl + shift + R' in chrome). May even need to clear your cache.
 
