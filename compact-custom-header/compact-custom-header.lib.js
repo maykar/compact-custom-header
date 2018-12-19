@@ -73,7 +73,7 @@ if (proceed) {
   }
 
   // Find the compact-custom-header card under normal circumstances.
-  if (div_view.querySelector('hui-view') != null) {
+  if (div_view.querySelector('hui-view') != null && !card_in_panel) {
     for (let i = 0; i < column.length; i++) {
       if (column[i].querySelector('compact-custom-header')) {
         cch_card = column[i].querySelector('compact-custom-header');
