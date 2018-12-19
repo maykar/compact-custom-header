@@ -149,7 +149,9 @@ if (proceed) {
     // Pad bottom for image backgrounds as we're shifted -64px.
     if (window.cch_background_image) {
       div_view.style.paddingBottom = '64px';
-    }
+    } else {
+      div_view.style.paddingBottom = '';
+    }  
     // Hide header if set to false in config
     if (!window.cch_header) {
       hui_root.querySelector('app-header').style.cssText = 'display:none;';
