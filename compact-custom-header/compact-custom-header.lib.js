@@ -147,8 +147,9 @@ if (proceed) {
     tab_chevron[0].style.cssText = 'display:none;';
     tab_chevron[1].style.cssText = 'display:none;';
     // Pad bottom for image backgrounds as we're shifted -64px.
-    div_view.style.paddingBottom = '64px';
-
+    if (window.cch_background_image) {
+      div_view.style.paddingBottom = '64px';
+    }
     // Hide header if set to false in config
     if (!window.cch_header) {
       hui_root.querySelector('app-header').style.cssText = 'display:none;';
