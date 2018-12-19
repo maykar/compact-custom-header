@@ -18,6 +18,7 @@ class CompactCustomHeader extends HTMLElement {
     let clock_format = format_config(this.config.clock_format);
     let clock_am_pm = format_config(this.config.clock_am_pm);
     let disable = format_config(this.config.disable);
+    let bg_image = format_config(this.config.background_image);
     let dir = this.config.dir || '/www/custom-lovelace/compact-custom-header/';
     let card_dir = dir.replace(/\/www\//gi, '/local/');
     // Empty agent for main config at start to keep index numbers consistant.
@@ -42,10 +43,11 @@ class CompactCustomHeader extends HTMLElement {
     window.cch_clock_format = conf_def(clock_format[0], clock_format[uai], 12);
     window.cch_am_pm = conf_def(clock_am_pm[0], clock_am_pm[uai], true);
     window.cch_disable = conf_def(disable[0], disable[uai], false);
+    window.cch_background_image = conf_def(bg_image[0], bg_image[uai], false);
     
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
-    script.src = card_dir + 'compact-custom-header.lib.js?v0.1.6';
+    script.src = card_dir + 'compact-custom-header.lib.js?v0.1.7';
     document.head.appendChild(script).parentNode.removeChild(script);
     // Resize the window to redraw header
     window.dispatchEvent(new Event('resize'));
