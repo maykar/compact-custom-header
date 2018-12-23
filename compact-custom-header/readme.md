@@ -47,13 +47,13 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 ## Important notes:
 
-* The custom header works best when this card is added to each view.
+* The custom header works best when added to each view.
 
-* When changing options in your lovelace config, you may need to do a full browser refresh after to get everything to display properly ('ctrl + shift + R' in chrome). You may even need to clear your cache.
+* When changing config options, you may need to do a full browser refresh after to get everything to display properly ('ctrl + shift + R' in chrome). You may even need to clear your cache.
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
-* If you notice your cards shifting when switching tabs, place this card as the last card in a vertical stack with the last card in the view.
+* If you notice your cards shifting when changing views, place this card in a vertical stack with the last card in the view.
 
 * Avoid using ```header: false``` unless you're using yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
 
@@ -90,21 +90,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |user_agent|string|no default||Use a different config per device using user agent info. More on this below.
 |disable|boolean|false||Disable Compact Custom Header. To use default header on a certain user agent.
 |dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
-|background_image|boolean|false||Set to true if you use a background image in your view. Otherwise background will not fill the window.
-
-## Example Config:
-Example shows some default values for illustration purposes, it is unnecessary to define options that have the desired effect as default.
-```
-      - type: custom:compact-custom-header
-        notification: true
-        menu: true
-        options: false
-        voice: false
-        clock: notification
-        clock_format: 12
-        clock_am_pm: true
-        header: true
-```
+|background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
 
 ## User Agent Config:
 
@@ -112,11 +98,11 @@ You can have a different set of settings per device by using user agent. To find
 
 <img src="https://i.imgur.com/BWs8zj8.jpg" width="300px">
 
-I could choose a few things here like "Mobile" if I wanted to use a custom header for all mobile devices, or "Android" if I wanted all android devices, but instead I want to have one for just my phone so I'll use the model number from the results "SM-G955U".
+You could choose a few things here like "Mobile" if you wanted to use a custom header for all mobile devices, or "Android" if you wanted all android devices, but instead lets use the model number from the results "SM-G955U".
 
-I'll add "SM-G955U" to "user_agent" in my config and I'll add my wifes phone as well (model number "NHG47Q"). So I'll use ```user_agent: SM-G955U, NHG47Q```. Seperate each user agent with a comma.
+Add "SM-G955U" to "user_agent" in your config and lets add my wifes phone as well (model number "NHG47Q"). So we'll use ```user_agent: SM-G955U, NHG47Q```. Seperate each user agent with a comma.
 
-Then in any config option you add a new option after a comma. These options happen in order, the first one being the default, the second being the first user_agent in config, the third being the second user_agent in config and so on.
+Then in any config option add a new option after a comma. These options happen in order, the first one being the default, the second being the first user_agent in config, the third being the second user_agent in config and so on.
 
 If any option is not set or empty it will fall back to the first option or default. So ```true, , false``` with the second option empty is essentially ```true, true, false``` and just ```true``` will be true for all user agents. If a device matches more than one user agent, for example: ```user_agent: Mobile, Android``` then the last matched user agent is the one used, so in this case ```Android```.
 
