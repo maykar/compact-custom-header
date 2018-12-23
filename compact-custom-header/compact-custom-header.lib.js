@@ -1,6 +1,6 @@
 // Avoid "already defined" errors when navigating away from Lovelace and back.
 if (typeof doc_root == 'undefined') {
-  var app_layout, card_options, cch_card,clock, clock_format,
+  var app_layout, card_options, card, clock, clock_format,
       clock_width, column, column_container, container, container_div,
       div_view, doc_root, drawer_layout, edit_mode, hui_root, hui_view, icon,
       iron_icon, love_lace, main, menu_btn_sr, menu_button, menu_icon,
@@ -57,88 +57,44 @@ if (proceed) {
   tab_count = tabs.querySelectorAll('paper-tab');
   tabs_container = tabs_sr.getElementById('tabsContainer');
   tab_chevron = tabs_sr.querySelectorAll('[icon^="paper-tabs:chevron"]');
-  let card_in_panel = false;
-  let card_found = false;
-  let container_edit = false;
-  let alone = false;
-
-  // If card isn't contained in panel view or a container type card...
-  // get the column elements.
-  if (div_view.querySelector('hui-view') != null) {
-    hui_view = div_view.querySelector('hui-view').shadowRoot;
-    column_container = hui_view.querySelector('[id="columns"]');
-    column = column_container.querySelectorAll('[class="column"]');
-  } else {
-    card_in_panel = true;
-  }
-
-  // Find the compact-custom-header card under normal circumstances.
-  if (div_view.querySelector('hui-view') != null && !card_in_panel) {
-    for (let i = 0; i < column.length; i++) {
-      if (column[i].querySelector('compact-custom-header')) {
-        cch_card = column[i].querySelector('compact-custom-header');
-        cch_card.style.cssText = 'display:none';
-        // Is the card the only one in the column?
-        if (column[i].children.length == 1) {
-          cch_card.parentNode.style.cssText = alone ? 'display:none' : '';
-          alone = true;
-        }
-        card_found = true;
-        break;
-      }
-    }
-  }
-
-  // Card placement changes depending on location and if in edit view.
-  // If inside a container card and in edit view:
-  if (!card_in_panel && !card_found) {
-    container_edit = (column[0].querySelector('hui-card-options') != null);
-  }
-  if (!card_in_panel && !card_found && container_edit) {
-    card_options = column[0].querySelector('hui-card-options');
-    container = card_options.querySelector('*').shadowRoot;
-    container_div = container.querySelector('div');
-    cch_card = container_div.querySelector('compact-custom-header');
-    alone = false;
-  // If inside container card not in edit view
-  } else if (!card_found && !card_in_panel) {
-    container = column[0].querySelector('*').shadowRoot;
-    container_div = container.querySelector('div');
-    cch_card = container_div.querySelector('compact-custom-header');
-    alone = false;
-  // If inside panel view.
-  } else if (card_in_panel){
-    container = div_view.querySelector('*').shadowRoot;
-    container_div = container.querySelector('div');
-    cch_card = container_div.querySelector('compact-custom-header');
-    alone = false;
-  }
 
   // If multiple toolbars exist & 2nd one is displayed, edit mode is active.
-  // If there is only one toolbar, toolbar[1] doesn't exist yet and will error.
   if (toolbar.length > 1) {
     edit_mode = toolbar[1].style.cssText != 'display: none;' ? true : false;
   } else {
     edit_mode = false;
   }
 
-  if (edit_mode && cch_card != null) {
-    // Show card in edit mode (remove 'display:none').
-    cch_card.style.cssText = '';
-    cch_card.innerHTML = `
-      <svg style="float:left;height:30px;padding:15px;padding-right:5px;"
-      viewBox="0 0 24 24"><path fill="var(--primary-text-color)"
-      d="M12,7L17,12H14V16H10V12H7L12,7M19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
-      3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21M19,19V5H5V19H19Z"></path></svg>
-      <h2 style="margin:auto;padding:20px;">Compact Custom Header</h2>
-    `;
-    cch_card.parentNode.style.cssText = 'background-color:var(--primary-color)';
-  } else if (cch_card != null) {
-    // Hide card outside of edit mode.
-    cch_card.style.cssText = 'display:none';
-    cch_card.innerHTML = '';
-    // Hide whole column if it only contains this card outside edit mode.
-    cch_card.parentNode.style.cssText = alone ? 'display:none' : '';
+  // Find our card element.
+  recursiveWalk(app_layout, function(node) {
+    if (node.nodeName == 'COMPACT-CUSTOM-HEADER') { 
+      card = node;
+    }
+  });
+
+  // Hide column if this card is the only one it contains.
+  if (card != null) {
+    if (card.parentNode.children.length == 1) {
+      card.parentNode.style.cssText = 'display:none';
+    } else {
+      card.parentNode.style.cssText = '';
+    }
+    // Show card in edit mode and add the html.
+    if (edit_mode) {
+      card.style.cssText = '';
+      card.innerHTML = `
+        <svg style="float:left;height:30px;padding:15px;padding-right:5px;"
+        viewBox="0 0 24 24"><path fill="var(--primary-text-color)"
+        d="M12,7L17,12H14V16H10V12H7L12,7M19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
+        3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21M19,19V5H5V19H19Z"></path></svg>
+        <h2 style="margin:auto;padding:20px;">Compact Custom Header</h2>
+      `;
+      card.parentNode.style.cssText = 'background-color:var(--primary-color)';
+    } else {
+      // Hide card outside of edit mode and remove contents.
+      card.style.cssText = 'display:none';
+      card.innerHTML = '';
+    }
   }
 
   // Style header and icons if "disable: false" in config, which is default.
@@ -181,8 +137,8 @@ if (proceed) {
       tabs_container.style.cssText = `margin-left:${clock_width + 15}px;`;
     }
 
+    // Get elements to style for clock choice.
     if (window.cch_clock) {
-      // Get elements to style for clock choice.
       if (window.cch_clock == 'notification') {
         icon = notify_icon;
         shadow_root = notify_icon_sr;
@@ -264,13 +220,25 @@ if (proceed) {
   window.dispatchEvent(new Event('resize'));
 }
 
+// Walk the DOM to find card element.
+function recursiveWalk(node, func) {
+    var done = func(node) || node.nodeName == 'COMPACT-CUSTOM-HEADER';
+    if (done) return true;
+    if ('shadowRoot' in node && node.shadowRoot) {
+        done = recursiveWalk(node.shadowRoot, func);
+        if (done) return true;
+    }
+    node = node.firstChild;
+    while (node) {
+        done = recursiveWalk(node, func);
+        if (done) return true;
+        node = node.nextSibling;
+    }
+}
+
 // Style or hide buttons and tabs.
 function element_style(config, element, shift) {
-  if (edit_mode) {
-    shift_amount = 240;
-  } else {
-    shift_amount = 111;
-  }
+  shift_amount = edit_mode ? 240 : 111;
   if (tab_count.length > 1 && shift && !window.cch_disable) {
     element.style.cssText = config ?
       `z-index:1; margin-top:${shift_amount}px;` :
