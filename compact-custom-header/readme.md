@@ -53,7 +53,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load.
 
-* When changing config options, you may need to do a full browser refresh after to get everything to display properly ('ctrl + shift + R' in chrome). You may even need to clear your cache.
+* When changing config options, you may need to refresh the page or do a [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) afterwards to get everything to display properly. You may even need to clear your cache.
 
 * If you notice your cards shifting when changing views, place this card in a vertical stack with another card in the view.
 
