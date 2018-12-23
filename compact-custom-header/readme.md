@@ -53,7 +53,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
-* If you notice your cards shifting when switching tabs, place this card as the last card in the view or in a vertical stack with the last card in view.
+* If you notice your cards shifting when switching tabs, place this card as the last card in a vertical stack with the last card in the view.
 
 * Avoid using ```header: false``` unless you're using yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
 
