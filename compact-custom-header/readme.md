@@ -55,7 +55,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * If you notice your cards shifting when switching tabs, place this card as the last card in the view or in a vertical stack with the last card in view.
 
-* Avoid using ```header: false``` unless you're using lovelace yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
+* Avoid using ```header: false``` unless you're using yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
 
 * To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise the "card" isn't "displayed" and won't load. Example with vertical-stack:
 
