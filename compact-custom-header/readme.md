@@ -25,7 +25,7 @@ This goes into under "resources:" in ui-lovelace.yaml or using the raw config ed
   type: js
 ```
 
-This goes into one of your views under "cards:" in the same file.
+This goes into one of your views under "cards:" in the same file, this works best when added to each view.
 
 ```
   - type: custom:compact-custom-header
@@ -47,7 +47,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 ## Important notes:
 
-* If you find that the default header appears again or views without the card don't look right add this card to each view.
+* The custom header works best when this card is added to each view.
 
 * When changing options in your lovelace config, you may need to do a full browser refresh after to get it to display correctly ('ctrl + shift + R' in chrome). May even need to clear your cache.
 
@@ -57,7 +57,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * Avoid using ```header: false``` unless you're using lovelace yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
 
-* To use with panel view place this card in a vertical stack (or another "container card") like the example below. If you're using another type of container card in panel view you can just insert this card into it and not worry about the vertical stack. This is to make it part of the panel, otherwise the "card" isn't "displayed" and won't load. 
+* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise the "card" isn't "displayed" and won't load. Example with vertical-stack:
 
 ```
     views:
