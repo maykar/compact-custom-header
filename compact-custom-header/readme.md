@@ -47,7 +47,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 ## Important notes:
 
-* This works best when the "card" is added to each view.
+* This works best when the card is added to each view.
 
 * When changing config options, you may need to do a full browser refresh after to get everything to display properly ('ctrl + shift + R' in chrome). You may even need to clear your cache.
 
