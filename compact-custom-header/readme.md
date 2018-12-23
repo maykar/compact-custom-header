@@ -49,15 +49,15 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * Works best when the card is added to each view with the same settings.
 
-* When changing config options, you may need to do a full browser refresh after to get everything to display properly ('ctrl + shift + R' in chrome). You may even need to clear your cache.
-
 * The clock will only display if you have set an icon to be the clock in the config.
+
+* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load. When using panel view the card takes a second or two to appear in edit mode.
+
+* When changing config options, you may need to do a full browser refresh after to get everything to display properly ('ctrl + shift + R' in chrome). You may even need to clear your cache.
 
 * If you notice your cards shifting when changing views, place this card in a vertical stack with another card in the view.
 
 * Avoid using ```header: false``` unless you're using yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
-
-* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load. When using panel view the card takes a second or two to appear in edit mode.
 
 # Config:
 
