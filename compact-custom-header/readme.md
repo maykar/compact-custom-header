@@ -57,21 +57,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * Avoid using ```header: false``` unless you're using yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
 
-* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example with vertical-stack:
-
-```
-    views:
-      - id: home
-        icon: mdi:home
-        title: 'Home'
-        panel: true
-        cards:
-        - type: vertical-stack
-          cards:
-          - type: weather-forecast
-            entity: weather.yweather
-          - type: custom:compact-custom-header
-```
+* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load. When using panel view the card takes a second or two to appear in edit mode.
 
 # Config:
 
