@@ -1,15 +1,12 @@
 // Avoid "already defined" errors when navigating away from Lovelace and back.
 if (typeof doc_root == 'undefined') {
-  var app_layout, card_options, card, clock, clock_format,
-      clock_width, column, column_container, container, container_div,
-      div_view, doc_root, drawer_layout, edit_mode, hui_root, hui_view, icon,
-      iron_icon, love_lace, main, menu_btn_sr, menu_button, menu_icon,
-      menu_icon_sr, menu_iron_icon, notify_btn_sr, notify_button, notify_icon,
-      notify_icon_sr, notify_indicator, notify_iron_icon, options_button,
-      options_icon, options_icon_sr, options_iron_icon, pad, pages, panel,
-      proceed, shadow_root, shift_amount, tabs, tabs_container, tabs_sr,
-      tab_chevron, tab_count, toolbar, voice_btn_sr, voice_button, voice_icon,
-      voice_icon_sr, voice_iron_icon;
+  var app_layout, card, clock, clock_format,clock_width, div_view, doc_root,
+      drawer_layout, edit_mode, hui_root, icon, iron_icon, love_lace, main,
+      menu_btn, menu_icon, menu_iron_icon, notify_btn, notify_icon,
+      notify_indicator, notify_iron_icon, options_button, options_icon,
+      options_iron_icon, pad, pages, panel, proceed, shift_amount, tabs,
+      tabs_container, chevron, tabs_count, toolbar, voice_btn, voice_icon,
+      voice_iron_icon;
 }
 // Try so that if we're not on a lovelace page it won't continue to run...
 // since some elements only exist on lovelace & we insert script in doc head.
@@ -30,33 +27,25 @@ try {
   console.log(e);
 }
 if (proceed) {
-  // Find elements to style.
-  menu_button = hui_root.querySelector('ha-menu-button');
-  menu_btn_sr = menu_button.shadowRoot;
-  menu_icon = menu_btn_sr.querySelector('paper-icon-button');
-  menu_icon_sr = menu_icon.shadowRoot;
-  menu_iron_icon = menu_icon_sr.querySelector('iron-icon');
-  voice_button = hui_root.querySelector('ha-start-voice-button');
-  voice_btn_sr = voice_button.shadowRoot;
-  voice_icon = voice_btn_sr.querySelector('paper-icon-button');
-  voice_icon_sr = voice_icon.shadowRoot;
-  voice_iron_icon = voice_icon_sr.querySelector('iron-icon');
-  notify_button = hui_root.querySelector('hui-notifications-button');
-  notify_btn_sr = notify_button.shadowRoot;
-  notify_icon = notify_btn_sr.querySelector('paper-icon-button');
-  notify_icon_sr = notify_icon.shadowRoot;
-  notify_iron_icon = notify_icon_sr.querySelector('iron-icon');
-  notify_indicator = notify_btn_sr.querySelector('[class="indicator"]');
+  // Get elements to style.
+  menu_btn = hui_root.querySelector('ha-menu-button');
+  menu_icon = menu_btn.shadowRoot.querySelector('paper-icon-button');
+  menu_iron_icon = menu_icon.shadowRoot.querySelector('iron-icon');
+  notify_btn = hui_root.querySelector('hui-notifications-button');
+  notify_icon = notify_btn.shadowRoot.querySelector('paper-icon-button');
+  notify_iron_icon = notify_icon.shadowRoot.querySelector('iron-icon');
+  notify_indicator = notify_btn.shadowRoot.querySelector('[class="indicator"]');
+  voice_btn = hui_root.querySelector('ha-start-voice-button');
+  voice_icon = voice_btn.shadowRoot.querySelector('paper-icon-button');
+  voice_iron_icon = voice_icon.shadowRoot.querySelector('iron-icon');
   options_button = hui_root.querySelector('paper-menu-button');
   options_icon = options_button.querySelector('paper-icon-button');
-  options_icon_sr = options_icon.shadowRoot;
-  options_iron_icon = options_icon_sr.querySelector('iron-icon');
-  toolbar = hui_root.querySelectorAll('app-toolbar');
+  options_iron_icon = options_icon.shadowRoot.querySelector('iron-icon');
   tabs = hui_root.querySelector('paper-tabs');
-  tabs_sr = hui_root.querySelector('paper-tabs').shadowRoot;
-  tab_count = tabs.querySelectorAll('paper-tab');
-  tabs_container = tabs_sr.getElementById('tabsContainer');
-  tab_chevron = tabs_sr.querySelectorAll('[icon^="paper-tabs:chevron"]');
+  tabs_count = tabs.querySelectorAll('paper-tab');
+  tabs_container = tabs.shadowRoot.getElementById('tabsContainer');
+  chevron = tabs.shadowRoot.querySelectorAll('[icon^="paper-tabs:chevron"]');
+  toolbar = hui_root.querySelectorAll('app-toolbar');
 
   // If multiple toolbars exist & 2nd one is displayed, edit mode is active.
   if (toolbar.length > 1) {
@@ -65,13 +54,10 @@ if (proceed) {
     edit_mode = false;
   }
 
-  // Find our card element.
+  // Find the card element.
   recursive_walk(app_layout, function(node) {
-    if (node.nodeName == 'COMPACT-CUSTOM-HEADER') { 
-      card = node;
-    }
+    card = node.nodeName == 'COMPACT-CUSTOM-HEADER' ? node : null;
   });
-
   // Hide column if this card is the only one it contains.
   if (card != null) {
     if (card.parentNode.children.length == 1) {
@@ -79,7 +65,7 @@ if (proceed) {
     } else {
       card.parentNode.style.cssText = '';
     }
-    // Show card in edit mode and add the html.
+    // Create and display card in edit mode.
     if (edit_mode) {
       card.style.cssText = '';
       card.innerHTML = `
@@ -91,7 +77,7 @@ if (proceed) {
       `;
       card.parentNode.style.cssText = 'background-color:var(--primary-color)';
     } else {
-      // Hide card outside of edit mode and remove contents.
+      // Hide card outside of edit mode.
       card.style.cssText = 'display:none';
       card.innerHTML = '';
     }
@@ -100,8 +86,8 @@ if (proceed) {
   // Style header and icons if "disable: false" in config, which is default.
   if (!window.cch_disable) {
     // Hide scroll arrows on tab bar to save space.
-    tab_chevron[0].style.cssText = 'display:none;';
-    tab_chevron[1].style.cssText = 'display:none;';
+    chevron[0].style.cssText = 'display:none;';
+    chevron[1].style.cssText = 'display:none;';
     // Pad bottom for image backgrounds as we're shifted -64px.
     if (window.cch_background_image) {
       div_view.style.paddingBottom = '64px';
@@ -115,7 +101,7 @@ if (proceed) {
 
     // Shift the header up to hide unused portion, but only with multiple tabs.
     // When there is only one tab the header is already collapsed.
-    if (tab_count.length > 1) {
+    if (tabs_count.length > 1) {
       hui_root.querySelector('app-toolbar').style.cssText = 'margin-top:-64px;';
     }
 
@@ -141,26 +127,22 @@ if (proceed) {
     if (window.cch_clock) {
       if (window.cch_clock == 'notification') {
         icon = notify_icon;
-        shadow_root = notify_icon_sr;
         iron_icon = notify_iron_icon;
         notify_indicator.style.cssText = 'top:14.5px;left:-7px';
       } else if (window.cch_clock == 'voice') {
         icon = voice_icon;
-        shadow_root = voice_icon_sr;
         iron_icon = voice_iron_icon;
       } else if (window.cch_clock == 'options') {
         icon = options_icon;
-        shadow_root = options_icon_sr;
         iron_icon = options_iron_icon;
       } else if (window.cch_clock == 'menu') {
         icon = menu_icon;
-        shadow_root = menu_icon_sr;
         iron_icon = menu_iron_icon;
       }
 
       // Find inserted clock element.
       try {
-        clock = shadow_root.getElementById('cch_clock');
+        clock = icon.shadowRoot.getElementById('cch_clock');
       } catch (e) {
         console.log(e);
       }
@@ -195,8 +177,8 @@ if (proceed) {
     }
   } else if (window.cch_disable) {
     // Clear any styles that were modified if disabled.
-    tab_chevron[0].style.cssText = '';
-    tab_chevron[1].style.cssText = '';
+    chevron[0].style.cssText = '';
+    chevron[1].style.cssText = '';
     hui_root.querySelector('app-header').style.cssText = '';
     hui_root.querySelector('app-toolbar').style.cssText = '';
     tabs.style.cssText = '';
@@ -209,12 +191,12 @@ if (proceed) {
   }
 
   // Hide or show buttons and tab container
-  element_style(window.cch_menu, menu_button, true);
-  element_style(window.cch_notify, notify_button, true);
-  element_style(window.cch_voice, voice_button, true);
+  element_style(window.cch_menu, menu_btn, true);
+  element_style(window.cch_notify, notify_btn, true);
+  element_style(window.cch_voice, voice_btn, true);
   element_style(window.cch_options, options_button, true);
-  for (let i = 0; i < tab_count.length; i++) {
-    element_style(window.cch_tabs, tab_count[i], false);
+  for (let i = 0; i < tabs_count.length; i++) {
+    element_style(window.cch_tabs, tabs_count[i], false);
   }
   // Resize to update header.
   window.dispatchEvent(new Event('resize'));
@@ -239,7 +221,7 @@ function recursive_walk(node, func) {
 // Style or hide buttons and tabs.
 function element_style(config, element, shift) {
   shift_amount = edit_mode ? 240 : 111;
-  if (tab_count.length > 1 && shift && !window.cch_disable) {
+  if (tabs_count.length > 1 && shift && !window.cch_disable) {
     element.style.cssText = config ?
       `z-index:1; margin-top:${shift_amount}px;` :
       'display:none' ;
