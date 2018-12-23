@@ -2,7 +2,6 @@ class CompactCustomHeader extends HTMLElement {
   set hass(hass) {
     if (!this.content) {
       const card = document.createElement('ha-card');
-      card.header = this.config.title;
       this.content = document.createElement('div');
       this.content.style.cssText = 'display: none;';
       card.appendChild(this.content);
@@ -47,7 +46,7 @@ class CompactCustomHeader extends HTMLElement {
     
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
-    script.src = card_dir + 'compact-custom-header.lib.js?v0.1.8';
+    script.src = card_dir + 'compact-custom-header.lib.js?v0.1.9';
     document.head.appendChild(script).parentNode.removeChild(script);
     // Resize the window to redraw header
     window.dispatchEvent(new Event('resize'));
@@ -59,11 +58,13 @@ class CompactCustomHeader extends HTMLElement {
     return 0;
   }
 }
+
 // Convert config options to string, strip spaces, and convert to list.
 // Allows grabbing everything with a list index.
 function format_config(config) {
   return String(config).replace(/\s+/g, '').split(',');
 }
+
 // Config and defaults. user-agent || main-config || default.
 function conf_def(main_ua, this_ua, default_val) {
   // Check if user agent config is set.
@@ -85,4 +86,5 @@ function conf_def(main_ua, this_ua, default_val) {
     return x;
   }
 }
+
 customElements.define('compact-custom-header', CompactCustomHeader);
