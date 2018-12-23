@@ -58,7 +58,7 @@ if (proceed) {
   recursive_walk(app_layout, function(node) {
     card = node.nodeName == 'COMPACT-CUSTOM-HEADER' ? node : null;
   });
-  // Hide column if this card is the only one it contains.
+  // Hide whole column if this card is the only one it contains.
   if (card != null) {
     if (card.parentNode.children.length == 1) {
       card.parentNode.style.cssText = 'display:none';
@@ -82,6 +82,8 @@ if (proceed) {
       card.innerHTML = '';
     }
   }
+
+  window.dispatchEvent(new Event('resize'));
 
   // Style header and icons if "disable: false" in config, which is default.
   if (!window.cch_disable) {
