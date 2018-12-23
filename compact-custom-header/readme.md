@@ -49,7 +49,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * The custom header works best when this card is added to each view.
 
-* When changing options in your lovelace config, you may need to do a full browser refresh after to get it to display correctly ('ctrl + shift + R' in chrome). May even need to clear your cache.
+* When changing options in your lovelace config, you may need to do a full browser refresh after to get everything to display properly ('ctrl + shift + R' in chrome). You may even need to clear your cache.
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
