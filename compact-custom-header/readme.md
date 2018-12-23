@@ -51,7 +51,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
-* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load. When using panel view the card takes a second or two to appear in edit mode.
+* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load.
 
 * When changing config options, you may need to do a full browser refresh after to get everything to display properly ('ctrl + shift + R' in chrome). You may even need to clear your cache.
 
