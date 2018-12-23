@@ -66,7 +66,7 @@ if (proceed) {
   }
 
   // Find our card element.
-  recursiveWalk(app_layout, function(node) {
+  recursive_walk(app_layout, function(node) {
     if (node.nodeName == 'COMPACT-CUSTOM-HEADER') { 
       card = node;
     }
@@ -221,16 +221,16 @@ if (proceed) {
 }
 
 // Walk the DOM to find card element.
-function recursiveWalk(node, func) {
+function recursive_walk(node, func) {
     var done = func(node) || node.nodeName == 'COMPACT-CUSTOM-HEADER';
     if (done) return true;
     if ('shadowRoot' in node && node.shadowRoot) {
-        done = recursiveWalk(node.shadowRoot, func);
+        done = recursive_walk(node.shadowRoot, func);
         if (done) return true;
     }
     node = node.firstChild;
     while (node) {
-        done = recursiveWalk(node, func);
+        done = recursive_walk(node, func);
         if (done) return true;
         node = node.nextSibling;
     }
