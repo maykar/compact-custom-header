@@ -1,12 +1,12 @@
 // Avoid "already defined" errors when navigating away from Lovelace and back.
-if (typeof doc_root == 'undefined') {
+if (doc_root == undefined) {
   var app_layout, card, clock, clock_format,clock_width, div_view, doc_root,
       drawer_layout, edit_mode, hui_root, icon, iron_icon, love_lace, main,
       menu_btn, menu_icon, menu_iron_icon, notify_btn, notify_icon,
       notify_indicator, notify_iron_icon, options_button, options_icon,
       options_iron_icon, pad, pages, panel, proceed, shift_amount, tabs,
       tabs_container, chevron, tabs_count, toolbar, voice_btn, voice_icon,
-      voice_iron_icon;
+      voice_iron_icon, raw_config;
 }
 // Try so that if we're not on a lovelace page it won't continue to run...
 // since some elements only exist on lovelace & we insert script in doc head.
@@ -18,46 +18,79 @@ try {
   pages = drawer_layout.querySelector('partial-panel-resolver').shadowRoot;
   panel = pages.querySelector('[id="panel"]');
   love_lace = panel.querySelector('ha-panel-lovelace').shadowRoot;
-  hui_root = love_lace.querySelector('hui-root').shadowRoot;
-  app_layout = hui_root.querySelector('ha-app-layout');
-  div_view = app_layout.querySelector('[id="view"]');
   proceed = true;
 } catch (e) {
   proceed = false;
   console.log(e);
 }
+// If parent elements exist proceed.
 if (proceed) {
   // Get elements to style.
-  menu_btn = hui_root.querySelector('ha-menu-button');
-  menu_icon = menu_btn.shadowRoot.querySelector('paper-icon-button');
-  menu_iron_icon = menu_icon.shadowRoot.querySelector('iron-icon');
-  notify_btn = hui_root.querySelector('hui-notifications-button');
-  notify_icon = notify_btn.shadowRoot.querySelector('paper-icon-button');
-  notify_iron_icon = notify_icon.shadowRoot.querySelector('iron-icon');
-  notify_indicator = notify_btn.shadowRoot.querySelector('[class="indicator"]');
-  voice_btn = hui_root.querySelector('ha-start-voice-button');
-  voice_icon = voice_btn.shadowRoot.querySelector('paper-icon-button');
-  voice_iron_icon = voice_icon.shadowRoot.querySelector('iron-icon');
-  options_button = hui_root.querySelector('paper-menu-button');
-  options_icon = options_button.querySelector('paper-icon-button');
-  options_iron_icon = options_icon.shadowRoot.querySelector('iron-icon');
+  hui_root = love_lace.querySelector('hui-root').shadowRoot;
+  app_layout = hui_root.querySelector('ha-app-layout');
+  div_view = app_layout.querySelector('[id="view"]');
   tabs = hui_root.querySelector('paper-tabs');
   tabs_count = tabs.querySelectorAll('paper-tab');
   tabs_container = tabs.shadowRoot.getElementById('tabsContainer');
   chevron = tabs.shadowRoot.querySelectorAll('[icon^="paper-tabs:chevron"]');
   toolbar = hui_root.querySelectorAll('app-toolbar');
 
+  // Find the card element.
+  recursive_walk(app_layout, function(node) {
+    card = node.nodeName == 'COMPACT-CUSTOM-HEADER' ? node : null;
+  });
+
+  // When exiting raw config editor buttons are hidden.
+  raw_config = hui_root.querySelector('ha-menu-button') == null;
   // If multiple toolbars exist & 2nd one is displayed, edit mode is active.
-  if (toolbar.length > 1) {
+  if (toolbar != null && toolbar.length > 1) {
     edit_mode = toolbar[1].style.cssText != 'display: none;' ? true : false;
   } else {
     edit_mode = false;
   }
 
-  // Find the card element.
-  recursive_walk(app_layout, function(node) {
-    card = node.nodeName == 'COMPACT-CUSTOM-HEADER' ? node : null;
-  });
+  // CSS for card.
+  let button_style = `
+    margin:auto;
+    margin-bottom:10px;
+    background-color:var(--primary-color);
+    color:var(--primary-text-color);
+    border-radius:8px;
+    display:inline-block;
+    border:0;
+    font-size:14px;
+    width:30%;
+    padding:10px 0 10px 0;
+    outline:0 !important;
+  `;
+  let h2_style = `
+    margin:auto auto 10px auto;
+    padding:20px;
+    background-color:var(--primary-color);
+  `;
+  let svg_style = `
+    float:left;
+    height:30px;
+    padding:15px 5px 15px 15px;
+  `;
+  let div_style = `
+    display: flex;
+    justify-content: center;
+  `;
+  let path = `
+    fill="var(--primary-text-color)"
+    d="M12,7L17,12H14V16H10V12H7L12,7M19,
+    21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
+    3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
+    21M19,19V5H5V19H19Z"
+   `;
+  let user_agent = `
+    padding:5px;
+    border:0;
+    resize:none;
+    width:100%;
+  `;
+
   // Hide whole column if this card is the only one it contains.
   if (card != null) {
     if (card.parentNode.children.length == 1) {
@@ -66,27 +99,62 @@ if (proceed) {
       card.parentNode.style.cssText = '';
     }
     // Create and display card in edit mode.
-    if (edit_mode) {
+    if (edit_mode || raw_config) {
+      let ua_text = window.cch_ua_display ? 'Hide' : 'Show';
+      let tabs_text = window.cch_tabs_display ? 'Revert' : 'Show';
       card.style.cssText = '';
       card.innerHTML = `
-        <svg style="float:left;height:30px;padding:15px;padding-right:5px;"
-        viewBox="0 0 24 24"><path fill="var(--primary-text-color)"
-        d="M12,7L17,12H14V16H10V12H7L12,7M19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
-        3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21M19,19V5H5V19H19Z"></path></svg>
-        <h2 style="margin:auto;padding:20px;">Compact Custom Header</h2>
+        <svg style="${svg_style}" viewBox="0 0 24 24">
+          <path ${path}></path>
+        </svg>
+        <h2 style="${h2_style}">Compact Custom Header</h2>
+        <div style="${div_style}">
+          <button id='btn_ua' style="${button_style}"
+            onclick="show_user_agent()">
+            ${ua_text} user agent</button>
+          <button id='btn_tabs' style="${button_style}"
+            onclick="show_all_tabs()">
+            ${tabs_text} all tabs</button>
+          <button style="${button_style}"
+            onclick="location.reload(true);">
+            Refresh</button>
+        </div>
+        <div style="${div_style}">
+          <textarea style="${user_agent} "id="cch_ua" rows="4" readonly>
+          </textarea>
+        </div>
       `;
-      card.parentNode.style.cssText = 'background-color:var(--primary-color)';
+      card.parentNode.style.cssText = `
+        background-color:var(--paper-card-background-color);
+      `;
+      if (!window.cch_ua_display) {
+        card.querySelector('[id="cch_ua"]').style.display = 'none';
+      }
+      card.querySelector('[id="cch_ua"]').innerHTML = navigator.userAgent;
     } else {
       // Hide card outside of edit mode.
       card.style.cssText = 'display:none';
       card.innerHTML = '';
     }
   }
-
+  // Resize to update header.
   window.dispatchEvent(new Event('resize'));
 
-  // Style header and icons if "disable: false" in config, which is default.
-  if (!window.cch_disable) {
+  // Style header and icons.
+  if (!window.cch_disable && !raw_config) {
+    menu_btn = hui_root.querySelector('ha-menu-button');
+    menu_icon = menu_btn.shadowRoot.querySelector('paper-icon-button');
+    menu_iron_icon = menu_icon.shadowRoot.querySelector('iron-icon');
+    notify_btn = hui_root.querySelector('hui-notifications-button');
+    notify_icon = notify_btn.shadowRoot.querySelector('paper-icon-button');
+    notify_iron_icon = notify_icon.shadowRoot.querySelector('iron-icon');
+    notify_indicator = notify_btn.shadowRoot.querySelector('[class="indicator"]');
+    voice_btn = hui_root.querySelector('ha-start-voice-button');
+    voice_icon = voice_btn.shadowRoot.querySelector('paper-icon-button');
+    voice_iron_icon = voice_icon.shadowRoot.querySelector('iron-icon');
+    options_button = hui_root.querySelector('paper-menu-button');
+    options_icon = options_button.querySelector('paper-icon-button');
+    options_iron_icon = options_icon.shadowRoot.querySelector('iron-icon');
     // Hide scroll arrows on tab bar to save space.
     chevron[0].style.cssText = 'display:none;';
     chevron[1].style.cssText = 'display:none;';
@@ -190,6 +258,9 @@ if (proceed) {
     if (iron_icon != null) iron_icon.style.cssText = '';
     if (icon != null) icon.style.cssText = '';
     if (clock != null) clock.innerHTML = '';
+    for (let i = 0; i < tabs_count.length; i++) {
+      tabs_count[i].style.cssText = '';
+    }
   }
 
   // Hide or show buttons and tab container
@@ -197,10 +268,12 @@ if (proceed) {
   element_style(window.cch_notify, notify_btn, true);
   element_style(window.cch_voice, voice_btn, true);
   element_style(window.cch_options, options_button, true);
-  for (let i = 0; i < tabs_count.length; i++) {
-    element_style(window.cch_tabs, tabs_count[i], false);
+  if (window.cch_tabs_display == undefined) {
+    for (let i = 0; i < tabs_count.length; i++) {
+      element_style(window.cch_tabs, tabs_count[i], false);
+    }
   }
-  // Resize to update header.
+
   window.dispatchEvent(new Event('resize'));
 }
 
@@ -218,6 +291,36 @@ function recursive_walk(node, func) {
         if (done) return true;
         node = node.nextSibling;
     }
+}
+
+function show_user_agent() {
+  if (card.querySelector('[id="cch_ua"]') != null) {
+    if (window.cch_ua_display) {
+      card.querySelector('[id="cch_ua"]').style.display = 'none';
+      card.querySelector('[id="btn_ua"]').innerHTML = 'Show user agent';
+      window.cch_ua_display = false;
+    } else if (!window.cch_ua_display) {
+      card.querySelector('[id="cch_ua"]').style.display = 'initial';
+      card.querySelector('[id="btn_ua"]').innerHTML = 'Hide user agent';
+      window.cch_ua_display = true;
+    }
+  }
+}
+
+function show_all_tabs() {
+  if (!window.cch_tabs_display) {
+    for (let i = 0; i < tabs_count.length; i++) {
+      tabs_count[i].style.cssText = '';
+    }
+    window.cch_tabs_display = true;
+    card.querySelector('[id="btn_tabs"]').innerHTML = 'Revert all tabs';
+  } else if (window.cch_tabs_display) {
+    for (let i = 0; i < tabs_count.length; i++) {
+      tabs_count[i].style.cssText = 'display:none;';
+    }
+    window.cch_tabs_display = false;
+    card.querySelector('[id="btn_tabs"]').innerHTML = 'Show all tabs';
+  }
 }
 
 // Style or hide buttons and tabs.
