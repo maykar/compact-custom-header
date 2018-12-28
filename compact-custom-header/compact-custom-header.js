@@ -46,7 +46,7 @@ class CompactCustomHeader extends HTMLElement {
     
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
-    script.src = card_dir + 'compact-custom-header.lib.js?v0.2.0';
+    script.src = card_dir + 'compact-custom-header.lib.js?v0.2.1';
     document.head.appendChild(script).parentNode.removeChild(script);
     // Resize the window to redraw header
     window.dispatchEvent(new Event('resize'));
