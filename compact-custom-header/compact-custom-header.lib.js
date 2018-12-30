@@ -157,7 +157,7 @@ if (proceed) {
     // Hide or show tabs.
     if (!window.cch_tabs_display) {
       for (let i = 0; i < tabs_count.length; i++) {
-        if (window.cch_show_tabs.indexOf(String(i+1)) > -1) {
+        if (window.cch_ua_views.indexOf(String(i+1)) > -1) {
           element_style(window.cch_tabs, tabs_count[i], false);
         } else {
           tabs_count[i].style.cssText = 'display:none;';
@@ -165,9 +165,9 @@ if (proceed) {
       }
     }
     // If user agent settings hide first tab, then redirect to new first tab.
-    if (!window.cch_tabs_display && window.cch_show_tabs[0] > 1 &&
+    if (!window.cch_tabs_display && window.cch_ua_views[0] > 1 &&
         tabs_count[0].className == 'iron-selected') {
-      tabs_count[parseInt(window.cch_show_tabs[0]) - 1].click();
+      tabs_count[parseInt(window.cch_ua_views[0]) - 1].click();
     }
 
     // Remove clock from element if no longer set.
@@ -355,7 +355,7 @@ function show_all_tabs() {
     card.querySelector('[id="btn_tabs"]').innerHTML = 'Revert all tabs';
   } else if (window.cch_tabs_display) {
     for (let i = 0; i < tabs_count.length; i++) {
-      if (window.cch_show_tabs.indexOf(String(i+1)) > -1) {
+      if (window.cch_ua_views.indexOf(String(i+1)) > -1) {
         tabs_count[i].style.cssText = '';
       } else {
         tabs_count[i].style.cssText = 'display:none;';
