@@ -80,6 +80,16 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
 |background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
 
+## Card:
+
+The card will automatically display when "configuring ui" in lovelace and has a few features to help with config.
+
+<img src="https://i.imgur.com/yjKLd9l.jpg" width="400px">
+
+* Show your current devices user agent information for easy copy and paste to config.
+* Show all tabs so that when using a device where tabs are hidden, you can temporarily show all tabs to allow for easy configuration.
+* The refresh button will do a hard refresh, refreshing the page ignoring cache.
+
 ## User Agent Config:
 
 You can have a different set of settings per device by using user agent. To find the user agent [google "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
@@ -112,7 +122,7 @@ Here's an example config showing:<br>
   clock_am_pm: false, true  # don't need to set a third, will fall back to the first option (false) when not set
 ```
 
-## User Agent Views Config:
+## User Agent Views:
 
 You can set what tabs are shown/hidden depending on user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. Example:
 
