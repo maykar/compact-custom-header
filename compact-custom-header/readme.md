@@ -1,4 +1,4 @@
-# Compact Custom Header
+# Compact Custom Header & Custom Device Views
 
 ### Customize the Home Assistant header!<br/><br/>
 Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
@@ -8,6 +8,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 ## Features:
 * Per device settings using user agents.
+* Can create per device views with user_agent_views.
 * Hide any item or the entire header altogether.
 * Replace any icon button with a clock while keeping the buttons functionality.
 * Compact design.
@@ -53,7 +54,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load.
 
-* When changing config options, you may need to refresh the page or do a [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) afterwards to get everything to display properly. You may even need to clear your cache.
+* When changing config options, you may need to refresh the page or by doing a [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with the cards "refresh" button or manually to get everything to display properly. You may even need to clear your cache.
 
 * If you notice your cards shifting when changing views, place this card in a vertical stack with another card in the view.
 
@@ -74,13 +75,24 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
 |clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|
 |user_agent|string|no default||Use a different config per device using user agent info. More on this below.
+|user_agent_views|list|no default||Hide/show tabs depending on user agent. More info below.
 |disable|boolean|false||Disable Compact Custom Header. To use default header on a certain user agent.
 |dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
 |background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
 
+## Card:
+
+The card will automatically display when "configuring ui" in lovelace and has a few features to help with config.
+
+<img src="https://i.imgur.com/yjKLd9l.jpg" width="400px">
+
+* Show your current devices user agent information for easy copy and paste to config.
+* Show all tabs so that when using a device where tabs are hidden, you can temporarily show all tabs to allow for easy configuration.
+* The refresh button will do a hard refresh, refreshing the page ignoring cache.
+
 ## User Agent Config:
 
-You can have a different set of settings per device by using user agent. To find the user agent [google "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
+You can have a different set of settings per device by using user agent. To find the user agent you can click "show user agent" on the card when configuring the lovelace ui or by [googling "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
 
 <img src="https://i.imgur.com/BWs8zj8.jpg" width="300px">
 
@@ -108,6 +120,19 @@ Here's an example config showing:<br>
   clock: notification, options, menu
   clock_format: 24, 12, 12
   clock_am_pm: false, true  # don't need to set a third, will fall back to the first option (false) when not set
+```
+
+## User Agent Views:
+
+You can set what tabs are shown/hidden depending on user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view. Example:
+
+```
+- type: custom:compact-custom-header
+  user_agent: SM-G955U, NHG47Q
+  user_agent_views:
+    - 1,2,3,4
+    - 2,3,4 # Will automatically redirect first view to second.
+    - 1,4
 ```
 
 <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee</span></a><br/><br/><br/>

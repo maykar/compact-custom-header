@@ -7,6 +7,7 @@ class CompactCustomHeader extends HTMLElement {
       card.appendChild(this.content);
       this.appendChild(card);
     }
+    let user_agent_views = this.config.user_agent_views;
     let header = format_config(this.config.header);
     let menu = format_config(this.config.menu);
     let notify = format_config(this.config.notification);
@@ -32,6 +33,7 @@ class CompactCustomHeader extends HTMLElement {
       }
     }
     // Global variables for the main script.
+    window.cch_ua_views = user_agent_views[uai].replace(/\s+/g, '').split(',');
     window.cch_header = conf_def(header[0], header[uai], true);
     window.cch_menu = conf_def(menu[0], menu[uai], true);
     window.cch_notify = conf_def(notify[0], notify[uai], true);
@@ -46,7 +48,7 @@ class CompactCustomHeader extends HTMLElement {
     
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
-    script.src = card_dir + 'compact-custom-header.lib.js?v0.2.0';
+    script.src = card_dir + 'compact-custom-header.lib.js?v0.2.1';
     document.head.appendChild(script).parentNode.removeChild(script);
     // Resize the window to redraw header
     window.dispatchEvent(new Event('resize'));
