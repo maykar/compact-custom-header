@@ -8,6 +8,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 ## Features:
 * Per device settings using user agents.
+* Can create per device lovelace views with user_agent_views.
 * Hide any item or the entire header altogether.
 * Replace any icon button with a clock while keeping the buttons functionality.
 * Compact design.
@@ -74,6 +75,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
 |clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|
 |user_agent|string|no default||Use a different config per device using user agent info. More on this below.
+|user_agent_views|list|no default||Hide/show tabs depending on user agent. More info below.
 |disable|boolean|false||Disable Compact Custom Header. To use default header on a certain user agent.
 |dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
 |background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
@@ -109,5 +111,21 @@ Here's an example config showing:<br>
   clock_format: 24, 12, 12
   clock_am_pm: false, true  # don't need to set a third, will fall back to the first option (false) when not set
 ```
+
+## User Agent Views Config:
+
+You can set what tabs are shown/hidden depending on user agent. Just like other user agent options this goes in order of default, user agent 1, user agent 2, and so on. Example:
+
+```
+- type: custom:compact-custom-header
+  user_agent: SM-G955U, NHG47Q
+  user_agent_views:
+    - 1,2,3,4
+    - 2,3,4
+    - 1,4
+```
+
+Remember to start with a hyphen and seperate each tab number with a comma. If the first visable tab is not tab one, like ```- 2,3,4``` then the user agent is automatically redirected to the first visable tab, in this case tab 2.
+
 
 <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee</span></a><br/><br/><br/>
