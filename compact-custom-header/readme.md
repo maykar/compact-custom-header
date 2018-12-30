@@ -114,7 +114,7 @@ Here's an example config showing:<br>
 
 ## User Agent Views Config:
 
-You can set what tabs are shown/hidden depending on user agent. Just like other user agent options this goes in order of default, user agent 1, user agent 2, and so on. Example:
+You can set what tabs are shown/hidden depending on user agent. Just like other user agent options this goes in order of default, user agent 1, user agent 2, and so on. Start each view with a hyphen and seperate each tab number with a comma. If the first visable tab is not tab one, like ```- 2,3,4``` then the user agent is automatically redirected to the first visable tab, in this case tab 2. Example:
 
 ```
 - type: custom:compact-custom-header
@@ -124,8 +124,5 @@ You can set what tabs are shown/hidden depending on user agent. Just like other 
     - 2,3,4
     - 1,4
 ```
-
-Remember to start with a hyphen and seperate each tab number with a comma. If the first visable tab is not tab one, like ```- 2,3,4``` then the user agent is automatically redirected to the first visable tab, in this case tab 2.
-
 
 <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee</span></a><br/><br/><br/>
