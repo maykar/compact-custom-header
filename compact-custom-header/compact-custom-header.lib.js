@@ -154,8 +154,8 @@ if (proceed) {
     options_icon = options_btn.querySelector('paper-icon-button');
     options_iron_icon = options_icon.shadowRoot.querySelector('iron-icon');
 
-    // Hide or show tabs.
-    if (!window.cch_tabs_display) {
+    if (window.cch_ua_views && !window.cch_tabs_display) {
+      // Hide or show tabs.
       for (let i = 0; i < tabs_count.length; i++) {
         if (window.cch_ua_views.indexOf(String(i+1)) > -1) {
           element_style(window.cch_tabs, tabs_count[i], false);
@@ -163,11 +163,15 @@ if (proceed) {
           tabs_count[i].style.cssText = 'display:none;';
         }
       }
-    }
-    // If user agent settings hide first tab, then redirect to new first tab.
-    if (!window.cch_tabs_display && window.cch_ua_views[0] > 1 &&
-        tabs_count[0].className == 'iron-selected') {
-      tabs_count[parseInt(window.cch_ua_views[0]) - 1].click();
+      // If user agent settings hide first tab, then redirect to new first tab.
+      if (!window.cch_tabs_display && window.cch_ua_views[0] > 1 &&
+          tabs_count[0].className == 'iron-selected') {
+        tabs_count[parseInt(window.cch_ua_views[0]) - 1].click();
+      }
+    } else {
+      for (let i = 0; i < tabs_count.length; i++) {
+          element_style(window.cch_tabs, tabs_count[i], false);
+        }
     }
 
     // Remove clock from element if no longer set.
@@ -202,7 +206,7 @@ if (proceed) {
       hui_root.querySelector('app-toolbar').style.cssText = 'margin-top:-64px;';
     }
 
-    // Add width of all visable elements on right side for tabs margin.
+    // Add width of all visible elements on right side for tabs margin.
     let pad = 20;
     pad += window.cch_notify && window.cch_clock != 'notification' ? 40 : 0;
     pad += window.cch_voice && window.cch_clock != 'voice' ? 40 : 0;
@@ -355,10 +359,12 @@ function show_all_tabs() {
     card.querySelector('[id="btn_tabs"]').innerHTML = 'Revert all tabs';
   } else if (window.cch_tabs_display) {
     for (let i = 0; i < tabs_count.length; i++) {
-      if (window.cch_ua_views.indexOf(String(i+1)) > -1) {
-        tabs_count[i].style.cssText = '';
-      } else {
-        tabs_count[i].style.cssText = 'display:none;';
+      if (window.cch_ua_views) {
+        if (window.cch_ua_views.indexOf(String(i+1)) > -1) {
+          tabs_count[i].style.cssText = '';
+        } else {
+          tabs_count[i].style.cssText = 'display:none;';
+        }
       }
     }
     window.cch_tabs_display = false;
