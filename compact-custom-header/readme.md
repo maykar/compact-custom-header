@@ -130,9 +130,9 @@ You can set what tabs are shown/hidden depending on user agent. This option foll
 - type: custom:compact-custom-header
   user_agent: SM-G955U, NHG47Q
   user_agent_views:
-    - 1,2,3,4
-    - 2,3,4 # Will automatically redirect first view to second.
-    - 1,4
+    - 1,2,3,4 # Default view.
+    - 2,3,4 # SM-G955U's view. Will automatically redirect from first view to second.
+    - 1,4 # NHG47Q's view.
 ```
 
 <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee</span></a><br/><br/><br/>
