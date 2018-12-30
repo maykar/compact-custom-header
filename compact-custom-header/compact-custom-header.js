@@ -7,7 +7,7 @@ class CompactCustomHeader extends HTMLElement {
       card.appendChild(this.content);
       this.appendChild(card);
     }
-    let tab_visability = this.config.tab_visability;
+    let user_agent_views = this.config.user_agent_views;
     let header = format_config(this.config.header);
     let menu = format_config(this.config.menu);
     let notify = format_config(this.config.notification);
@@ -33,7 +33,7 @@ class CompactCustomHeader extends HTMLElement {
       }
     }
     // Global variables for the main script.
-    window.cch_show_tabs = tab_visability[uai].replace(/\s+/g, '').split(',');
+    window.cch_ua_views = user_agent_views[uai].replace(/\s+/g, '').split(',');
     window.cch_header = conf_def(header[0], header[uai], true);
     window.cch_menu = conf_def(menu[0], menu[uai], true);
     window.cch_notify = conf_def(notify[0], notify[uai], true);
