@@ -54,7 +54,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load.
 
-* When changing config options, you may need to refresh the page or do a [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) afterwards to get everything to display properly. You may even need to clear your cache.
+* When changing config options, you may need to refresh the page or by doing a [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with the cards "refresh" button or manually to get everything to display properly. You may even need to clear your cache.
 
 * If you notice your cards shifting when changing views, place this card in a vertical stack with another card in the view.
 
@@ -92,7 +92,7 @@ The card will automatically display when "configuring ui" in lovelace and has a 
 
 ## User Agent Config:
 
-You can have a different set of settings per device by using user agent. To find the user agent [google "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
+You can have a different set of settings per device by using user agent. To find the user agent you can click "show user agent" on the card when configuring the lovelace ui or by [googling "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
 
 <img src="https://i.imgur.com/BWs8zj8.jpg" width="300px">
 
@@ -124,7 +124,7 @@ Here's an example config showing:<br>
 
 ## User Agent Views:
 
-You can set what tabs are shown/hidden depending on user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. Example:
+You can set what tabs are shown/hidden depending on user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view. Example:
 
 ```
 - type: custom:compact-custom-header
