@@ -153,7 +153,35 @@ if (proceed) {
     options_btn = hui_root.querySelector('paper-menu-button');
     options_icon = options_btn.querySelector('paper-icon-button');
     options_iron_icon = options_icon.shadowRoot.querySelector('iron-icon');
-    
+
+    // Hide or show tabs.
+    if (!window.cch_tabs_display) {
+      for (let i = 0; i < tabs_count.length; i++) {
+        if (window.cch_show_tabs.indexOf(String(i+1)) > -1) {
+          element_style(window.cch_tabs, tabs_count[i], false);
+        } else {
+          tabs_count[i].style.cssText = 'display:none;';
+        }
+      }
+    }
+    // If user agent settings hide first tab, then redirect to new first tab.
+    if (!window.cch_tabs_display && window.cch_show_tabs[0] > 1 &&
+        tabs_count[0].className == 'iron-selected') {
+      tabs_count[parseInt(window.cch_show_tabs[0]) - 1].click();
+    }
+
+    // Remove clock from element if no longer set.
+    remove_clock('notification', notify_icon, notify_btn);
+    remove_clock('voice', voice_icon, voice_btn);
+    remove_clock('options', options_icon, options_btn);
+    remove_clock('menu', menu_icon, menu_btn);
+  
+    // Hide or show buttons.
+    element_style(window.cch_menu, menu_btn, true);
+    element_style(window.cch_notify, notify_btn, true);
+    element_style(window.cch_voice, voice_btn, true);
+    element_style(window.cch_options, options_btn, true);
+
     // Hide scroll arrows on tab bar to save space.
     chevron[0].style.cssText = 'display:none;';
     chevron[1].style.cssText = 'display:none;';
@@ -162,7 +190,7 @@ if (proceed) {
       div_view.style.paddingBottom = '64px';
     } else {
       div_view.style.paddingBottom = '';
-    }  
+    }
     // Hide header if set to false in config
     if (!window.cch_header) {
       hui_root.querySelector('app-header').style.cssText = 'display:none;';
@@ -251,23 +279,6 @@ if (proceed) {
     }
   }
 
-  // Remove clock from element if no longer set.
-  remove_clock('notification', notify_icon, notify_btn);
-  remove_clock('voice', voice_icon, voice_btn);
-  remove_clock('options', options_icon, options_btn);
-  remove_clock('menu', menu_icon, menu_btn);
-
-  // Hide or show buttons and tab container
-  element_style(window.cch_menu, menu_btn, true);
-  element_style(window.cch_notify, notify_btn, true);
-  element_style(window.cch_voice, voice_btn, true);
-  element_style(window.cch_options, options_btn, true);
-  if (window.cch_tabs_display == undefined) {
-    for (let i = 0; i < tabs_count.length; i++) {
-      element_style(window.cch_tabs, tabs_count[i], false);
-    }
-  }
-
   window.dispatchEvent(new Event('resize'));
 }
 
@@ -287,37 +298,6 @@ function recursive_walk(node, func) {
     }
 }
 
-function show_user_agent() {
-  if (card.querySelector('[id="cch_ua"]') != null) {
-    if (window.cch_ua_display) {
-      card.querySelector('[id="cch_ua"]').style.display = 'none';
-      card.querySelector('[id="btn_ua"]').innerHTML = 'Show user agent';
-      window.cch_ua_display = false;
-    } else if (!window.cch_ua_display) {
-      card.querySelector('[id="cch_ua"]').style.display = 'initial';
-      card.querySelector('[id="btn_ua"]').innerHTML = 'Hide user agent';
-      window.cch_ua_display = true;
-    }
-  }
-}
-
-function show_all_tabs() {
-  if (!window.cch_tabs_display) {
-    for (let i = 0; i < tabs_count.length; i++) {
-      tabs_count[i].style.cssText = '';
-    }
-    window.cch_tabs_display = true;
-    card.querySelector('[id="btn_tabs"]').innerHTML = 'Revert all tabs';
-  } else if (window.cch_tabs_display) {
-    for (let i = 0; i < tabs_count.length; i++) {
-      tabs_count[i].style.cssText = 'display:none;';
-    }
-    window.cch_tabs_display = false;
-    card.querySelector('[id="btn_tabs"]').innerHTML = 'Show all tabs';
-  }
-}
-
-// Style or hide buttons and tabs.
 function element_style(config, element, shift) {
   let top = edit_mode ? 240 : 111;
   let options_style = element == options_btn ?
@@ -349,5 +329,39 @@ function remove_clock(config, element, parent) {
       notify_dot.style.cssText = '';
     }
     clock_element.parentNode.removeChild(clock_element);
+  }
+}
+
+function show_user_agent() {
+  if (card.querySelector('[id="cch_ua"]') != null) {
+    if (window.cch_ua_display) {
+      card.querySelector('[id="cch_ua"]').style.display = 'none';
+      card.querySelector('[id="btn_ua"]').innerHTML = 'Show user agent';
+      window.cch_ua_display = false;
+    } else if (!window.cch_ua_display) {
+      card.querySelector('[id="cch_ua"]').style.display = 'initial';
+      card.querySelector('[id="btn_ua"]').innerHTML = 'Hide user agent';
+      window.cch_ua_display = true;
+    }
+  }
+}
+
+function show_all_tabs() {
+  if (!window.cch_tabs_display) {
+    for (let i = 0; i < tabs_count.length; i++) {
+      tabs_count[i].style.cssText = '';
+    }
+    window.cch_tabs_display = true;
+    card.querySelector('[id="btn_tabs"]').innerHTML = 'Revert all tabs';
+  } else if (window.cch_tabs_display) {
+    for (let i = 0; i < tabs_count.length; i++) {
+      if (window.cch_show_tabs.indexOf(String(i+1)) > -1) {
+        tabs_count[i].style.cssText = '';
+      } else {
+        tabs_count[i].style.cssText = 'display:none;';
+      }
+    }
+    window.cch_tabs_display = false;
+    card.querySelector('[id="btn_tabs"]').innerHTML = 'Show all tabs';
   }
 }
