@@ -114,14 +114,14 @@ Here's an example config showing:<br>
 
 ## User Agent Views Config:
 
-You can set what tabs are shown/hidden depending on user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent is automatically redirected to the first visible tab, in this case tab 2. Example:
+You can set what tabs are shown/hidden depending on user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. Example:
 
 ```
 - type: custom:compact-custom-header
   user_agent: SM-G955U, NHG47Q
   user_agent_views:
     - 1,2,3,4
-    - 2,3,4
+    - 2,3,4 # Will automatically redirect first view to second.
     - 1,4
 ```
 
