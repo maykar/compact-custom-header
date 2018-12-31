@@ -74,7 +74,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |clock|string|no default||Change icon to clock. Choices are menu, notification, voice, and options.|
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
 |clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|
-|user_agent|string|no default||Use a different config per device using user agent info. More on this below.
+|user_agent|string|no default||Use a different config per device using username or user agent info. More on this below.
 |user_agent_views|list|no default||Hide/show tabs depending on username or user agent. More info below.
 |disable|boolean|false||Disable Compact Custom Header. To use default header on a certain user agent.
 |dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
@@ -96,9 +96,9 @@ You can have a different set of settings per device by using username or user ag
 
 <img src="https://i.imgur.com/BWs8zj8.jpg" width="300px">
 
-You could choose a few things here like "Mobile" if you wanted to use a custom header for all mobile devices, or "Android" if you wanted all android devices, but instead lets use the model number from the results "SM-G955U".
+You could choose a few things here like "Mobile" if you wanted to use a custom header for all mobile devices, or "Android" if you wanted all android devices, or even a HA username like "maykar" but instead lets use the model number from the results "SM-G955U".
 
-Add "SM-G955U" to "user_agent" in your config and lets add my wifes phone as well (model number "NHG47Q"). So we'll use ```user_agent: SM-G955U, NHG47Q```. Seperate each user agent with a comma.
+Add "SM-G955U" to "user_agent" in your config and lets add my wifes username as well "thewife". So we'll use ```user_agent: SM-G955U, thewife```. Seperate each user agent with a comma.
 
 Then in any config option add a new option after a comma. These options happen in order, the first one being the default, the second being the first user_agent in config, the third being the second user_agent in config and so on.
 
@@ -110,12 +110,12 @@ Here's an example config showing:<br>
 |-|-
 |**default** |menu button shown and "notifications" as a 24 hour clock,<br>
 |**my phone "SM-G955U"** |menu button hidden and "options" as a 12 hour clock with AM/PM shown,<br>
-|**wifes phone "NHG47Q"** |menu button shown and "menu" as a 12 hour clock without AM/PM.
+|**wife's username "thewife"** |menu button shown and "menu" as a 12 hour clock without AM/PM.
 
 
 ```
 - type: custom:compact-custom-header
-  user_agent: SM-G955U, NHG47Q
+  user_agent: SM-G955U, thewife
   menu: true, false
   clock: notification, options, menu
   clock_format: 24, 12, 12
@@ -128,10 +128,10 @@ You can set what tabs are shown/hidden depending on username or user agent. This
 
 ```
 - type: custom:compact-custom-header
-  user_agent: maykar, NHG47Q
+  user_agent: thewife, NHG47Q
   user_agent_views:
     - 1,2,3,4   # Default view.
-    - 2,3,4     # The user "maykar's" view. Will automatically redirect from first view to second.
+    - 2,3,4     # The user thewife's view. Will automatically redirect from first view to second.
     - 1,4       # NHG47Q's view.
 ```
 
