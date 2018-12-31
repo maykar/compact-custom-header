@@ -124,7 +124,7 @@ Here's an example config showing:<br>
 
 ## User Agent Views:
 
-You can set what tabs are shown/hidden depending on user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view. Example:
+You can set what tabs are shown/hidden depending on user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view or, at the very least, the starting views for each user agent. Example:
 
 ```
 - type: custom:compact-custom-header
