@@ -75,7 +75,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
 |clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|
 |user_agent|string|no default||Use a different config per device using user agent info. More on this below.
-|user_agent_views|list|no default||Hide/show tabs depending on user name or user agent. More info below.
+|user_agent_views|list|no default||Hide/show tabs depending on username or user agent. More info below.
 |disable|boolean|false||Disable Compact Custom Header. To use default header on a certain user agent.
 |dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
 |background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
@@ -90,9 +90,9 @@ The card will automatically display when "configuring ui" in lovelace and has a 
 * Show all tabs so that when using a device where tabs are hidden, you can temporarily show all tabs to allow for easy configuration.
 * The refresh button will do a hard refresh, refreshing the page ignoring cache.
 
-## User Agent (or User Name) Config:
+## User Agent (or Username) Config:
 
-You can have a different set of settings per device by using user name or user agent. To find the user agent you can click "show user agent" on the card when configuring the lovelace ui or by [googling "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
+You can have a different set of settings per device by using username or user agent. To find the user agent you can click "show user agent" on the card when configuring the lovelace ui or by [googling "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
 
 <img src="https://i.imgur.com/BWs8zj8.jpg" width="300px">
 
@@ -122,9 +122,9 @@ Here's an example config showing:<br>
   clock_am_pm: false, true  # don't need to set a third, will fall back to the first option (false) when not set
 ```
 
-## User Agent (or User Name) Views:
+## User Agent (or Username) Views:
 
-You can set what tabs are shown/hidden depending on user name or user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view or, at the very least, the starting views for each user agent. Example:
+You can set what tabs are shown/hidden depending on username or user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view or, at the very least, the starting views for each user agent. Example:
 
 ```
 - type: custom:compact-custom-header
