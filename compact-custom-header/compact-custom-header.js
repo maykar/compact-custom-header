@@ -28,10 +28,11 @@ class CompactCustomHeader extends HTMLElement {
     // Find user agent's index number to grab it's config.
     for (let i = 1; i < user_agent.length; i++) {
       let regex = new RegExp(user_agent[i], 'i');
-      if (regex.test(navigator.userAgent)) {
+      if (regex.test(navigator.userAgent) || regex.test(hass.user.name)) {
         uai = i;
       }
     }
+
     // Global variables for the main script.
     if (ua_views) {
       window.cch_ua_views = ua_views[uai].replace(/\s+/gi, '').split(',');
@@ -50,7 +51,7 @@ class CompactCustomHeader extends HTMLElement {
     
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
-    script.src = card_dir + 'compact-custom-header.lib.js?v0.2.3';
+    script.src = card_dir + 'compact-custom-header.lib.js?v0.2.4';
     document.head.appendChild(script).parentNode.removeChild(script);
     // Resize the window to redraw header
     window.dispatchEvent(new Event('resize'));
