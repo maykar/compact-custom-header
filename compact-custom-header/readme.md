@@ -1,4 +1,4 @@
-# Compact Custom Header & Custom User Views
+# Compact Custom Header & Custom User/Device Views
 
 ### Customize the Home Assistant header!<br/><br/>
 Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
