@@ -48,7 +48,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 ## Important notes:
 
-* Works best when the card is added to each view with the same settings.
+* Works best when the card is added to each view with the same settings. You can try only using card in the first view, but if you have issues add it to each.
 
 * The clock will only display if you have set an icon to be the clock in the config.
 
