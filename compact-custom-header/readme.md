@@ -7,8 +7,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 
 ## Features:
-* Per device settings using username or user agents.
-* Can create per device views with user_agent_views.
+* Per device views and settings using username or user agents.
 * Hide any item or the entire header altogether.
 * Replace any icon button with a clock while keeping the buttons functionality.
 * Compact design.
