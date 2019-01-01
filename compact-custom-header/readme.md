@@ -10,6 +10,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 * Per device views and settings using usernames or user agents.
 * Hide any item or the entire header altogether.
 * Replace any icon button with a clock while keeping the buttons functionality.
+* Notifications & indicator still display if notification icon is a clock
 * Compact design.
 * Removes header text.
 * 12 or 24 hour display for time.
