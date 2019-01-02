@@ -23,7 +23,7 @@ class CompactCustomHeader extends HTMLElement {
     let card_dir = dir.replace(/\/www\//gi, '/local/');
     // Empty agent for main config at start to keep index numbers consistant.
     let user_agent = ',' + this.config.user_agent;
-    user_agent = user_agent.split(',');
+    user_agent = user_agent.replace(/\s+/g, '').split(',');
     let uai = 0;  // user agent index
     // Find user agent's index number to grab it's config.
     for (let i = 1; i < user_agent.length; i++) {
