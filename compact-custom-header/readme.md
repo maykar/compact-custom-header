@@ -45,21 +45,6 @@ https://raw.githubusercontent.com/maykar/custom-lovelace/master/tracker.json
 ```
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
 
-
-## Important notes:
-
-* Works best when the card is added to each view with the same settings. You can try only using card in the first view, but if you have issues add it to each.
-
-* The clock will only display if you have set an icon to be the clock in the config.
-
-* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load. An example would be placing this card in a vertical stack with the card in the panel view.
-
-* When changing config options, you may need to refresh the page or by doing a [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with the cards "refresh" button or manually to get everything to display properly. You may even need to clear your cache.
-
-* If you notice your cards shifting when changing views, place this card in a vertical stack with another card in the view.
-
-* Avoid using ```header: false``` unless you're using yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
-
 # Config:
 
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
@@ -80,6 +65,23 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
 |background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
 
+
+## Important notes:
+
+* Works best when the card is added to each view with the same settings. You can try only adding this card in the first view, but if you have issues add it to each (when the browser refreshes on a page without this card, it won't load. This usually only happens on mobile devices when exiting and returning to the browser app).
+
+* When using user_agent_views and hiding this cards view for an agent, be sure to add this card to the agents new first view or else it will not load.
+
+* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load. An example would be placing this card in a vertical stack with the card in the panel view.
+
+* The clock will only display if you have set an icon to be the clock in the config.
+
+* When changing config options, you may need to refresh the page or by doing a [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with the cards "refresh" button or manually to get everything to display properly. You may even need to clear your cache.
+
+* If you notice your cards shifting when changing views, place this card in a vertical stack with another card in the view.
+
+* Avoid using ```header: false``` unless you're using yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
+
 ## Card:
 
 The card will automatically display when "configuring ui" in lovelace and has a few features to help with config.
@@ -87,8 +89,8 @@ The card will automatically display when "configuring ui" in lovelace and has a 
 <img src="https://i.imgur.com/yjKLd9l.jpg" width="400px">
 
 * Show your current devices user agent information for easy copy and paste to config.
-* Show all tabs so that when using a device where tabs are hidden, you can temporarily show all tabs to allow for easy configuration.
-* The refresh button will do a hard refresh, refreshing the page ignoring cache.
+* Show all tabs so that when using a device where tabs are hidden, you can temporarily show all to allow for easy configuration.
+* The refresh button will do a "hard refresh", refreshing the page ignoring cache. Helps when changing config options and things don't display correctly and will load new code after an update of the card.
 
 ## User Agent (or Username) Config:
 
