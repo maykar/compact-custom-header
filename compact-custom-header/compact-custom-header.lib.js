@@ -16,6 +16,7 @@ try {
   pages = drawer_layout.querySelector('partial-panel-resolver').shadowRoot;
   panel = pages.querySelector('[id="panel"]');
   love_lace = panel.querySelector('ha-panel-lovelace').shadowRoot;
+  hui_root = love_lace.querySelector('hui-root').shadowRoot;
   proceed = true;
 } catch (e) {
   proceed = false;
@@ -24,7 +25,6 @@ try {
 // If parent elements exist proceed.
 if (proceed) {
   // Get elements to style.
-  hui_root = love_lace.querySelector('hui-root').shadowRoot;
   app_layout = hui_root.querySelector('ha-app-layout');
   div_view = app_layout.querySelector('[id="view"]');
   tabs = hui_root.querySelector('paper-tabs');
