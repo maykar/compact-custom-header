@@ -42,7 +42,7 @@ resources:
 ```
 To use with [custom-updater](https://github.com/custom-components/custom_updater) add this url to it's "card_urls:" section:
 ```
-https://raw.githubusercontent.com/maykar/custom-lovelace/master/tracker.json
+https://raw.githubusercontent.com/maykar/compact-custom-header/master/tracker.json
 ```
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
 
