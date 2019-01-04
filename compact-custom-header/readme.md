@@ -5,6 +5,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 <img src="https://i.imgur.com/kz0gnZm.jpg" width="500px"> 
 
+<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee</span></a><br/><br/><br/>
 
 ## Features:
 * Per user/device views and settings using usernames or user agents.
@@ -136,5 +137,3 @@ You can set what tabs are shown/hidden depending on username or user agent. This
     - 2,3,4     # The user thewife's view. Will automatically redirect from first view to second.
     - 1,4       # NHG47Q's view.
 ```
-
-<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee</span></a><br/><br/><br/>
