@@ -267,7 +267,7 @@ if (proceed) {
         };
         let date = new Date();
         date = date.toLocaleTimeString([], clock_format);
-        if (!window.cch_am_pm && window.ch_clock_format != 24) {
+        if (!window.cch_am_pm && window.cch_clock_format == 12) {
           clock.innerHTML = date.slice(0, -3);
         } else {
           clock.innerHTML = date;
