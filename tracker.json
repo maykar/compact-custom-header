@@ -1,7 +1,7 @@
 {
     "compact-custom-header": {
       "updated_at": "2018-12-31",
-      "version": "0.2.6",
+      "version": "0.2.7",
       "remote_location": "https://raw.githubusercontent.com/maykar/compact-custom-header/master/compact-custom-header.js",
       "visit_repo": "https://github.com/maykar/compact-custom-header/tree/master/",
       "changelog": "https://github.com/maykar/compact-custom-header/releases"
