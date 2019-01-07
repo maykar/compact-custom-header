@@ -40,10 +40,8 @@ resources:
 - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
   type: js
 ```
-To use with [custom-updater](https://github.com/custom-components/custom_updater) add this url to it's "card_urls:" section:
-```
-https://raw.githubusercontent.com/maykar/compact-custom-header/master/tracker.json
-```
+You can use [custom-updater](https://github.com/custom-components/custom_updater) to update this card with no additional configuration.
+
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
 
 # Config:
