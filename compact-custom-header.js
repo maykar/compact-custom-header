@@ -35,6 +35,7 @@ class CompactCustomHeader extends HTMLElement {
 
     // Global variables for the main script.
     if (ua_views) {
+      ua_views[uai] = String(ua_views[uai]);
       window.cch_ua_views = ua_views[uai].replace(/\s+/gi, '').split(',');
     }
     window.cch_header = conf_def(header[0], header[uai], true);
@@ -48,7 +49,7 @@ class CompactCustomHeader extends HTMLElement {
     window.cch_am_pm = conf_def(clock_am_pm[0], clock_am_pm[uai], true);
     window.cch_disable = conf_def(disable[0], disable[uai], false);
     window.cch_background_image = conf_def(bg_image[0], bg_image[uai], false);
-    
+
     // Insert the main script in head, run, remove.
     const script = document.createElement('script');
     script.src = card_dir + 'compact-custom-header.lib.js?v0.2.7';
