@@ -64,7 +64,27 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
 |background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
 
-
+## Example
+Do not just copy and paste this example, build your own using the config options above.
+Be sure to read the important notes section and the user agent/views sections.
+```
+- type: custom:compact-custom-header
+  header: true
+  menu: false
+  notification: true
+  voice: false
+  options: true
+  tabs: false
+  clock: notification
+  clock_format: 12
+  clock_am_pm: true
+  disable: false
+  background_image: true
+  user_agent: maykar, mobile
+  user_agent_views:
+    - 1,2,3,4
+    - 2,4
+```
 ## Important notes:
 
 * Works best when the card is added to each view with the same settings. You can try only adding this card in the first view, but if you have issues add it to each (when the browser refreshes on a page without this card, it won't load. This usually only happens on mobile devices when exiting and returning to the browser app).
