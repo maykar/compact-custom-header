@@ -65,7 +65,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 |background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
 
 ## Example
-Do not just copy and paste this example, build your own using the config options above.
+<b>Do not just copy and paste this example</b>, build your own using the config options above.
 Be sure to read the important notes section and the user agent/views sections.
 ```
 - type: custom:compact-custom-header
