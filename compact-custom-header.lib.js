@@ -14,7 +14,7 @@ try {
   main = doc_root.querySelector('home-assistant-main').shadowRoot;
   drawer_layout = main.querySelector('app-drawer-layout');
   pages = drawer_layout.querySelector('partial-panel-resolver').shadowRoot;
-  love_lace = pages.querySelector('ha-panel-lovelace').shadowRoot;
+  love_lace = (pages.querySelector('[id="panel"]') || pages).querySelector('ha-panel-lovelace').shadowRoot;
   hui_root = love_lace.querySelector('hui-root').shadowRoot;
   proceed = true;
 } catch (e) {
