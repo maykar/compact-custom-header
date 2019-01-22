@@ -3,7 +3,7 @@ if (doc_root == undefined) {
   var app_layout, card, chevron, div_view, doc_root, drawer_layout, edit_mode,
       hui_root, icon, iron_icon, love_lace, main, menu_btn, menu_icon,
       menu_iron_icon, notify_btn, notify_icon, notify_dot, notify_iron_icon,
-      options_btn, options_icon, options_iron_icon, pages, panel, proceed,
+      options_btn, options_icon, options_iron_icon, pages, proceed,
       raw_config, tabs, tabs_container, tabs_count, toolbar, voice_btn,
       voice_icon, voice_iron_icon;
 }
@@ -14,8 +14,7 @@ try {
   main = doc_root.querySelector('home-assistant-main').shadowRoot;
   drawer_layout = main.querySelector('app-drawer-layout');
   pages = drawer_layout.querySelector('partial-panel-resolver').shadowRoot;
-  panel = pages.querySelector('[id="panel"]');
-  love_lace = panel.querySelector('ha-panel-lovelace').shadowRoot;
+  love_lace = pages.querySelector('ha-panel-lovelace').shadowRoot;
   hui_root = love_lace.querySelector('hui-root').shadowRoot;
   proceed = true;
 } catch (e) {
