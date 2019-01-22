@@ -1,48 +1,34 @@
-// Avoid "already defined" errors when navigating away from Lovelace and back.
-if (doc_root == undefined) {
-  var app_layout, card, chevron, div_view, doc_root, drawer_layout, edit_mode,
-      hui_root, icon, iron_icon, love_lace, main, menu_btn, menu_icon,
-      menu_iron_icon, notify_btn, notify_icon, notify_dot, notify_iron_icon,
-      options_btn, options_icon, options_iron_icon, pages, panel, proceed,
-      raw_config, tabs, tabs_container, tabs_count, toolbar, voice_btn,
-      voice_icon, voice_iron_icon;
-}
-// Try so that if we're not on a lovelace page it won't continue to run.
-try {
-  // Get the parents of the elements to style.
-  doc_root = document.querySelector('home-assistant').shadowRoot;
-  main = doc_root.querySelector('home-assistant-main').shadowRoot;
-  drawer_layout = main.querySelector('app-drawer-layout');
-  pages = drawer_layout.querySelector('partial-panel-resolver').shadowRoot;
-  panel = pages.querySelector('[id="panel"]');
-  love_lace = panel.querySelector('ha-panel-lovelace').shadowRoot;
-  hui_root = love_lace.querySelector('hui-root').shadowRoot;
-  proceed = true;
-} catch (e) {
-  proceed = false;
-  console.log(e);
-}
-// If parent elements exist proceed.
-if (proceed) {
-  // Get elements to style.
-  app_layout = hui_root.querySelector('ha-app-layout');
-  div_view = app_layout.querySelector('[id="view"]');
-  tabs = hui_root.querySelector('paper-tabs');
-  tabs_count = tabs.querySelectorAll('paper-tab');
-  tabs_container = tabs.shadowRoot.getElementById('tabsContainer');
-  chevron = tabs.shadowRoot.querySelectorAll('[icon^="paper-tabs:chevron"]');
-  toolbar = hui_root.querySelectorAll('app-toolbar');
+// Avoid "already defined" error when navigating away from Lovelace and back.
+if (hui_root == undefined) var hui_root, card;
 
-  // Find the card element.
-  recursive_walk(app_layout, function(node) {
+// Find hui-root element
+recursive_walk(document, 'HUI-ROOT', function(node) {
+  hui_root = node.nodeName == 'HUI-ROOT' ? node.shadowRoot : null;
+});
+
+if (hui_root) {
+  let app_layout = hui_root.querySelector('ha-app-layout');
+  let div_view = app_layout.querySelector('[id="view"]');
+  let toolbar = hui_root.querySelectorAll('app-toolbar');
+  var tabs = hui_root.querySelector('paper-tabs');
+  if (tabs) {
+    let tabs_sr = tabs.shadowRoot;
+    var tabs_count = tabs.querySelectorAll('paper-tab');
+    var tabs_container = tabs_sr.getElementById('tabsContainer');
+    var arrows = tabs_sr.querySelectorAll('[icon^="paper-tabs:chevron"]');
+  }
+
+  // Find this card's element.
+  recursive_walk(app_layout, 'COMPACT-CUSTOM-HEADER', function(node) {
     card = node.nodeName == 'COMPACT-CUSTOM-HEADER' ? node : null;
   });
 
   // When exiting raw config editor buttons are hidden.
-  raw_config = hui_root.querySelector('ha-menu-button') == null;
+  let raw_config = hui_root.querySelector('ha-menu-button') == null;
+  
   // If multiple toolbars exist & 2nd one is displayed, edit mode is active.
-  if (toolbar != null && toolbar.length > 1) {
-    edit_mode = toolbar[1].style.cssText != 'display: none;' ? true : false;
+  if (toolbar.length > 1) {
+    var edit_mode = toolbar[1].style.cssText != 'display: none;' ? true : false;
   } else {
     edit_mode = false;
   }
@@ -89,8 +75,8 @@ if (proceed) {
     width:100%;
   `;
 
-  // Hide whole column if this card is the only one it contains.
-  if (card != null) {
+  if (card) {
+    // Hide whole column if this card is the only one it contains.
     if (card.parentNode.children.length == 1) {
       card.parentNode.style.cssText = 'display:none';
     } else {
@@ -135,44 +121,24 @@ if (proceed) {
       card.innerHTML = '';
     }
   }
-  // Resize to update header.
+  // Resize to update.
   window.dispatchEvent(new Event('resize'));
 
   // Style header and icons.
   if (!window.cch_disable && !raw_config) {
-    menu_btn = hui_root.querySelector('ha-menu-button');
-    menu_icon = menu_btn.shadowRoot.querySelector('paper-icon-button');
-    menu_iron_icon = menu_icon.shadowRoot.querySelector('iron-icon');
-    notify_btn = hui_root.querySelector('hui-notifications-button');
-    notify_icon = notify_btn.shadowRoot.querySelector('paper-icon-button');
-    notify_iron_icon = notify_icon.shadowRoot.querySelector('iron-icon');
-    notify_dot = notify_btn.shadowRoot.querySelector('[class="indicator"]');
-    voice_btn = hui_root.querySelector('ha-start-voice-button');
-    voice_icon = voice_btn.shadowRoot.querySelector('paper-icon-button');
-    voice_iron_icon = voice_icon.shadowRoot.querySelector('iron-icon');
-    options_btn = hui_root.querySelector('paper-menu-button');
-    options_icon = options_btn.querySelector('paper-icon-button');
-    options_iron_icon = options_icon.shadowRoot.querySelector('iron-icon');
-
-    if (window.cch_ua_views && !window.cch_tabs_display) {
-      // Hide or show tabs.
-      for (let i = 0; i < tabs_count.length; i++) {
-        if (window.cch_ua_views.indexOf(String(i+1)) > -1) {
-          element_style(window.cch_tabs, tabs_count[i], false);
-        } else {
-          tabs_count[i].style.cssText = 'display:none;';
-        }
-      }
-      // If user agent settings hide first tab, then redirect to new first tab.
-      if (!window.cch_tabs_display && window.cch_ua_views[0] > 1 &&
-          tabs_count[0].className == 'iron-selected') {
-        tabs_count[parseInt(window.cch_ua_views[0]) - 1].click();
-      }
-    } else {
-      for (let i = 0; i < tabs_count.length; i++) {
-          element_style(window.cch_tabs, tabs_count[i], false);
-        }
-    }
+    let menu_btn = hui_root.querySelector('ha-menu-button');
+    let menu_icon = menu_btn.shadowRoot.querySelector('paper-icon-button');
+    let menu_iron_icon = menu_icon.shadowRoot.querySelector('iron-icon');
+    let notify_btn = hui_root.querySelector('hui-notifications-button');
+    let notify_icon = notify_btn.shadowRoot.querySelector('paper-icon-button');
+    let notify_iron_icon = notify_icon.shadowRoot.querySelector('iron-icon');
+    var notify_dot = notify_btn.shadowRoot.querySelector('[class="indicator"]');
+    let voice_btn = hui_root.querySelector('ha-start-voice-button');
+    let voice_icon = voice_btn.shadowRoot.querySelector('paper-icon-button');
+    let voice_iron_icon = voice_icon.shadowRoot.querySelector('iron-icon');
+    var options_btn = hui_root.querySelector('paper-menu-button');
+    let options_icon = options_btn.querySelector('paper-icon-button');
+    let options_iron_icon = options_icon.shadowRoot.querySelector('iron-icon');
 
     // Remove clock from element if no longer set.
     remove_clock('notification', notify_icon, notify_btn);
@@ -186,24 +152,12 @@ if (proceed) {
     element_style(window.cch_voice, voice_btn, true);
     element_style(window.cch_options, options_btn, true);
 
-    // Hide scroll arrows on tab bar to save space.
-    chevron[0].style.cssText = 'display:none;';
-    chevron[1].style.cssText = 'display:none;';
     // Pad bottom for image backgrounds as we're shifted -64px.
-    if (window.cch_background_image) {
-      div_view.style.paddingBottom = '64px';
-    } else {
-      div_view.style.paddingBottom = '';
-    }
+    div_view.style.paddingBottom = window.cch_background_image ? '64px' : '';
+    
     // Hide header if set to false in config
     if (!window.cch_header) {
       hui_root.querySelector('app-header').style.cssText = 'display:none;';
-    }
-
-    // Shift the header up to hide unused portion, but only with multiple tabs.
-    // When there is only one tab the header is already collapsed.
-    if (tabs_count.length > 1) {
-      hui_root.querySelector('app-toolbar').style.cssText = 'margin-top:-64px;';
     }
 
     // Add width of all visible elements on right side for tabs margin.
@@ -215,16 +169,46 @@ if (proceed) {
       pad += window.cch_am_pm && window.ch_clock_format == 12 ? 30 : 0;
       pad += 60;
     }
-    tabs.style.cssText = `margin-right:${pad}px;`;
 
     // Set width of clock based on format options.
     let clock_width = window.cch_clock_format == 12 && window.cch_am_pm ?
       90 : 70;
-    // Add margin to the left side if the menu button is a clock.
-    if (window.cch_menu && window.cch_clock != 'menu') {
-      tabs_container.style.cssText = 'margin-left:60px;';
-    } else if (window.cch_menu && window.cch_clock == 'menu') {
-      tabs_container.style.cssText = `margin-left:${clock_width + 15}px;`;
+
+    if (tabs) {
+      // Add margins for clock.
+      tabs.style.cssText = `margin-right:${pad}px;`;
+      if (window.cch_menu && window.cch_clock != 'menu') {
+        tabs_container.style.cssText = 'margin-left:60px;';
+      } else if (window.cch_menu && window.cch_clock == 'menu') {
+        tabs_container.style.cssText = `margin-left:${clock_width + 15}px;`;
+      }
+      
+      // Shift the header.
+      hui_root.querySelector('app-toolbar').style.cssText = 'margin-top:-64px;';
+      
+      // Hide tab scroll arrows.
+      arrows[0].style.cssText = 'display:none;';
+      arrows[1].style.cssText = 'display:none;';
+      
+      // Hide or show tabs.
+      if (window.cch_ua_views && !window.cch_tabs_display) {
+        for (let i = 0; i < tabs_count.length; i++) {
+          if (window.cch_ua_views.indexOf(String(i)) > -1) {
+            element_style(window.cch_tabs, tabs_count[i], false);
+          } else {
+            tabs_count[i].style.cssText = 'display:none;';
+          }
+        }
+        // If user agent hide's first tab, then redirect to new first tab.
+        if (!window.cch_tabs_display && window.cch_ua_views[0] > 1 &&
+            tabs_count[0].className == 'iron-selected') {
+          tabs_count[parseInt(window.cch_ua_views[0]) - 1].click();
+        }
+      } else {
+        for (let i = 0; i < tabs_count.length; i++) {
+            element_style(window.cch_tabs, tabs_count[i], false);
+        }
+      }
     }
 
     // Strings to compare config to. Avoids errors while typing in edit field.
@@ -233,8 +217,8 @@ if (proceed) {
     // Get elements to style for clock choice.
     if (clock_strings.indexOf(window.cch_clock) > -1) {
       if (window.cch_clock == 'notification') {
-        icon = notify_icon;
-        iron_icon = notify_iron_icon;
+        var icon = notify_icon;
+        var iron_icon = notify_iron_icon;
         notify_dot.style.cssText = 'top:14.5px;left:-7px';
       } else if (window.cch_clock == 'voice') {
         icon = voice_icon;
@@ -246,6 +230,7 @@ if (proceed) {
         icon = menu_icon;
         iron_icon = menu_iron_icon;
       }
+      
       // If the clock element doesn't exist yet, create & insert.
       if (window.cch_clock && clock == null) {
         let create_clock = document.createElement('p');
@@ -257,6 +242,7 @@ if (proceed) {
         `;
         iron_icon.parentNode.insertBefore(create_clock, iron_icon);
       }
+      
       // Style clock and insert time text.
       var clock = icon.shadowRoot.getElementById('cch_clock');
       if (window.cch_clock && clock != null) {
@@ -269,8 +255,10 @@ if (proceed) {
         date = date.toLocaleTimeString([], clock_format);
         if (!window.cch_am_pm && window.cch_clock_format == 12) {
           clock.innerHTML = date.slice(0, -3);
+          window.dispatchEvent(new Event('resize'));
         } else {
           clock.innerHTML = date;
+          window.dispatchEvent(new Event('resize'));
         }
         icon.style.cssText = `
           margin-right:-5px;
@@ -278,25 +266,23 @@ if (proceed) {
           text-align: center;
         `;
         iron_icon.style.cssText = 'display:none;';
-        window.dispatchEvent(new Event('resize'));
       }
     }
   }
-
   window.dispatchEvent(new Event('resize'));
 }
 
 // Walk the DOM to find card element.
-function recursive_walk(node, func) {
-    var done = func(node) || node.nodeName == 'COMPACT-CUSTOM-HEADER';
+function recursive_walk(node, element, func) {
+    var done = func(node) || node.nodeName == element;
     if (done) return true;
     if ('shadowRoot' in node && node.shadowRoot) {
-      done = recursive_walk(node.shadowRoot, func);
+      done = recursive_walk(node.shadowRoot, element, func);
       if (done) return true;
     }
     node = node.firstChild;
     while (node) {
-      done = recursive_walk(node, func);
+      done = recursive_walk(node, element, func);
       if (done) return true;
       node = node.nextSibling;
     }
@@ -306,7 +292,7 @@ function element_style(config, element, shift) {
   let top = edit_mode ? 240 : 111;
   let options_style = element == options_btn ?
     'margin-right:-5px; padding:0;' : '';
-  if (tabs_count.length > 1 && shift && !window.cch_disable) {
+  if (tabs && shift && !window.cch_disable) {
     element.style.cssText = config ?
       `z-index:1; margin-top:${top}px;${options_style}` :
       'display:none' ;
@@ -351,13 +337,13 @@ function show_user_agent() {
 }
 
 function show_all_tabs() {
-  if (!window.cch_tabs_display) {
+  if (!window.cch_tabs_display && tabs) {
     for (let i = 0; i < tabs_count.length; i++) {
       tabs_count[i].style.cssText = '';
     }
     window.cch_tabs_display = true;
     card.querySelector('[id="btn_tabs"]').innerHTML = 'Revert all tabs';
-  } else if (window.cch_tabs_display) {
+  } else if (window.cch_tabs_display && tabs) {
     for (let i = 0; i < tabs_count.length; i++) {
       if (window.cch_ua_views) {
         if (window.cch_ua_views.indexOf(String(i+1)) > -1) {
