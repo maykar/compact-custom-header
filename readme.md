@@ -82,8 +82,8 @@ Be sure to read the important notes section and the user agent/views sections.
   background_image: true
   user_agent: maykar, mobile
   user_agent_views:
-    - 1,2,3,4
-    - 2,4
+    - 0,1,2,3,4
+    - 1,2,4
 ```
 ## Important notes:
 
@@ -145,13 +145,13 @@ Here's an example config showing:<br>
 
 ## User Agent (or Username) Views:
 
-You can set what tabs are shown/hidden depending on username or user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. If the first visible tab is not tab 1, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view or, at the very least, the starting views for each user agent. Example:
+You can set what tabs are shown/hidden depending on username or user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. View numbering starts at zero. If the first visible tab is not tab 0, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view or, at the very least, the starting views for each user agent. Example:
 
 ```
 - type: custom:compact-custom-header
   user_agent: thewife, NHG47Q
   user_agent_views:
-    - 1,2,3,4   # Default view.
+    - 0,1,2,3,4   # Default view.
     - 2,3,4     # The user thewife's view. Will automatically redirect from first view to second.
-    - 1,4       # NHG47Q's view.
+    - 0,1,4       # NHG47Q's view.
 ```
