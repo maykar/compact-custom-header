@@ -1,7 +1,7 @@
 ---
 name: Bug report
-about: Do not post an issue here until you have read the readme (including "important
-  notes" section) and have done a hard browser refresh.
+about: Do not post an issue here until you have read the readme especially the "important
+  notes" section and have done a hard browser refresh.
 title: ''
 labels: ''
 assignees: ''
