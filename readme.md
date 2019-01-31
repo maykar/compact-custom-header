@@ -35,7 +35,7 @@ This goes into one of your views under "cards:" in the same file, this works bes
 
 When updating, if not using [custom-updater](https://github.com/custom-components/custom_updater), be sure add to the version number at the end of your lovelace resources.
 
-You can use [custom-updater](https://github.com/custom-components/custom_updater) to update this card with no additional configuration.
+You can use [custom-updater](https://github.com/custom-components/custom_updater) to update this card with no additional configuration. Keep in mind that custom-updater only fully works yaml mode or with Home Assistant versions below 0.84.0.
 
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
 
