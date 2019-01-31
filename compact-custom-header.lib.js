@@ -1,20 +1,12 @@
+// Need to implement views, will do the inverse (hide_views)
 var config_views = window.cch_ua_views;
-var config_header = window.cch_header;
-var config_menu = window.cch_menu;
-var config_notify = window.cch_notify;
-var config_voice = window.cch_voice;
-var config_options = window.cch_options;
-var config_tabs = window.cch_tabs;
-var config_clock = window.cch_clock;
-var config_clock_form =window.cch_clock_format;
-var config_am_pm = window.cch_am_pm;
-var config_disable = window.cch_disable;
-var config_background = window.cch_background_image;
-var display_tabs = window.cch_tabs_display;
-var display_ua = window.cch_ua_display;
 
 // Avoid "already defined" error when navigating away from Lovelace and back.
-if (hui_root == undefined) var hui_root, card;
+if (hui_root == undefined) var hui_root, card, config;
+
+config = window.cchConfig;
+let display_tabs = window.cch_tabs_display;
+let display_ua = window.cch_ua_display;
 
 // Find hui-root element
 recursive_walk(document, 'HUI-ROOT', function(node) {
@@ -141,7 +133,7 @@ if (hui_root) {
   window.dispatchEvent(new Event('resize'));
 
   // Style header and icons.
-  if (!config_disable && !raw_config) {
+  if (!config.disable && !raw_config) {
     let menu_btn = hui_root.querySelector('ha-menu-button');
     let menu_icon = menu_btn.shadowRoot.querySelector('paper-icon-button');
     let menu_iron_icon = menu_icon.shadowRoot.querySelector('iron-icon');
@@ -157,7 +149,7 @@ if (hui_root) {
     let options_iron_icon = options_icon.shadowRoot.querySelector('iron-icon');
 
     // Hide header completely if set to false in config.
-    if (!config_header) {
+    if (!config.header) {
       hui_root.querySelector('app-header').style.cssText = 'display:none;';
     }
 
@@ -168,32 +160,32 @@ if (hui_root) {
     remove_clock('menu', menu_icon, menu_btn);
 
     // Hide or show buttons.
-    element_style(config_menu, menu_btn, true);
-    element_style(config_notify, notify_btn, true);
-    element_style(config_voice, voice_btn, true);
-    element_style(config_options, options_btn, true);
+    element_style(config.menu, menu_btn, true);
+    element_style(config.notification, notify_btn, true);
+    element_style(config.voice, voice_btn, true);
+    element_style(config.options, options_btn, true);
 
     // Pad bottom for image backgrounds as we're shifted -64px.
-    div_view.style.paddingBottom = config_background ? '64px' : '';
+    div_view.style.paddingBottom = config.background_image ? '64px' : '';
 
     // Set clock width.
-    let clock_w = config_clock_form == 12 && config_am_pm ? 110 : 80;
+    let clock_w = config.clock_format == 12 && config.clock_am_pm ? 110 : 80;
 
     if (tabs) {
       // Add width of all visible elements on right side for tabs margin.
       let pad = 0;
-      pad += config_notify && config_clock != 'notification' ? 45 : 0;
-      pad += config_voice && config_clock != 'voice' ? 45 : 0;
-      pad += config_options && config_clock != 'options' ? 45 : 0;
-      if (config_clock && config_clock != 'menu') {
-        pad += config_am_pm && config_clock_form == 12 ? 110 : 80;
+      pad += config.notification && config.clock != 'notification' ? 45 : 0;
+      pad += config.voice && config.clock != 'voice' ? 45 : 0;
+      pad += config.options && config.clock != 'options' ? 45 : 0;
+      if (config.clock && config.clock != 'menu') {
+        pad += config.clock_am_pm && config.clock_format == 12 ? 110 : 80;
       }
       tabs.style.cssText = `margin-right:${pad}px;`;
 
       // Add margin to left side if menu button is the clock.
-      if (config_menu && config_clock != 'menu') {
+      if (config.menu && config.clock != 'menu') {
         tabs_container.style.cssText = 'margin-left:60px;';
-      } else if (config_menu && config_clock == 'menu') {
+      } else if (config.menu && config.clock == 'menu') {
         tabs_container.style.cssText = `margin-left:${clock_w + 15}px;`;
       }
 
@@ -208,7 +200,7 @@ if (hui_root) {
       if (config_views && !display_tabs) {
         for (let i = 0; i < tabs_count.length; i++) {
           if (config_views.indexOf(String(i)) > -1) {
-            element_style(config_tabs, tabs_count[i], false);
+            element_style(config.tabs, tabs_count[i], false);
           } else {
             tabs_count[i].style.cssText = 'display:none;';
           }
@@ -220,7 +212,7 @@ if (hui_root) {
         }
       } else {
         for (let i = 0; i < tabs_count.length; i++) {
-            element_style(config_tabs, tabs_count[i], false);
+            element_style(config.tabs, tabs_count[i], false);
         }
       }
     }
@@ -229,24 +221,24 @@ if (hui_root) {
     let clock_strings = ['notification','voice','options','menu'];
 
     // Get elements to style for clock choice.
-    if (clock_strings.indexOf(config_clock) > -1) {
-      if (config_clock == 'notification') {
+    if (clock_strings.indexOf(config.clock) > -1) {
+      if (config.clock == 'notification') {
         var icon = notify_icon;
         var iron_icon = notify_iron_icon;
         notify_dot.style.cssText = 'top:14.5px;left:-7px';
-      } else if (config_clock == 'voice') {
+      } else if (config.clock == 'voice') {
         icon = voice_icon;
         iron_icon = voice_iron_icon;
-      } else if (config_clock == 'options') {
+      } else if (config.clock == 'options') {
         icon = options_icon;
         iron_icon = options_iron_icon;
-      } else if (config_clock == 'menu') {
+      } else if (config.clock == 'menu') {
         icon = menu_icon;
         iron_icon = menu_iron_icon;
       }
 
       // If the clock element doesn't exist yet, create & insert.
-      if (config_clock && clock == null) {
+      if (config.clock && clock == null) {
         let create_clock = document.createElement('p');
         create_clock.setAttribute('id','cch_clock');
         create_clock.style.cssText = `
@@ -259,15 +251,15 @@ if (hui_root) {
 
       // Style clock and insert time text.
       var clock = icon.shadowRoot.getElementById('cch_clock');
-      if (config_clock && clock != null) {
+      if (config.clock && clock != null) {
         let clock_format = {
-          'hour12': (config_clock_form != 24),
+          'hour12': (config.clock_format != 24),
           'hour': '2-digit',
           'minute': '2-digit'
         };
         let date = new Date();
         date = date.toLocaleTimeString([], clock_format);
-        if (!config_am_pm && config_clock_form == 12) {
+        if (!config.clock_am_pm && config.clock_format == 12) {
           clock.innerHTML = date.slice(0, -3);
         } else {
           clock.innerHTML = date;
@@ -305,11 +297,11 @@ function element_style(config, element, shift) {
   let top = edit_mode ? 240 : 111;
   let options_style = element == options_btn ?
     'margin-right:-5px; padding:0;' : '';
-  if (tabs && shift && !config_disable) {
+  if (tabs && shift && !config.disable) {
     element.style.cssText = config ?
       `z-index:1; margin-top:${top}px;${options_style}` :
       'display:none' ;
-  } else if (!config_disable){
+  } else if (!config.disable){
     element.style.cssText = config ? '' : 'display:none' ;
   } else {
     element.style.cssText = '';
@@ -318,7 +310,7 @@ function element_style(config, element, shift) {
 
 // Revert button if previously a clock.
 function remove_clock(config, element, parent) {
-  if (config_clock != config &&
+  if (config.clock != config &&
       element.shadowRoot.getElementById('cch_clock') != null) {
     let clock_element = element.shadowRoot.getElementById('cch_clock');
     clock_element.parentNode.querySelector('iron-icon').style.cssText = '';
