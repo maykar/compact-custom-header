@@ -23,7 +23,7 @@ Install this card by copying both .js files to `www/custom-lovelace/compact-cust
 This goes into under "resources:" in ui-lovelace.yaml or using the raw config editor.
 
 ```
-- url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v0
+- url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
   type: js
 ```
 
