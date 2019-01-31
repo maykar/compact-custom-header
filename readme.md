@@ -33,13 +33,8 @@ This goes into one of your views under "cards:" in the same file, this works bes
   - type: custom:compact-custom-header
 ```
 
-When updating, if not using [custom-updater](https://github.com/custom-components/custom_updater), be sure add to a version number at the end of your lovelace resources, like so:
+When updating, if not using [custom-updater](https://github.com/custom-components/custom_updater), be sure add to the version number at the end of your lovelace resources.
 
-```
-resources:
-- url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
-  type: js
-```
 You can use [custom-updater](https://github.com/custom-components/custom_updater) to update this card with no additional configuration.
 
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
