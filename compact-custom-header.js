@@ -1,4 +1,8 @@
-let userVars;
+const LitElement = Object.getPrototypeOf(
+  customElements.get("ha-panel-lovelace")
+);
+const html = LitElement.prototype.html;
+
 let firstRun = true;
 
 const defaultConfig = {
@@ -15,41 +19,46 @@ const defaultConfig = {
   background_image: false
 };
 
-class CompactCustomHeader extends HTMLElement {
-  set hass(hass) {
-    this._hass = hass;
-    if (!this.content) {
-      const card = document.createElement("ha-card");
-      this.content = document.createElement("div");
-      this.content.style.cssText = "display: none;";
-      card.appendChild(this.content);
-      this.appendChild(card);
-    }
-    if (firstRun) {
-      this.insertScript();
-      console.log("hass insert script");
-    }
+class CompactCustomHeader extends LitElement {
+  static get properties() {
+    return {
+      config: {},
+      hass: {}
+    };
   }
 
   setConfig(config) {
     this.config = config;
-    if (!firstRun) {
-      this.insertScript();
-      console.log("config insert script");
+  }
+
+  updated() {
+    if (this.config && this.hass && firstRun) {
+      insertScript();
     }
+  }
+
+  render() {
+    if (!this.config || !this.hass) {
+      return html``;
+    }
+    return html`
+      <ha-card><div style="display: none;"></div></ha-card>
+    `;
   }
 
   insertScript() {
     if (firstRun) {
-      userVars = this._hass.user.name + " " + navigator.userAgent;
       firstRun = false;
-      console.log("set uservars");
+      this.userVars = {
+        name: this.hass.user.name,
+        user_agent: navigator.userAgent
+      };
     }
     let exceptionConfig = {};
     let highestMatch = 0;
 
     this.config.exceptions.forEach(exception => {
-      const matches = countMatches(exception.conditions, userVars);
+      const matches = this.countMatches(exception.conditions);
       if (matches > highestMatch) {
         highestMatch = matches;
         exceptionConfig = exception.config;
@@ -63,21 +72,21 @@ class CompactCustomHeader extends HTMLElement {
     document.head.appendChild(script).parentNode.removeChild(script);
   }
 
+  countMatches(conditions) {
+    let count = 0;
+    for (condition in conditions) {
+      if (this.userVars[condition] == conditions[condition]) {
+        count++;
+      } else {
+        return 0;
+      }
+    }
+    return count;
+  }
+
   getCardSize() {
     return 0;
   }
-}
-
-function countMatches(conditions, agents) {
-  let count = 0;
-  for (condition in conditions) {
-    if (agents.includes(conditions[condition])) {
-      count++;
-    } else {
-      return 0;
-    }
-  }
-  return count;
 }
 
 customElements.define("compact-custom-header", CompactCustomHeader);
