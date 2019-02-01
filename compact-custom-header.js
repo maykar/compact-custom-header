@@ -1,3 +1,4 @@
+let firstRun = true
 const defaultConfig = {
   header: true,
   menu: true,
@@ -5,16 +6,12 @@ const defaultConfig = {
   voice: true,
   options: true,
   tabs: true,
-  clock: '',
   clock_format: 12,
   clock_am_pm: true,
   disable: false,
   dir: '/local/custom-lovelace/compact-custom-header/',
   background_image: false
 }
-
-let first_run = true
-let user_vars;
 
 class CompactCustomHeader extends HTMLElement {
   set hass(hass) {
@@ -26,7 +23,7 @@ class CompactCustomHeader extends HTMLElement {
       card.appendChild(this.content)
       this.appendChild(card)
     }
-    if (first_run) {
+    if (firstRun) {
       this.insertScript()
       console.log('hass insert script')
     }
@@ -34,23 +31,24 @@ class CompactCustomHeader extends HTMLElement {
 
   setConfig(config) {
     this.config = config
-    if (!first_run) {
+    if (!firstRun) {
       this.insertScript()
       console.log('config insert script')
     }
   }
 
   insertScript() {
-    if (first_run) {
-      user_vars = this._hass.user.name + ' ' + navigator.userAgent
-      first_run = false
+    let userVars
+    if (firstRun) {
+      userVars = this._hass.user.name + ' ' + navigator.userAgent
+      firstRun = false
       console.log('set uservars')
     }
     let exceptionConfig = {}
     let highestMatch = 0
 
     this.config.exceptions.forEach(exception => {
-      const matches = countMatches(exception.conditions, user_vars)
+      const matches = countMatches(exception.conditions, userVars)
       if (matches > highestMatch) {
         highestMatch = matches
         exceptionConfig = exception.config
@@ -62,7 +60,6 @@ class CompactCustomHeader extends HTMLElement {
     script.src =
       window.cchConfig.dir + 'compact-custom-header.lib.js?v0.2.9d03'
     document.head.appendChild(script).parentNode.removeChild(script)
-    console.log(window.cchConfig.clock)
   }
 
   getCardSize() {
