@@ -1,4 +1,5 @@
 let firstRun = true
+let userVars
 const defaultConfig = {
   header: true,
   menu: true,
@@ -38,7 +39,6 @@ class CompactCustomHeader extends HTMLElement {
   }
 
   insertScript() {
-    let userVars
     if (firstRun) {
       userVars = this._hass.user.name + ' ' + navigator.userAgent
       firstRun = false
@@ -58,7 +58,7 @@ class CompactCustomHeader extends HTMLElement {
     window.cchConfig = { ...defaultConfig, ...this.config, ...exceptionConfig }
     const script = document.createElement('script')
     script.src =
-      window.cchConfig.dir + 'compact-custom-header.lib.js?v0.2.9d03'
+      window.cchConfig.dir + 'compact-custom-header.lib.js?v0.2.9d0202'
     document.head.appendChild(script).parentNode.removeChild(script)
   }
 
