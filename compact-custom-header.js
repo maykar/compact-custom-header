@@ -33,7 +33,7 @@ class CompactCustomHeader extends LitElement {
 
   updated() {
     if (this.config && this.hass && firstRun) {
-      insertScript();
+      this.insertScript();
     }
   }
 
@@ -74,7 +74,7 @@ class CompactCustomHeader extends LitElement {
 
   countMatches(conditions) {
     let count = 0;
-    for (condition in conditions) {
+    for (let condition in conditions) {
       if (this.userVars[condition] == conditions[condition]) {
         count++;
       } else {
