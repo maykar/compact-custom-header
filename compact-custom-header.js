@@ -13,8 +13,12 @@ const defaultConfig = {
   background_image: false
 }
 
+let first_run = true
+let user_vars;
+
 class CompactCustomHeader extends HTMLElement {
   set hass(hass) {
+    this._hass = hass
     if (!this.content) {
       const card = document.createElement('ha-card')
       this.content = document.createElement('div')
@@ -22,13 +26,31 @@ class CompactCustomHeader extends HTMLElement {
       card.appendChild(this.content)
       this.appendChild(card)
     }
+    if (first_run) {
+      this.insertScript()
+      console.log('hass insert script')
+    }
+  }
 
-    const userVars = hass.user.name + ' ' + navigator.userAgent
+  setConfig(config) {
+    this.config = config
+    if (!first_run) {
+      this.insertScript()
+      console.log('config insert script')
+    }
+  }
+
+  insertScript() {
+    if (first_run) {
+      user_vars = this._hass.user.name + ' ' + navigator.userAgent
+      first_run = false
+      console.log('set uservars')
+    }
     let exceptionConfig = {}
     let highestMatch = 0
 
     this.config.exceptions.forEach(exception => {
-      const matches = countMatches(exception.conditions, userVars)
+      const matches = countMatches(exception.conditions, user_vars)
       if (matches > highestMatch) {
         highestMatch = matches
         exceptionConfig = exception.config
@@ -36,16 +58,13 @@ class CompactCustomHeader extends HTMLElement {
     })
 
     window.cchConfig = { ...defaultConfig, ...this.config, ...exceptionConfig }
-
     const script = document.createElement('script')
     script.src =
-      window.cchConfig.dir + 'compact-custom-header.lib.js?v0.2.9d02'
+      window.cchConfig.dir + 'compact-custom-header.lib.js?v0.2.9d03'
     document.head.appendChild(script).parentNode.removeChild(script)
+    console.log(window.cchConfig.clock)
   }
 
-  setConfig(config) {
-    this.config = config
-  }
   getCardSize() {
     return 0
   }
