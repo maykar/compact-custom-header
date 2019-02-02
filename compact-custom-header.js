@@ -382,7 +382,7 @@ ${navigator.userAgent}</textarea
     } else {
       clock.innerHTML = date;
     }
-    var t = window.setTimeout(() => this.updateClock, 60000);
+    var t = window.setTimeout(() => this.updateClock(), 60000);
   }
 
   // Walk the DOM to find element.
