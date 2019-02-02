@@ -167,8 +167,6 @@ ${navigator.userAgent}</textarea
       this.edit_mode =
         root.querySelectorAll("app-toolbar")[0].className == "edit-mode";
 
-      console.log(this.edit_mode);
-
       // Style header and icons.
       if (!this.cardConfig.disable && !this.raw_config_mode) {
         this.button = {};
@@ -356,21 +354,7 @@ ${navigator.userAgent}</textarea
           // Style clock and insert time text.
           var clock = this.clock_icon.shadowRoot.getElementById("cch_clock");
           if (this.cardConfig.clock && clock != null) {
-            let clock_format = {
-              hour12: this.cardConfig.clock_format != 24,
-              hour: "2-digit",
-              minute: "2-digit"
-            };
-            let date = new Date();
-            date = date.toLocaleTimeString([], clock_format);
-            if (
-              !this.cardConfig.clock_am_pm &&
-              this.cardConfig.clock_format == 12
-            ) {
-              clock.innerHTML = date.slice(0, -3);
-            } else {
-              clock.innerHTML = date;
-            }
+            this.updateClock();
             this.clock_icon.style.cssText = `
             margin-right:-5px;
             width:${clock_w}px;
@@ -382,6 +366,23 @@ ${navigator.userAgent}</textarea
       }
       window.dispatchEvent(new Event("resize"));
     }
+  }
+
+  updateClock() {
+    var clock = this.clock_icon.shadowRoot.getElementById("cch_clock");
+    let clock_format = {
+      hour12: this.cardConfig.clock_format != 24,
+      hour: "2-digit",
+      minute: "2-digit"
+    };
+    let date = new Date();
+    date = date.toLocaleTimeString([], clock_format);
+    if (!this.cardConfig.clock_am_pm && this.cardConfig.clock_format == 12) {
+      clock.innerHTML = date.slice(0, -3);
+    } else {
+      clock.innerHTML = date;
+    }
+    var t = window.setTimeout(() => this.updateClock, 60000);
   }
 
   // Walk the DOM to find element.
