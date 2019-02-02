@@ -18,13 +18,16 @@ class CompactCustomHeader extends LitElement {
   static get properties() {
     return {
       config: {},
-      hass: {}
+      hass: {},
+      edit_mode: {},
+      show_ua: {}
     };
   }
 
   constructor() {
     super();
     this.firstRun = true;
+    this.edit_mode = false;
   }
 
   setConfig(config) {
@@ -38,13 +41,68 @@ class CompactCustomHeader extends LitElement {
   }
 
   render() {
-    if (!this.config || !this.hass) {
+    if (!this.config || !this.hass || !this.edit_mode) {
       return html``;
     }
     return html`
+      ${this.renderStyle()}
       <ha-card>
-        <div style="display: none;"></div>
+        <div>
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12,7L17,12H14V16H10V12H7L12,7M19,
+        21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
+        3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
+        21M19,19V5H5V19H19Z"
+            ></path>
+          </svg>
+          <h2>Compact Custom Header</h2>
+          <div>
+            <paper-button @click="${this.toggle_user_agent}">
+              ${this.show_ua ? "Hide" : "Show"} user agent
+            </paper-button>
+            <paper-button @click="${this.show_all_tabs}">
+              ${window.cch_tabs_display ? "Revert" : "Show"} all tabs
+            </paper-button>
+            <paper-button @click="${this.refresh}">
+              Refresh
+            </paper-button>
+          </div>
+          <div ?hidden=${!this.show_ua}>
+            <textarea class="user_agent" rows="4" readonly>
+${navigator.userAgent}</textarea
+            >
+          </div>
+        </div>
       </ha-card>
+    `;
+  }
+
+  renderStyle() {
+    return html`
+      <style>
+        [hidden] {
+          display: none;
+        }
+        h2 {
+          margin: auto auto 10px auto;
+          padding: 20px;
+          background-color: var(--primary-color);
+          color: var(--text-primary-color);
+        }
+        svg {
+          float: left;
+          height: 30px;
+          padding: 15px 5px 15px 15px;
+          fill: var(--text-primary-color);
+        }
+        .user_agent {
+          padding: 5px;
+          border: 0;
+          resize: none;
+          width: 100%;
+        }
+      </style>
     `;
   }
 
@@ -76,7 +134,8 @@ class CompactCustomHeader extends LitElement {
   countMatches(conditions) {
     let count = 0;
     for (const condition in conditions) {
-      if (this.userVars[condition] == conditions[condition] ||
+      if (
+        this.userVars[condition] == conditions[condition] ||
         (condition == "user_agent" &&
           this.userVars[condition].includes(conditions[condition]))
       ) {
@@ -97,7 +156,7 @@ class CompactCustomHeader extends LitElement {
     let root;
     let card;
 
-    this.recursiveWalk(document, "HUI-ROOT", function (node) {
+    this.recursiveWalk(document, "HUI-ROOT", function(node) {
       root = node.nodeName == "HUI-ROOT" ? node.shadowRoot : null;
     });
 
@@ -105,106 +164,16 @@ class CompactCustomHeader extends LitElement {
       this.tab_container = root.querySelector("paper-tabs");
       this.tabs = this.tab_container.querySelectorAll("paper-tab");
       this.raw_config_mode = root.querySelector("ha-menu-button") == null;
-      this.edit_mode = root.querySelectorAll("app-toolbar").length > 1 && root.querySelectorAll("app-toolbar")[1].style.cssText != "display: none;" ? true : false;
-      this.recursiveWalk(document, "COMPACT-CUSTOM-HEADER", function (node) {
-        card = node.nodeName == "COMPACT-CUSTOM-HEADER" ? node : null;
-      });
-      // Temporary fix for button function on the card (which is currently not functioning anyhow)
-      window.cchCard = card
-
-      // Card styling.
-      let button_style = `
-        margin:auto;
-        margin-bottom:10px;
-        background-color:var(--primary-color);
-        color:var(--primary-text-color);
-        border-radius:8px;
-        display:inline-block;
-        border:0;
-        font-size:14px;
-        width:30%;
-        padding:10px 0 10px 0;
-        outline:0 !important;
-      `;
-      let h2_style = `
-        margin:auto auto 10px auto;
-        padding:20px;
-        background-color:var(--primary-color);
-      `;
-      let svg_style = `
-        float:left;
-        height:30px;
-        padding:15px 5px 15px 15px;
-      `;
-      let div_style = `
-        display: flex;
-        justify-content: center;
-      `;
-      let path = `
-        fill="var(--primary-text-color)"
-        d="M12,7L17,12H14V16H10V12H7L12,7M19,
-        21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
-        3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
-        21M19,19V5H5V19H19Z"
-      `;
-      let user_agent = `
-        padding:5px;
-        border:0;
-        resize:none;
-        width:100%;
-      `;
-
-      if (card) {
-        if (this.edit_mode || this.raw_config_mode) {
-          card.style.cssText = "";
-          card.innerHTML = `
-          <svg style="${svg_style}" viewBox="0 0 24 24">
-            <path ${path}></path>
-          </svg>
-          <h2 style="${h2_style}">Compact Custom Header</h2>
-          <div style="${div_style}">
-            <button id='btn_ua' style="${button_style}"
-              onclick="show_user_agent()">
-              ${window.cch_ua_display ? "Hide" : "Show"} user agent</button>
-            <button id='btn_tabs' style="${button_style}"
-              onclick="show_all_tabs()">
-              ${window.cch_tabs_display ? "Revert" : "Show"} all tabs</button>
-            <button style="${button_style}"
-              onclick="location.reload(true);">
-              Refresh</button>
-          </div>
-          <div style="${div_style}">
-            <textarea style="${user_agent} "id="cch_ua" rows="4" readonly>
-            </textarea>
-          </div>
-        `;
-          card.parentNode.style.cssText = `
-          background-color:var(--paper-card-background-color);
-        `;
-          if (!window.cch_ua_display) {
-            card.querySelector('[id="cch_ua"]').style.display = "none";
-          }
-          card.querySelector('[id="cch_ua"]').innerHTML = navigator.userAgent;
-        } else {
-          // Hide card outside of edit mode.
-          card.style.cssText = "display:none";
-          card.innerHTML = "";
-          // When not in edit mode hide whole column if this is the only card in it.
-          if (card.parentNode.children.length == 1) {
-            card.parentNode.style.cssText = "display:none";
-          } else {
-            card.parentNode.style.cssText = "";
-          }
-        }
-      }
-      // Resize to update.
-      window.dispatchEvent(new Event("resize"));
+      this.edit_mode =
+        root.querySelectorAll("app-toolbar")[0].className == "edit-mode";
 
       // Style header and icons.
       if (!this.cardConfig.disable && !this.raw_config_mode) {
-        this.button = {}
+        this.button = {};
         this.button.menu = root.querySelector("ha-menu-button");
-        this.button.notification = root.querySelector("hui-notifications-button");
+        this.button.notification = root.querySelector(
+          "hui-notifications-button"
+        );
         this.button.voice = root.querySelector("ha-start-voice-button");
         this.button.options = root.querySelector("paper-menu-button");
 
@@ -214,40 +183,80 @@ class CompactCustomHeader extends LitElement {
         }
 
         // Remove clock from element if no longer set.
-        this.removeClock("notification", this.button.notification.shadowRoot.querySelector("paper-icon-button"), this.button.notification);
-        this.removeClock("voice", this.button.voice.shadowRoot.querySelector("paper-icon-button"), this.button.voice);
-        this.removeClock("options", this.button.options.querySelector("paper-icon-button"), this.button.options);
-        this.removeClock("menu", this.button.menu.shadowRoot.querySelector("paper-icon-button"), this.button.menu);
+        this.removeClock(
+          "notification",
+          this.button.notification.shadowRoot.querySelector(
+            "paper-icon-button"
+          ),
+          this.button.notification
+        );
+        this.removeClock(
+          "voice",
+          this.button.voice.shadowRoot.querySelector("paper-icon-button"),
+          this.button.voice
+        );
+        this.removeClock(
+          "options",
+          this.button.options.querySelector("paper-icon-button"),
+          this.button.options
+        );
+        this.removeClock(
+          "menu",
+          this.button.menu.shadowRoot.querySelector("paper-icon-button"),
+          this.button.menu
+        );
 
         // Hide or show buttons.
         this.elementStyle(this.cardConfig.menu, this.button.menu, true);
-        this.elementStyle(this.cardConfig.notification, this.button.notification, true);
+        this.elementStyle(
+          this.cardConfig.notification,
+          this.button.notification,
+          true
+        );
         this.elementStyle(this.cardConfig.voice, this.button.voice, true);
         this.elementStyle(this.cardConfig.options, this.button.options, true);
 
         // Pad bottom for image backgrounds as we're shifted -64px.
-        root.querySelector("ha-app-layout").querySelector("[id=\"view\"]")
-          .style.paddingBottom = this.cardConfig.background_image ? "64px" : "";
+        root
+          .querySelector("ha-app-layout")
+          .querySelector('[id="view"]').style.paddingBottom = this.cardConfig
+          .background_image
+          ? "64px"
+          : "";
 
         // Set clock width.
         let clock_w =
-          this.cardConfig.clock_format == 12 && this.cardConfig.clock_am_pm ? 110 : 80;
+          this.cardConfig.clock_format == 12 && this.cardConfig.clock_am_pm
+            ? 110
+            : 80;
 
         if (this.tab_container) {
           // Add width of all visible elements on right side for tabs margin.
           let pad = 0;
-          pad += this.cardConfig.notification && this.cardConfig.clock != "notification" ? 45 : 0;
-          pad += this.cardConfig.voice && this.cardConfig.clock != "voice" ? 45 : 0;
-          pad += this.cardConfig.options && this.cardConfig.clock != "options" ? 45 : 0;
+          pad +=
+            this.cardConfig.notification &&
+            this.cardConfig.clock != "notification"
+              ? 45
+              : 0;
+          pad +=
+            this.cardConfig.voice && this.cardConfig.clock != "voice" ? 45 : 0;
+          pad +=
+            this.cardConfig.options && this.cardConfig.clock != "options"
+              ? 45
+              : 0;
           if (this.cardConfig.clock && this.cardConfig.clock != "menu") {
-            pad += this.cardConfig.clock_am_pm && this.cardConfig.clock_format == 12 ? 110 : 80;
+            pad +=
+              this.cardConfig.clock_am_pm && this.cardConfig.clock_format == 12
+                ? 110
+                : 80;
           }
           this.tab_container.style.cssText = `margin-right:${pad}px;`;
 
           // Add margin to left side if menu button is the clock.
           if (this.cardConfig.menu && this.cardConfig.clock != "menu") {
-            this.tab_container.shadowRoot.getElementById("tabsContainer").style.cssText =
-              "margin-left:60px;";
+            this.tab_container.shadowRoot.getElementById(
+              "tabsContainer"
+            ).style.cssText = "margin-left:60px;";
           } else if (this.cardConfig.menu && this.cardConfig.clock == "menu") {
             this.tab_container.shadowRoot.getElementById(
               "tabsContainer"
@@ -255,8 +264,7 @@ class CompactCustomHeader extends LitElement {
           }
 
           // Shift the header up to hide unused portion.
-          root.querySelector("app-toolbar").style.cssText =
-            "margin-top:-64px;";
+          root.querySelector("app-toolbar").style.cssText = "margin-top:-64px;";
 
           // Hide tab bar scroll arrows to save space since we can still swipe.
           this.tab_container.shadowRoot.querySelectorAll(
@@ -276,7 +284,8 @@ class CompactCustomHeader extends LitElement {
               }
             }
             // If user agent hide's first tab, then redirect to new first tab.
-            if (!window.cch_tabs_display &&
+            if (
+              !window.cch_tabs_display &&
               config_views[0] > 0 &&
               this.tabs[0].className == "iron-selected"
             ) {
@@ -295,18 +304,36 @@ class CompactCustomHeader extends LitElement {
         // Get elements to style for clock choice.
         if (clock_strings.indexOf(this.cardConfig.clock) > -1) {
           if (this.cardConfig.clock == "notification") {
-            this.clock_icon = this.button.notification.shadowRoot.querySelector("paper-icon-button");
-            this.clock_iron_icon = this.button.notification.shadowRoot.querySelector("paper-icon-button").shadowRoot.querySelector("iron-icon");
-            this.button.notification.shadowRoot.querySelector('[class="indicator"]').style.cssText = "top:14.5px;left:-7px";
+            this.clock_icon = this.button.notification.shadowRoot.querySelector(
+              "paper-icon-button"
+            );
+            this.clock_iron_icon = this.button.notification.shadowRoot
+              .querySelector("paper-icon-button")
+              .shadowRoot.querySelector("iron-icon");
+            this.button.notification.shadowRoot.querySelector(
+              '[class="indicator"]'
+            ).style.cssText = "top:14.5px;left:-7px";
           } else if (this.cardConfig.clock == "voice") {
-            this.clock_icon = this.button.voice.shadowRoot.querySelector("paper-icon-button");
-            this.clock_iron_icon = this.button.voice.shadowRoot.querySelector("paper-icon-button").shadowRoot.querySelector("iron-icon");
+            this.clock_icon = this.button.voice.shadowRoot.querySelector(
+              "paper-icon-button"
+            );
+            this.clock_iron_icon = this.button.voice.shadowRoot
+              .querySelector("paper-icon-button")
+              .shadowRoot.querySelector("iron-icon");
           } else if (this.cardConfig.clock == "options") {
-            this.clock_icon = this.button.options.querySelector("paper-icon-button");
-            this.clock_iron_icon = this.button.options.querySelector("paper-icon-button").shadowRoot.querySelector("iron-icon");
+            this.clock_icon = this.button.options.querySelector(
+              "paper-icon-button"
+            );
+            this.clock_iron_icon = this.button.options
+              .querySelector("paper-icon-button")
+              .shadowRoot.querySelector("iron-icon");
           } else if (this.cardConfig.clock == "menu") {
-            this.clock_icon = this.button.menu.shadowRoot.querySelector("paper-icon-button");
-            this.clock_iron_icon = this.button.menu.shadowRoot.querySelector("paper-icon-button").shadowRoot.querySelector("iron-icon");
+            this.clock_icon = this.button.menu.shadowRoot.querySelector(
+              "paper-icon-button"
+            );
+            this.clock_iron_icon = this.button.menu.shadowRoot
+              .querySelector("paper-icon-button")
+              .shadowRoot.querySelector("iron-icon");
           }
 
           // If the clock element doesn't exist yet, create & insert.
@@ -318,24 +345,16 @@ class CompactCustomHeader extends LitElement {
             margin-top:2px;
             margin-left:-8px;
           `;
-            this.clock_iron_icon.parentNode.insertBefore(create_clock, this.clock_iron_icon);
+            this.clock_iron_icon.parentNode.insertBefore(
+              create_clock,
+              this.clock_iron_icon
+            );
           }
 
           // Style clock and insert time text.
           var clock = this.clock_icon.shadowRoot.getElementById("cch_clock");
           if (this.cardConfig.clock && clock != null) {
-            let clock_format = {
-              hour12: this.cardConfig.clock_format != 24,
-              hour: "2-digit",
-              minute: "2-digit"
-            };
-            let date = new Date();
-            date = date.toLocaleTimeString([], clock_format);
-            if (!this.cardConfig.clock_am_pm && this.cardConfig.clock_format == 12) {
-              clock.innerHTML = date.slice(0, -3);
-            } else {
-              clock.innerHTML = date;
-            }
+            this.updateClock();
             this.clock_icon.style.cssText = `
             margin-right:-5px;
             width:${clock_w}px;
@@ -347,6 +366,23 @@ class CompactCustomHeader extends LitElement {
       }
       window.dispatchEvent(new Event("resize"));
     }
+  }
+
+  updateClock() {
+    var clock = this.clock_icon.shadowRoot.getElementById("cch_clock");
+    let clock_format = {
+      hour12: this.cardConfig.clock_format != 24,
+      hour: "2-digit",
+      minute: "2-digit"
+    };
+    let date = new Date();
+    date = date.toLocaleTimeString([], clock_format);
+    if (!this.cardConfig.clock_am_pm && this.cardConfig.clock_format == 12) {
+      clock.innerHTML = date.slice(0, -3);
+    } else {
+      clock.innerHTML = date;
+    }
+    var t = window.setTimeout(() => this.updateClock(), 60000);
   }
 
   // Walk the DOM to find element.
@@ -372,13 +408,13 @@ class CompactCustomHeader extends LitElement {
     }
     let top = this.edit_mode ? 240 : 111;
     let options_style =
-      element.tagName === "PAPER-MENU-BUTTON" ?
-      "margin-right:-5px; padding:0;" :
-      "";
+      element.tagName === "PAPER-MENU-BUTTON"
+        ? "margin-right:-5px; padding:0;"
+        : "";
     if (this.tab_container && shift && !config.disable) {
-      element.style.cssText = config ?
-        `z-index:1; margin-top:${top}px;${options_style}` :
-        "display:none";
+      element.style.cssText = config
+        ? `z-index:1; margin-top:${top}px;${options_style}`
+        : "display:none";
     } else if (!config.disable) {
       element.style.cssText = config ? "" : "display:none";
     } else {
@@ -400,49 +436,47 @@ class CompactCustomHeader extends LitElement {
         parent.shadowRoot.querySelector("paper-icon-button").style.cssText = "";
       }
       if (config == "notification") {
-        this.button.notification.shadowRoot.querySelector('[class="indicator"]').style.cssText = "";
+        this.button.notification.shadowRoot.querySelector(
+          '[class="indicator"]'
+        ).style.cssText = "";
       }
       clock_element.parentNode.removeChild(clock_element);
+    }
+  }
+
+  refresh() {
+    location.reload(true);
+  }
+
+  // Toggle user agent portion of card for button on element.card.
+  toggle_user_agent() {
+    this.show_ua = !this.show_ua;
+  }
+
+  // Display all tabs for button on element.card.
+  show_all_tabs() {
+    if (!window.cch_tabs_display && this.tab_container) {
+      for (let i = 0; i < this.tabs.length; i++) {
+        this.tabs[i].style.cssText = "";
+      }
+      window.cch_tabs_display = true;
+      window.cchCard.querySelector('[id="btn_tabs"]').innerHTML =
+        "Revert all tabs";
+    } else if (window.cch_tabs_display && this.tab_container) {
+      for (let i = 0; i < this.tabs.length; i++) {
+        if (config_views) {
+          if (config_views.indexOf(String(i + 1)) > -1) {
+            this.tabs[i].style.cssText = "";
+          } else {
+            this.tabs[i].style.cssText = "display:none;";
+          }
+        }
+      }
+      window.cch_tabs_display = false;
+      window.cchCard.querySelector('[id="btn_tabs"]').innerHTML =
+        "Show all tabs";
     }
   }
 }
 
 customElements.define("compact-custom-header", CompactCustomHeader);
-
-// Show user agent portion of card for button on element.card.
-function show_user_agent() {
-  if (window.cchCard.querySelector('[id="cch_ua"]') != null) {
-    if (window.cch_ua_display) {
-      window.cchCard.querySelector('[id="cch_ua"]').style.display = "none";
-      window.cchCard.querySelector('[id="btn_ua"]').innerHTML = "Show user agent";
-      window.cch_ua_display = false;
-    } else if (!window.cch_ua_display) {
-      window.cchCard.querySelector('[id="cch_ua"]').style.display = "initial";
-      window.cchCard.querySelector('[id="btn_ua"]').innerHTML = "Hide user agent";
-      window.cch_ua_display = true;
-    }
-  }
-}
-
-// Display all tabs for button on element.card.
-function show_all_tabs() {
-  if (!window.cch_tabs_display && this.tab_container) {
-    for (let i = 0; i < this.tabs.length; i++) {
-      this.tabs[i].style.cssText = "";
-    }
-    window.cch_tabs_display = true;
-    window.cchCard.querySelector('[id="btn_tabs"]').innerHTML = "Revert all tabs";
-  } else if (window.cch_tabs_display && this.tab_container) {
-    for (let i = 0; i < this.tabs.length; i++) {
-      if (config_views) {
-        if (config_views.indexOf(String(i + 1)) > -1) {
-          this.tabs[i].style.cssText = "";
-        } else {
-          this.tabs[i].style.cssText = "display:none;";
-        }
-      }
-    }
-    window.cch_tabs_display = false;
-    window.cchCard.querySelector('[id="btn_tabs"]').innerHTML = "Show all tabs";
-  }
-}
