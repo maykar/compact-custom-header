@@ -150,7 +150,6 @@ class CompactCustomHeader extends LitElement {
   }
 
   run() {
-    let config_views = undefined; // Will be replacing this & refactoring views config to "hide_tabs"
     let root;
     let card;
 
@@ -180,17 +179,6 @@ class CompactCustomHeader extends LitElement {
           root.querySelector("app-header").style.cssText = "display:none;";
         }
 
-        // Hide or show buttons.
-        this.elementStyle(this.cchConfig.menu, this.button.menu, true);
-        this.elementStyle(
-          this.cchConfig.notifications,
-          this.button.notifications,
-          true
-        );
-        this.elementStyle(this.cchConfig.voice, this.button.voice, true);
-        this.elementStyle(this.cchConfig.options, this.button.options, true);
-
-        // Pad bottom for image backgrounds as we're shifted -64px.
         root
           .querySelector("ha-app-layout")
           .querySelector('[id="view"]').style.paddingBottom = this.cchConfig
@@ -230,32 +218,49 @@ class CompactCustomHeader extends LitElement {
           chevron[0].style.cssText = "display:none;";
           chevron[1].style.cssText = "display:none;";
 
-          // Hide or show tabs.
-          if (config_views && !window.cch_tabs_display) {
-            for (let i = 0; i < this.tabs.length; i++) {
-              if (config_views.indexOf(String(i)) > -1) {
-                this.elementStyle(this.cchConfig.tabs, this.tabs[i], false);
-              } else {
-                this.tabs[i].style.cssText = "display:none;";
-              }
-            }
-            // If user agent hide's first tab, then redirect to new first tab.
-            if (
-              !window.cch_tabs_display &&
-              config_views[0] > 0 &&
-              this.tabs[0].className == "iron-selected"
-            ) {
-              this.tabs[parseInt(config_views[0])].click();
-            }
-          } else {
-            for (let i = 0; i < this.tabs.length; i++) {
-              this.elementStyle(this.cchConfig.tabs, this.tabs[i], false);
-            }
-          }
+          ////////////////////////////////////
+          // This will be completely redone //
+          ////////////////////////////////////
+          // if (config_views && !window.cch_tabs_display) {
+          //   for (let i = 0; i < this.tabs.length; i++) {
+          //     if (config_views.indexOf(String(i)) > -1) {
+          //       this.elementStyle(this.cchConfig.tabs, this.tabs[i], false);
+          //     } else {
+          //       this.tabs[i].style.cssText = "display:none;";
+          //     }
+          //   }
+          //   // If user agent hide's first tab, then redirect to new first tab.
+          //   if (
+          //     !window.cch_tabs_display &&
+          //     config_views[0] > 0 &&
+          //     this.tabs[0].className == "iron-selected"
+          //   ) {
+          //     this.tabs[parseInt(config_views[0])].click();
+          //   }
+          // } else {
+          //   for (let i = 0; i < this.tabs.length; i++) {
+          //     this.elementStyle(this.cchConfig.tabs, this.tabs[i], false);
+          //   }
+          // }
         }
       }
-      if (this.cchConfig.clock) this.insertClock()
+      this.styleButtons();
+      if (this.cchConfig.clock) this.insertClock();
       window.dispatchEvent(new Event("resize"));
+    }
+  }
+
+  styleButtons() {
+    for (const button in this.button) {
+      if (this.cchConfig[button]) {
+        this.button[button].style.cssText = `
+          z-index:1;
+          margin-top:111px;
+          ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
+        `;
+      } else {
+        this.button[button].style.cssText = "display: none;";
+      }
     }
   }
 
@@ -351,27 +356,6 @@ class CompactCustomHeader extends LitElement {
     }
   }
 
-  // Style and hide buttons.
-  elementStyle(config, element, shift) {
-    if (!element) {
-      return;
-    }
-    let top = this.edit_mode ? 240 : 111;
-    let options_style =
-      element.tagName === "PAPER-MENU-BUTTON"
-        ? "margin-right:-5px; padding:0;"
-        : "";
-    if (this.tab_container && shift && !config.disable) {
-      element.style.cssText = config
-        ? `z-index:1; margin-top:${top}px;${options_style}`
-        : "display:none";
-    } else if (!config.disable) {
-      element.style.cssText = config ? "" : "display:none";
-    } else {
-      element.style.cssText = "";
-    }
-  }
-
   refresh() {
     location.reload(true);
   }
@@ -381,30 +365,33 @@ class CompactCustomHeader extends LitElement {
     this.show_ua = !this.show_ua;
   }
 
+  ////////////////////////////////////
+  // This will be completely redone //
+  ////////////////////////////////////
   // Display all tabs for button on element.card.
-  show_all_tabs() {
-    if (!window.cch_tabs_display && this.tab_container) {
-      for (let i = 0; i < this.tabs.length; i++) {
-        this.tabs[i].style.cssText = "";
-      }
-      window.cch_tabs_display = true;
-      window.cchCard.querySelector('[id="btn_tabs"]').innerHTML =
-        "Revert all tabs";
-    } else if (window.cch_tabs_display && this.tab_container) {
-      for (let i = 0; i < this.tabs.length; i++) {
-        if (config_views) {
-          if (config_views.indexOf(String(i + 1)) > -1) {
-            this.tabs[i].style.cssText = "";
-          } else {
-            this.tabs[i].style.cssText = "display:none;";
-          }
-        }
-      }
-      window.cch_tabs_display = false;
-      window.cchCard.querySelector('[id="btn_tabs"]').innerHTML =
-        "Show all tabs";
-    }
-  }
+  // show_all_tabs() {
+  //   if (!window.cch_tabs_display && this.tab_container) {
+  //     for (let i = 0; i < this.tabs.length; i++) {
+  //       this.tabs[i].style.cssText = "";
+  //     }
+  //     window.cch_tabs_display = true;
+  //     window.cchCard.querySelector('[id="btn_tabs"]').innerHTML =
+  //       "Revert all tabs";
+  //   } else if (window.cch_tabs_display && this.tab_container) {
+  //     for (let i = 0; i < this.tabs.length; i++) {
+  //       if (config_views) {
+  //         if (config_views.indexOf(String(i + 1)) > -1) {
+  //           this.tabs[i].style.cssText = "";
+  //         } else {
+  //           this.tabs[i].style.cssText = "display:none;";
+  //         }
+  //       }
+  //     }
+  //     window.cch_tabs_display = false;
+  //     window.cchCard.querySelector('[id="btn_tabs"]').innerHTML =
+  //       "Show all tabs";
+  //   }
+  // }
 }
 
 customElements.define("compact-custom-header", CompactCustomHeader);
