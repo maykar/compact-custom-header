@@ -61,12 +61,6 @@ class CompactCustomHeader extends LitElement {
             <paper-button @click="${this.toggle_user_agent}">
               ${this.show_ua ? "Hide" : "Show"} user agent
             </paper-button>
-            <paper-button @click="${this.show_all_tabs}">
-              ${this.showTabs ? "Revert" : "Show"} all tabs
-            </paper-button>
-            <paper-button @click="${this.refresh}">
-              Refresh
-            </paper-button>
           </div>
           <div ?hidden=${!this.show_ua}>
             <textarea class="user_agent" rows="4" readonly>
@@ -152,15 +146,12 @@ class CompactCustomHeader extends LitElement {
 
   run() {
     let root;
-
     if (!root) {
       this.recursiveWalk(document, "HUI-ROOT", function(node) {
         root = node.nodeName == "HUI-ROOT" ? node.shadowRoot : null;
       });
     }
-
     if (root) {
-
       // Hide header completely if set to false in config.
       if (!this.cchConfig.header) {
         root.querySelector("app-header").style.cssText = "display:none;";
@@ -182,8 +173,6 @@ class CompactCustomHeader extends LitElement {
 
       // Style header and icons.
       if (!this.raw_config_mode) {
-
-
         root
           .querySelector("ha-app-layout")
           .querySelector('[id="view"]').style.paddingBottom = this.cchConfig
@@ -291,15 +280,6 @@ class CompactCustomHeader extends LitElement {
         show_tabs.innerHTML = "Show All Tabs";
         first_item.parentNode.insertBefore( show_tabs, first_item );
       }
-      if (!menu_items.querySelector('[id="refresh"]')) {
-        let refresh = document.createElement("paper-item");
-        refresh.setAttribute("id", "refresh");
-        refresh.addEventListener('click', function() {
-          location.reload(true);
-        });
-        refresh.innerHTML = "Refresh";
-        first_item.parentNode.insertBefore( refresh, first_item );
-      }
     }
   }
 
@@ -388,10 +368,6 @@ class CompactCustomHeader extends LitElement {
       if (done) return true;
       node = node.nextSibling;
     }
-  }
-
-  refresh() {
-    location.reload(true);
   }
 
   // Toggle user agent portion of card for button on element.card.
