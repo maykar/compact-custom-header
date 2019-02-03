@@ -62,7 +62,7 @@ class CompactCustomHeader extends LitElement {
               ${this.show_ua ? "Hide" : "Show"} user agent
             </paper-button>
             <paper-button @click="${this.show_all_tabs}">
-              ${window.cch_tabs_display ? "Revert" : "Show"} all tabs
+              ${this.showTabs ? "Revert" : "Show"} all tabs
             </paper-button>
             <paper-button @click="${this.refresh}">
               Refresh
@@ -126,7 +126,8 @@ class CompactCustomHeader extends LitElement {
       });
     }
     this.cchConfig = { ...defaultConfig, ...this.config, ...exceptionConfig };
-    this.run();
+    
+    if (!this.cchConfig.disable) this.run();
   }
 
   countMatches(conditions) {
@@ -151,34 +152,37 @@ class CompactCustomHeader extends LitElement {
 
   run() {
     let root;
-    let card;
 
-    this.recursiveWalk(document, "HUI-ROOT", function(node) {
-      root = node.nodeName == "HUI-ROOT" ? node.shadowRoot : null;
-    });
+    if (!root) {
+      this.recursiveWalk(document, "HUI-ROOT", function(node) {
+        root = node.nodeName == "HUI-ROOT" ? node.shadowRoot : null;
+      });
+    }
 
     if (root) {
+
+      // Hide header completely if set to false in config.
+      if (!this.cchConfig.header) {
+        root.querySelector("app-header").style.cssText = "display:none;";
+        return;
+      }
+
       this.edit_mode =
         root.querySelectorAll("app-toolbar")[0].className == "edit-mode";
       this.tab_container = root.querySelector("paper-tabs");
       this.tabs = this.tab_container.querySelectorAll("paper-tab");
       this.raw_config_mode = root.querySelector("ha-menu-button") == null;
-
+      this.button = {};
+      this.button.menu = root.querySelector("ha-menu-button");
+      this.button.voice = root.querySelector("ha-start-voice-button");
+      this.button.options = root.querySelector("paper-menu-button");
+      this.button.notifications = root.querySelector(
+        "hui-notifications-button"
+      );
 
       // Style header and icons.
-      if (!this.cchConfig.disable && !this.raw_config_mode) {
-        this.button = {};
-        this.button.menu = root.querySelector("ha-menu-button");
-        this.button.voice = root.querySelector("ha-start-voice-button");
-        this.button.options = root.querySelector("paper-menu-button");
-        this.button.notifications = root.querySelector(
-          "hui-notifications-button"
-        );
+      if (!this.raw_config_mode) {
 
-        // Hide header completely if set to false in config.
-        if (!this.cchConfig.header) {
-          root.querySelector("app-header").style.cssText = "display:none;";
-        }
 
         root
           .querySelector("ha-app-layout")
@@ -223,6 +227,7 @@ class CompactCustomHeader extends LitElement {
       this.hideTabs();
       this.styleButtons();
       if (this.cchConfig.clock) this.insertClock();
+      this.insertMenuItems()
       window.dispatchEvent(new Event("resize"));
     }
   }
@@ -255,15 +260,45 @@ class CompactCustomHeader extends LitElement {
   }
 
   styleButtons() {
-    for (const button in this.button) {
-      if (this.cchConfig[button]) {
-        this.button[button].style.cssText = `
-          z-index:1;
-          margin-top:111px;
-          ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
-        `;
-      } else {
-        this.button[button].style.cssText = "display: none;";
+    if (!this.edit_mode) {
+      for (const button in this.button) {
+        if (this.cchConfig[button]) {
+          this.button[button].style.cssText = `
+            z-index:1;
+            margin-top:111px;
+            ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
+          `;
+        } else {
+          this.button[button].style.cssText = "display: none;";
+        }
+      }
+    }
+  }
+
+  insertMenuItems() {
+    if (!this.menu_insert && this.edit_mode && this.button.options) {
+      let menu_items = this.button.options.querySelector("paper-listbox");
+      let first_item = menu_items.querySelector("paper-item");
+      if (!menu_items.querySelector('[id="show_tabs"]')) {
+        let show_tabs = document.createElement("paper-item");
+        let tabs = this.tabs;
+        show_tabs.setAttribute("id", "show_tabs");
+        show_tabs.addEventListener('click', function() {
+          for (let i = 0; i < tabs.length; i++) {
+            tabs[i].style.cssText = "";
+          }
+        });
+        show_tabs.innerHTML = "Show All Tabs";
+        first_item.parentNode.insertBefore( show_tabs, first_item );
+      }
+      if (!menu_items.querySelector('[id="refresh"]')) {
+        let refresh = document.createElement("paper-item");
+        refresh.setAttribute("id", "refresh");
+        refresh.addEventListener('click', function() {
+          location.reload(true);
+        });
+        refresh.innerHTML = "Refresh";
+        first_item.parentNode.insertBefore( refresh, first_item );
       }
     }
   }
@@ -278,15 +313,10 @@ class CompactCustomHeader extends LitElement {
       let clock_icon;
       let clock_iron_icon;
 
-      if (this.cchConfig.clock == "options") {
-        clock_icon = this.button[this.cchConfig.clock].querySelector(
-            "paper-icon-button"
-          );
-      } else {
-        clock_icon = this.button[this.cchConfig.clock].shadowRoot.querySelector(
-            "paper-icon-button"
-          );
-      }
+      clock_icon = this.cchConfig.clock == "options"
+        ? this.button[this.cchConfig.clock]
+        : this.button[this.cchConfig.clock].shadowRoot
+      clock_icon = clock_icon.querySelector("paper-icon-button");
       clock_iron_icon = clock_icon.shadowRoot.querySelector("iron-icon");
 
       this.button.notifications.shadowRoot.querySelector(
@@ -346,7 +376,7 @@ class CompactCustomHeader extends LitElement {
 
   // Walk the DOM to find element.
   recursiveWalk(node, element, func) {
-    var done = func(node) || node.nodeName == element;
+    let done = func(node) || node.nodeName == element;
     if (done) return true;
     if ("shadowRoot" in node && node.shadowRoot) {
       done = this.recursiveWalk(node.shadowRoot, element, func);
@@ -369,33 +399,20 @@ class CompactCustomHeader extends LitElement {
     this.show_ua = !this.show_ua;
   }
 
-  ////////////////////////////////////
-  // This will be completely redone //
-  ////////////////////////////////////
   // Display all tabs for button on element.card.
-  // show_all_tabs() {
-  //   if (!window.cch_tabs_display && this.tab_container) {
-  //     for (let i = 0; i < this.tabs.length; i++) {
-  //       this.tabs[i].style.cssText = "";
-  //     }
-  //     window.cch_tabs_display = true;
-  //     window.cchCard.querySelector('[id="btn_tabs"]').innerHTML =
-  //       "Revert all tabs";
-  //   } else if (window.cch_tabs_display && this.tab_container) {
-  //     for (let i = 0; i < this.tabs.length; i++) {
-  //       if (config_views) {
-  //         if (config_views.indexOf(String(i + 1)) > -1) {
-  //           this.tabs[i].style.cssText = "";
-  //         } else {
-  //           this.tabs[i].style.cssText = "display:none;";
-  //         }
-  //       }
-  //     }
-  //     window.cch_tabs_display = false;
-  //     window.cchCard.querySelector('[id="btn_tabs"]').innerHTML =
-  //       "Show all tabs";
-  //   }
-  // }
+  show_all_tabs() {
+    if (!this.showTabs && this.tab_container) {
+      for (let i = 0; i < this.tabs.length; i++) {
+        this.tabs[i].style.cssText = "";
+      }
+      this.showTabs = true;
+      this.render();
+    } else if (this.showTabs && this.tab_container) {
+      this.hideTabs();
+      this.showTabs = false;
+      this.render();
+    }
+  }
 }
 
 customElements.define("compact-custom-header", CompactCustomHeader);
