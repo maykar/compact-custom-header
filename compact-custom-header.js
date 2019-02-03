@@ -158,11 +158,12 @@ class CompactCustomHeader extends LitElement {
     });
 
     if (root) {
+      this.edit_mode =
+        root.querySelectorAll("app-toolbar")[0].className == "edit-mode";
       this.tab_container = root.querySelector("paper-tabs");
       this.tabs = this.tab_container.querySelectorAll("paper-tab");
       this.raw_config_mode = root.querySelector("ha-menu-button") == null;
-      this.edit_mode =
-        root.querySelectorAll("app-toolbar")[0].className == "edit-mode";
+
 
       // Style header and icons.
       if (!this.cchConfig.disable && !this.raw_config_mode) {
@@ -217,36 +218,37 @@ class CompactCustomHeader extends LitElement {
           )
           chevron[0].style.cssText = "display:none;";
           chevron[1].style.cssText = "display:none;";
-
-          ////////////////////////////////////
-          // This will be completely redone //
-          ////////////////////////////////////
-          // if (config_views && !window.cch_tabs_display) {
-          //   for (let i = 0; i < this.tabs.length; i++) {
-          //     if (config_views.indexOf(String(i)) > -1) {
-          //       this.elementStyle(this.cchConfig.tabs, this.tabs[i], false);
-          //     } else {
-          //       this.tabs[i].style.cssText = "display:none;";
-          //     }
-          //   }
-          //   // If user agent hide's first tab, then redirect to new first tab.
-          //   if (
-          //     !window.cch_tabs_display &&
-          //     config_views[0] > 0 &&
-          //     this.tabs[0].className == "iron-selected"
-          //   ) {
-          //     this.tabs[parseInt(config_views[0])].click();
-          //   }
-          // } else {
-          //   for (let i = 0; i < this.tabs.length; i++) {
-          //     this.elementStyle(this.cchConfig.tabs, this.tabs[i], false);
-          //   }
-          // }
         }
       }
       this.styleButtons();
+      if (this.cchConfig.hide_tabs) this.hideTabs();
       if (this.cchConfig.clock) this.insertClock();
       window.dispatchEvent(new Event("resize"));
+    }
+  }
+
+  hideTabs() {
+    // Convert hide_tabs config to array
+    let hidden_tabs = JSON.parse(`[${this.cchConfig.hide_tabs}]`);
+    for (let i = 0; i < this.tabs.length; i++) {
+      if (hidden_tabs[i] == i) {
+        this.tabs[i].style.cssText = "display:none;";
+      }
+    }
+    // Check if current tab is a hidden tab.
+    for (let i = 0; i < this.tabs.length; i++) {
+      if (
+        this.tabs[i].className == "iron-selected" && 
+        this.cchConfig.hide_tabs == i
+      ) {
+        // Find first visable tab and navigate there.
+        for (let i = 0; i < this.tabs.length; i++) {
+          if (!hidden_tabs.includes(i)) {
+            this.tabs[parseInt(i)].click();
+            break;
+          }
+        }
+      }
     }
   }
 
