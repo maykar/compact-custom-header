@@ -1,5 +1,7 @@
-var LitElement = Object.getPrototypeOf(customElements.get("ha-panel-lovelace"));
-var html = LitElement.prototype.html;
+const LitElement = Object.getPrototypeOf(
+  customElements.get("ha-panel-lovelace")
+);
+const html = LitElement.prototype.html;
 
 const defaultConfig = {
   header: true,
@@ -30,6 +32,15 @@ class CompactCustomHeader extends LitElement {
     this.edit_mode = false;
   }
 
+  static async getConfigElement() {
+    await import("./compact-custom-header-editor.js");
+    return document.createElement("compact-custom-header-editor");
+  }
+
+  static getStubConfig() {
+    return {};
+  }
+
   setConfig(config) {
     this.config = config;
   }
@@ -51,9 +62,9 @@ class CompactCustomHeader extends LitElement {
           <svg viewBox="0 0 24 24">
             <path
               d="M12,7L17,12H14V16H10V12H7L12,7M19,
-              21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
-              3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
-              21M19,19V5H5V19H19Z"
+                    21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
+                    3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
+                    21M19,19V5H5V19H19Z"
             ></path>
           </svg>
           <h2>Compact Custom Header</h2>
@@ -64,8 +75,9 @@ class CompactCustomHeader extends LitElement {
           </div>
           <div ?hidden=${!this.show_ua}>
             <textarea class="user_agent" rows="4" readonly>
-              ${navigator.userAgent}
-            </textarea>
+                    ${navigator.userAgent}
+                  </textarea
+            >
           </div>
         </div>
       </ha-card>
@@ -120,7 +132,7 @@ class CompactCustomHeader extends LitElement {
       });
     }
     this.cchConfig = { ...defaultConfig, ...this.config, ...exceptionConfig };
-    
+
     if (!this.cchConfig.disable) this.run();
   }
 
@@ -208,7 +220,7 @@ class CompactCustomHeader extends LitElement {
           // Hide tab bar scroll arrows to save space since we can still swipe.
           let chevron = this.tab_container.shadowRoot.querySelectorAll(
             '[icon^="paper-tabs:chevron"]'
-          )
+          );
           chevron[0].style.cssText = "display:none;";
           chevron[1].style.cssText = "display:none;";
         }
@@ -216,7 +228,7 @@ class CompactCustomHeader extends LitElement {
       this.hideTabs();
       this.styleButtons();
       if (this.cchConfig.clock) this.insertClock();
-      this.insertMenuItems()
+      this.insertMenuItems();
       window.dispatchEvent(new Event("resize"));
     }
   }
@@ -233,7 +245,7 @@ class CompactCustomHeader extends LitElement {
       // Check if current tab is a hidden tab.
       for (let i = 0; i < this.tabs.length; i++) {
         if (
-          this.tabs[i].className == "iron-selected" && 
+          this.tabs[i].className == "iron-selected" &&
           hidden_tabs.includes(i)
         ) {
           // Find first visable tab and navigate there.
@@ -272,13 +284,13 @@ class CompactCustomHeader extends LitElement {
         let show_tabs = document.createElement("paper-item");
         let tabs = this.tabs;
         show_tabs.setAttribute("id", "show_tabs");
-        show_tabs.addEventListener('click', function() {
+        show_tabs.addEventListener("click", function() {
           for (let i = 0; i < tabs.length; i++) {
             tabs[i].style.cssText = "";
           }
         });
         show_tabs.innerHTML = "Show All Tabs";
-        first_item.parentNode.insertBefore( show_tabs, first_item );
+        first_item.parentNode.insertBefore(show_tabs, first_item);
       }
     }
   }
@@ -293,17 +305,17 @@ class CompactCustomHeader extends LitElement {
       let clock_icon;
       let clock_iron_icon;
 
-      clock_icon = this.cchConfig.clock == "options"
-        ? this.button[this.cchConfig.clock]
-        : this.button[this.cchConfig.clock].shadowRoot
+      clock_icon =
+        this.cchConfig.clock == "options"
+          ? this.button[this.cchConfig.clock]
+          : this.button[this.cchConfig.clock].shadowRoot;
       clock_icon = clock_icon.querySelector("paper-icon-button");
       clock_iron_icon = clock_icon.shadowRoot.querySelector("iron-icon");
 
       this.button.notifications.shadowRoot.querySelector(
-          '[class="indicator"]'
-        ).style.cssText = this.cchConfig.clock == "notifications"
-          ? "top:14.5px;left:-7px"
-          : '';
+        '[class="indicator"]'
+      ).style.cssText =
+        this.cchConfig.clock == "notifications" ? "top:14.5px;left:-7px" : "";
 
       let clock_element = document.createElement("p");
       clock_element.setAttribute("id", "cch_clock");
@@ -317,7 +329,7 @@ class CompactCustomHeader extends LitElement {
         width:${clock_width}px;
         text-align: center;
       `;
-      clock_iron_icon.parentNode.insertBefore( clock_element, clock_iron_icon );
+      clock_iron_icon.parentNode.insertBefore(clock_element, clock_iron_icon);
       clock_iron_icon.style.cssText = "display:none;";
 
       this.clock = clock_icon.shadowRoot.getElementById("cch_clock");
