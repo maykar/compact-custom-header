@@ -220,32 +220,34 @@ class CompactCustomHeader extends LitElement {
           chevron[1].style.cssText = "display:none;";
         }
       }
+      this.hideTabs();
       this.styleButtons();
-      if (this.cchConfig.hide_tabs) this.hideTabs();
       if (this.cchConfig.clock) this.insertClock();
       window.dispatchEvent(new Event("resize"));
     }
   }
 
   hideTabs() {
-    // Convert hide_tabs config to array
-    let hidden_tabs = JSON.parse(`[${this.cchConfig.hide_tabs}]`);
-    for (let i = 0; i < this.tabs.length; i++) {
-      if (hidden_tabs[i] == i) {
-        this.tabs[i].style.cssText = "display:none;";
+    if (this.cchConfig.hide_tabs && !this.edit_mode) {
+      // Convert hide_tab config to array
+      let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
+      for (let i = 0; i < this.tabs.length; i++) {
+        if (hidden_tabs.includes(i)) {
+          this.tabs[i].style.cssText = "display:none;";
+        }
       }
-    }
-    // Check if current tab is a hidden tab.
-    for (let i = 0; i < this.tabs.length; i++) {
-      if (
-        this.tabs[i].className == "iron-selected" && 
-        this.cchConfig.hide_tabs == i
-      ) {
-        // Find first visable tab and navigate there.
-        for (let i = 0; i < this.tabs.length; i++) {
-          if (!hidden_tabs.includes(i)) {
-            this.tabs[parseInt(i)].click();
-            break;
+      // Check if current tab is a hidden tab.
+      for (let i = 0; i < this.tabs.length; i++) {
+        if (
+          this.tabs[i].className == "iron-selected" && 
+          hidden_tabs.includes(i)
+        ) {
+          // Find first visable tab and navigate there.
+          for (let i = 0; i < this.tabs.length; i++) {
+            if (!hidden_tabs.includes(i)) {
+              this.tabs[parseInt(i)].click();
+              break;
+            }
           }
         }
       }
