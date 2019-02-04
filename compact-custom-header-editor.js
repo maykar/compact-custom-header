@@ -35,16 +35,18 @@ export class CompactCustomHeaderEditor extends LitElement {
         @cch-config-changed="${this._configChanged}"
       ></cch-config-editor>
       <h3>Exceptions</h3>
-      ${this._config.exceptions.map((exception, index) => {
-        return html`
-          <cch-exception-editor
-            .exception="${exception}"
-            .index="${index}"
-            @cch-exception-changed="${this._exceptionChanged}"
-            @cch-exception-delete="${this._exceptionDelete}"
-          ></cch-exception-editor>
-        `;
-      })}
+      ${this._config.exceptions
+        ? this._config.exceptions.map((exception, index) => {
+            return html`
+              <cch-exception-editor
+                .exception="${exception}"
+                .index="${index}"
+                @cch-exception-changed="${this._exceptionChanged}"
+                @cch-exception-delete="${this._exceptionDelete}"
+              ></cch-exception-editor>
+            `;
+          })
+        : ""}
       <paper-button elevated @click="${this._addException}"
         >Add Exception</paper-button
       >
@@ -52,7 +54,11 @@ export class CompactCustomHeaderEditor extends LitElement {
   }
 
   _addException() {
-    this._config.exceptions.push({ conditions: {}, config: {} });
+    if (this._config.exceptions) {
+      this._config.exceptions.push({ conditions: {}, config: {} });
+    } else {
+      this._config.exceptions = [{ conditions: {}, config: {} }];
+    }
     fireEvent(this, "config-changed", { config: this._config });
     this.requestUpdate();
   }
@@ -70,6 +76,7 @@ export class CompactCustomHeaderEditor extends LitElement {
       return;
     }
     const target = ev.target;
+    console.log("edit", target.index);
     this._config.exceptions[target.index] = ev.detail.exception;
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -79,7 +86,8 @@ export class CompactCustomHeaderEditor extends LitElement {
       return;
     }
     const target = ev.target;
-    this._config.exceptions = this._config.exceptions.splice(target.index, 1);
+    console.log("delete", target.index);
+    this._config.exceptions.splice(target.index, 1);
     fireEvent(this, "config-changed", { config: this._config });
     this.requestUpdate();
   }
@@ -337,8 +345,8 @@ export class CchConditionsEditor extends LitElement {
     return this.conditions.user || "";
   }
 
-  get _userAgent() {
-    return this.conditions.useragent || "";
+  get _user_agent() {
+    return this.conditions.user_agent || "";
   }
 
   render() {
@@ -354,7 +362,7 @@ export class CchConditionsEditor extends LitElement {
       ></paper-input>
       <paper-input
         label="User agent"
-        .value="${this._userAgent}"
+        .value="${this._user_agent}"
         .configValue="${"user_agent"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
