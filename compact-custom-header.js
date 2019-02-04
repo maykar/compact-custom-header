@@ -29,7 +29,7 @@ class CompactCustomHeader extends LitElement {
   constructor() {
     super();
     this.firstRun = true;
-    this.edit_mode = false;
+    this.editMode = false;
   }
 
   static async getConfigElement() {
@@ -52,9 +52,6 @@ class CompactCustomHeader extends LitElement {
   }
 
   render() {
-    if (!this.config || !this.hass || !this.edit_mode) {
-      return html``;
-    }
     return html`
       ${this.renderStyle()}
       <ha-card>
@@ -69,7 +66,7 @@ class CompactCustomHeader extends LitElement {
           </svg>
           <h2>Compact Custom Header</h2>
           <div>
-            <paper-button @click="${this.toggle_user_agent}">
+            <paper-button @click="${this.toggleUserAgent}">
               ${this.show_ua ? "Hide" : "Show"} user agent
             </paper-button>
           </div>
@@ -157,84 +154,121 @@ class CompactCustomHeader extends LitElement {
   }
 
   run() {
+    this.getElements();
+    this.hideCard();
+    if (this.editMode) this.insertMenuItems();
+    if (!this.rawConfigMode && !this.editMode) {
+      this.styleHeader();
+      if (this.cchConfig.clock) this.insertClock();
+    }
+  }
+
+  getElements() {
     let root;
+    let card;
+    // Find hui-root in DOM
     if (!root) {
       this.recursiveWalk(document, "HUI-ROOT", function(node) {
         root = node.nodeName == "HUI-ROOT" ? node.shadowRoot : null;
       });
     }
-    if (root) {
-      // Hide header completely if set to false in config.
-      if (!this.cchConfig.header) {
-        root.querySelector("app-header").style.cssText = "display:none;";
-        return;
-      }
+    this.root = root;
+    // Find this card's element in hui-root
+    if (!card) {
+      this.recursiveWalk(root, "COMPACT-CUSTOM-HEADER", function(node) {
+        card = node.nodeName == "COMPACT-CUSTOM-HEADER" ? node : null;
+      });
+    }
+    this.card = card;
+    this.button = {};
+    this.rawConfigMode = root.querySelector("ha-menu-button") == null;
+    this.editMode = root.querySelector("app-toolbar").className == "edit-mode";
+    this.button.options = root.querySelector("paper-menu-button");
+    this.tabContainer = root.querySelector("paper-tabs");
+    this.tabs = this.tabContainer.querySelectorAll("paper-tab");
 
-      this.edit_mode =
-        root.querySelectorAll("app-toolbar")[0].className == "edit-mode";
-      this.tab_container = root.querySelector("paper-tabs");
-      this.tabs = this.tab_container.querySelectorAll("paper-tab");
-      this.raw_config_mode = root.querySelector("ha-menu-button") == null;
-      this.button = {};
+    if (!this.rawConfigMode && !this.editMode) {
       this.button.menu = root.querySelector("ha-menu-button");
       this.button.voice = root.querySelector("ha-start-voice-button");
-      this.button.options = root.querySelector("paper-menu-button");
       this.button.notifications = root.querySelector(
         "hui-notifications-button"
       );
+    }
+  }
 
-      // Style header and icons.
-      if (!this.raw_config_mode) {
-        root
-          .querySelector("ha-app-layout")
-          .querySelector('[id="view"]').style.paddingBottom = this.cchConfig
-          .background_image
-          ? "64px"
-          : "";
+  styleHeader() {
+    // Hide header completely if set to false in config.
+    if (!this.cchConfig.header) {
+      this.root.querySelector("app-header").style.cssText = "display:none;";
+      return;
+    }
 
-        if (this.tab_container) {
-          // Add width of all visible elements on right side for tabs margin.
-          let pad = 0;
-          pad +=
-            this.cchConfig.notifications &&
-            this.cchConfig.clock != "notifications"
-              ? 45
-              : 0;
-          pad +=
-            this.cchConfig.voice && this.cchConfig.clock != "voice" ? 45 : 0;
-          pad +=
-            this.cchConfig.options && this.cchConfig.clock != "options"
-              ? 45
-              : 0;
-          if (this.cchConfig.clock && this.cchConfig.clock != "menu") {
-            pad +=
-              this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12
-                ? 110
-                : 80;
-          }
-          this.tab_container.style.cssText = `margin-right:${pad}px;`;
+    this.root
+      .querySelector("ha-app-layout")
+      .querySelector('[id="view"]').style.paddingBottom = this.cchConfig
+      .background_image
+      ? "64px"
+      : "";
 
-          // Shift the header up to hide unused portion.
-          root.querySelector("app-toolbar").style.cssText = "margin-top:-64px;";
+    if (this.tabContainer) {
+      // Add width of all visible elements on right side for tabs margin.
+      this.pad = 0;
+      this.pad +=
+        this.cchConfig.notifications &&
+        this.cchConfig.clock != "notifications"
+          ? 45
+          : 0;
+      this.pad +=
+        this.cchConfig.voice && this.cchConfig.clock != "voice" ? 45 : 0;
+      this.pad +=
+        this.cchConfig.options && this.cchConfig.clock != "options" ? 45 : 0;
+      if (this.cchConfig.clock && this.cchConfig.clock != "menu") {
+        this.pad +=
+          this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12
+            ? 110
+            : 80;
+      }
 
-          // Hide tab bar scroll arrows to save space since we can still swipe.
-          let chevron = this.tab_container.shadowRoot.querySelectorAll(
-            '[icon^="paper-tabs:chevron"]'
-          );
-          chevron[0].style.cssText = "display:none;";
-          chevron[1].style.cssText = "display:none;";
+      // Add margin to left side of tabs if menu is the clock.
+      if (this.cchConfig.menu && this.cchConfig.clock != "menu") {
+        this.tabContainer.style.cssText = `
+          margin-left:60px;
+          margin-right:${this.pad}px;
+        `;
+      }
+
+      // Shift the header up to hide unused portion.
+      this.root.querySelector("app-toolbar").style.cssText = "margin-top:-64px;";
+
+      // Hide tab bar scroll arrows to save space since we can still swipe.
+      let chevron = this.tabContainer.shadowRoot.querySelectorAll(
+        '[icon^="paper-tabs:chevron"]'
+      );
+      chevron[0].style.cssText = "display:none;";
+      chevron[1].style.cssText = "display:none;";
+    }
+  this.styleButtons();
+  this.hideTabs();
+  }
+
+  styleButtons() {
+    if (!this.editMode) {
+      for (const button in this.button) {
+        if (this.cchConfig[button]) {
+          this.button[button].style.cssText = `
+            z-index:1;
+            margin-top:111px;
+            ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
+          `;
+        } else {
+          this.button[button].style.cssText = "display: none;";
         }
       }
-      this.hideTabs();
-      this.styleButtons();
-      if (this.cchConfig.clock) this.insertClock();
-      this.insertMenuItems();
-      window.dispatchEvent(new Event("resize"));
     }
   }
 
   hideTabs() {
-    if (this.cchConfig.hide_tabs && !this.edit_mode) {
+    if (this.cchConfig.hide_tabs && !this.editMode) {
       // Convert hide_tab config to array
       let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
       for (let i = 0; i < this.tabs.length; i++) {
@@ -260,24 +294,23 @@ class CompactCustomHeader extends LitElement {
     }
   }
 
-  styleButtons() {
-    if (!this.edit_mode) {
-      for (const button in this.button) {
-        if (this.cchConfig[button]) {
-          this.button[button].style.cssText = `
-            z-index:1;
-            margin-top:111px;
-            ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
-          `;
-        } else {
-          this.button[button].style.cssText = "display: none;";
-        }
-      }
+  hideCard() {
+    // If this card is the only one in a column, hide column outside edit mode
+    if (this.card.parentNode.children.length == 1 && !this.editMode) {
+      this.card.parentNode.style.cssText = "display:none";
+    } else {
+      this.card.parentNode.style.cssText = "";
     }
+    if (!this.editMode) {
+      this.card.style.cssText = "display:none";
+    } else {
+      this.card.style.cssText = "";
+    }
+    
   }
 
   insertMenuItems() {
-    if (!this.menu_insert && this.edit_mode && this.button.options) {
+    if (this.editMode && this.button.options) {
       let menu_items = this.button.options.querySelector("paper-listbox");
       let first_item = menu_items.querySelector("paper-item");
       if (!menu_items.querySelector('[id="show_tabs"]')) {
@@ -301,7 +334,7 @@ class CompactCustomHeader extends LitElement {
         ? 110
         : 80;
 
-    if (!this.raw_config_mode && !this.edit_mode && this.clock == null) {
+    if (!this.rawConfigMode && !this.editMode && this.clock == null) {
       let clock_icon;
       let clock_iron_icon;
 
@@ -332,22 +365,15 @@ class CompactCustomHeader extends LitElement {
       clock_iron_icon.parentNode.insertBefore(clock_element, clock_iron_icon);
       clock_iron_icon.style.cssText = "display:none;";
 
+      if (this.cchConfig.menu && this.cchConfig.clock == "menu") {
+        this.tabContainer.style.cssText = `
+          margin-left:${clock_width + 15}px;
+          margin-right:${this.pad}px;
+        `;
+      }
       this.clock = clock_icon.shadowRoot.getElementById("cch_clock");
       this.updateClock();
-    }
-
-    if (this.tab_container) {
-      // Add margin to left side of tabs if menu is the clock.
-      if (this.cchConfig.menu && this.cchConfig.clock != "menu") {
-        this.tab_container.shadowRoot.getElementById(
-          "tabsContainer"
-        ).style.cssText = "margin-left:60px;";
-      } else if (this.cchConfig.menu && this.cchConfig.clock == "menu") {
-        this.tab_container.shadowRoot.getElementById(
-          "tabsContainer"
-        ).style.cssText = `margin-left:${clock_width + 15}px;`;
-      }
-    }
+    }  
   }
 
   updateClock() {
@@ -383,23 +409,8 @@ class CompactCustomHeader extends LitElement {
   }
 
   // Toggle user agent portion of card for button on element.card.
-  toggle_user_agent() {
+  toggleUserAgent() {
     this.show_ua = !this.show_ua;
-  }
-
-  // Display all tabs for button on element.card.
-  show_all_tabs() {
-    if (!this.showTabs && this.tab_container) {
-      for (let i = 0; i < this.tabs.length; i++) {
-        this.tabs[i].style.cssText = "";
-      }
-      this.showTabs = true;
-      this.render();
-    } else if (this.showTabs && this.tab_container) {
-      this.hideTabs();
-      this.showTabs = false;
-      this.render();
-    }
   }
 }
 
