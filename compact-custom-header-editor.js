@@ -41,10 +41,20 @@ export class CompactCustomHeaderEditor extends LitElement {
             .exception="${exception}"
             .index="${index}"
             @cch-exception-changed="${this._exceptionChanged}"
+            @cch-exception-delete="${this._exceptionDelete}"
           ></cch-exception-editor>
         `;
       })}
+      <paper-button elevated @click="${this._addException}"
+        >Add Exception</paper-button
+      >
     `;
+  }
+
+  _addException() {
+    this._config.exceptions.push({ conditions: {}, config: {} });
+    fireEvent(this, "config-changed", { config: this._config });
+    this.requestUpdate();
   }
 
   _configChanged(ev) {
@@ -62,6 +72,16 @@ export class CompactCustomHeaderEditor extends LitElement {
     const target = ev.target;
     this._config.exceptions[target.index] = ev.detail.exception;
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  _exceptionDelete(ev) {
+    if (!this._config) {
+      return;
+    }
+    const target = ev.target;
+    this._config.exceptions = this._config.exceptions.splice(target.index, 1);
+    fireEvent(this, "config-changed", { config: this._config });
+    this.requestUpdate();
   }
 
   renderStyle() {
@@ -86,11 +106,11 @@ export class CchConfigEditor extends LitElement {
     return this.config.clock || "";
   }
 
-  get _clockFormat() {
+  get _clock_format() {
     return this.config.clock_format || "12";
   }
 
-  get _clockAmPm() {
+  get _clock_am_pm() {
     return this.config.clock_am_pm || true;
   }
 
@@ -140,7 +160,7 @@ export class CchConfigEditor extends LitElement {
         >
           <paper-listbox
             slot="dropdown-content"
-            .selected="${this._clockFormat === "24" ? 1 : 0}"
+            .selected="${this._clock_format === "24" ? 1 : 0}"
           >
             <paper-item>12</paper-item>
             <paper-item>24</paper-item>
@@ -206,19 +226,12 @@ customElements.define("cch-config-editor", CchConfigEditor);
 
 export class CchExceptionEditor extends LitElement {
   static get properties() {
-    return { exception: {} };
+    return { exception: {}, _closed: {} };
   }
 
-  get _clock() {
-    return this.config.clock || "";
-  }
-
-  get _clockFormat() {
-    return this.config.clock_format || "12";
-  }
-
-  get _clockAmPm() {
-    return this.config.clock_am_pm || true;
+  constructor() {
+    super();
+    this._closed = true;
   }
 
   render() {
@@ -226,17 +239,69 @@ export class CchExceptionEditor extends LitElement {
       return html``;
     }
     return html`
-      <h4>Conditions</h4>
-      <cch-conditions-editor
-        .conditions="${this.exception.conditions}"
-        @cch-conditions-changed="${this._conditionsChanged}"
-      ></cch-conditions-editor>
-      <h4>Config</h4>
-      <cch-config-editor
-        .config="${this.exception.config}"
-        @cch-config-changed="${this._configChanged}"
-      ></cch-config-editor>
+      ${this.renderStyle()}
+      <custom-style>
+        <style is="custom-style">
+          .card-header {
+            margin-top: -5px;
+            @apply --paper-font-headline;
+          }
+          .card-header paper-icon-button {
+            margin-top: -5px;
+            float: right;
+          }
+        </style>
+      </custom-style>
+      <paper-card ?closed=${this._closed}>
+        <div class="card-content">
+          <div class="card-header">
+            ${Object.values(this.exception.conditions).join(", ")}
+            <paper-icon-button
+              icon="${this._closed ? "mdi:chevron-down" : "mdi:chevron-up"}"
+              @click="${this._toggleCard}"
+            ></paper-icon-button>
+            <paper-icon-button
+              ?hidden=${this._closed}
+              icon="mdi:delete"
+              @click="${this._deleteException}"
+            ></paper-icon-button>
+          </div>
+          <h4>Conditions</h4>
+          <cch-conditions-editor
+            .conditions="${this.exception.conditions}"
+            @cch-conditions-changed="${this._conditionsChanged}"
+          ></cch-conditions-editor>
+          <h4>Config</h4>
+          <cch-config-editor
+            .config="${this.exception.config}"
+            @cch-config-changed="${this._configChanged}"
+          ></cch-config-editor>
+        </div>
+      </paper-card>
     `;
+  }
+
+  renderStyle() {
+    return html`
+      <style>
+        [closed] {
+          overflow: hidden;
+          max-height: 52px;
+        }
+        paper-card {
+          margin-top: 10px;
+          transition: all 0.5s ease;
+        }
+      </style>
+    `;
+  }
+
+  _toggleCard() {
+    this._closed = !this._closed;
+  }
+
+  _deleteException() {
+    fireEvent(this, "cch-exception-delete");
   }
 
   _conditionsChanged(ev) {
