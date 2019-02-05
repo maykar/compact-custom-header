@@ -127,15 +127,15 @@ export class CchConfigEditor extends LitElement {
   }
 
   get _main_config() {
-    return this.config.main_config == true || false;
+    return this.config.main_config || false;
   }
 
   get _disable() {
-    return this.config.disable == true || false;
+    return this.config.disable || false;
   }
 
   get _background_image() {
-    return this.config.background_image == true || false;
+    return this.config.background_image || false;
   }
 
   render() {
@@ -143,7 +143,7 @@ export class CchConfigEditor extends LitElement {
       ${this.renderStyle()}
       <paper-toggle-button
         ?checked="${this._disable !== false}"
-        .configValue="${" disable"}"
+        .configValue="${"disable"}"
         @change="${this._valueChanged}"
       >
         Disable Custom Compact Header
