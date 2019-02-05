@@ -414,6 +414,10 @@ export class CchConditionsEditor extends LitElement {
     return this.conditions.user_agent || "";
   }
 
+  get _media_query() {
+    return this.conditions.media_query || "";
+  }
+
   render() {
     if (!this.conditions) {
       return html``;
@@ -430,6 +434,13 @@ export class CchConditionsEditor extends LitElement {
         label="User agent"
         .value="${this._user_agent}"
         .configValue="${"user_agent"}"
+        @value-changed="${this._valueChanged}"
+      >
+      </paper-input>
+      <paper-input
+        label="Media query"
+        .value="${this._media_query}"
+        .configValue="${"media_query"}"
         @value-changed="${this._valueChanged}"
       >
       </paper-input>
