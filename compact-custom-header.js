@@ -311,7 +311,7 @@ ${navigator.userAgent}
           "paper-icon-button"
         );
         if (paperIconButton.hasAttribute("hidden")) {
-          return;
+          continue;
         }
         const menu_items = buttons.options.querySelector("paper-listbox");
         const id = `menu_item_${button}`;
