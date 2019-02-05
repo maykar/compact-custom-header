@@ -126,8 +126,8 @@ export class CchConfigEditor extends LitElement {
     return this.config.clock_am_pm || true;
   }
 
-  get _parent_card() {
-    return this.config.parent_card == true || false;
+  get _main_config() {
+    return this.config.main_config == true || false;
   }
 
   get _disable() {
@@ -151,11 +151,11 @@ export class CchConfigEditor extends LitElement {
       ${this.minimal === undefined
         ? html`
             <paper-toggle-button
-              ?checked="${this._parent_card !== false}"
-              .configValue="${"parent_card"}"
+              ?checked="${this._main_config !== false}"
+              .configValue="${"main_config"}"
               @change="${this._valueChanged}"
             >
-              Parent Card
+              Main Config
             </paper-toggle-button>
             <paper-toggle-button
               ?checked="${this._background_image !== false}"
