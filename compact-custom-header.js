@@ -14,7 +14,7 @@ const defaultConfig = {
   clock_am_pm: true,
   disable: false,
   background_image: false,
-  parent_card: false
+  main_config: false
 };
 
 class CompactCustomHeader extends LitElement {
@@ -122,8 +122,6 @@ ${navigator.userAgent}
       };
     }
 
-    this.hideCard();
-
     let exceptionConfig = {};
     let highestMatch = 0;
     if (this.config.exceptions) {
@@ -139,7 +137,7 @@ ${navigator.userAgent}
     // Retrieve cached config and set as default if this card isn't parent card.
     this.cchCache = {};
     let retrievedCache = localStorage.getItem("cchCache");
-    if (!this.config.parent_card && retrievedCache) {
+    if (!this.config.main_config && retrievedCache) {
       this.cchCache = JSON.parse(retrievedCache);
     }
 
@@ -151,8 +149,8 @@ ${navigator.userAgent}
       ...this.child
     };
 
-    if (this.config.parent_card) {
-      delete this.cchConfig.parent_card;
+    if (this.config.main_config) {
+      delete this.cchConfig.main_config;
       localStorage.setItem("cchCache", JSON.stringify(this.cchConfig));
     }
 
@@ -189,10 +187,11 @@ ${navigator.userAgent}
     const buttons = this.getButtonElements(root);
     const tabContainer = root.querySelector("paper-tabs");
     const tabs = tabContainer.querySelectorAll("paper-tab");
-    const pad = this.pad;
     if (this.editMode) {
       this.insertMenuItems(buttons, tabs);
     } else {
+      const pad = this.pad;
+      this.hideCard();
       this.styleHeader(root, tabContainer, pad);
       this.styleButtons(buttons);
       this.hideTabs(tabs);
@@ -325,7 +324,7 @@ ${navigator.userAgent}
 
   hideCard() {
     // If this card is the only one in a column, hide column outside edit mode
-    if (this.parentNode.children.length == 1 && !this.editMode) {
+    if (this.parentNode.children.length == 1) {
       this.parentNode.style.cssText = "display:none";
     }
   }
