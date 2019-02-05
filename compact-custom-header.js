@@ -58,11 +58,12 @@ class CompactCustomHeader extends LitElement {
       <ha-card>
         <div>
           <svg viewBox="0 0 24 24">
-            <path d="M12,7L17,12H14V16H10V12H7L12,7M19,
-              21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
-              3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
-              21M19,19V5H5V19H19Z">
-            </path>
+            <path
+              d="M12,7L17,12H14V16H10V12H7L12,7M19,
+                    21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
+                    3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
+                    21M19,19V5H5V19H19Z"
+            ></path>
           </svg>
           <h2>Compact Custom Header</h2>
           <div>
@@ -71,9 +72,10 @@ class CompactCustomHeader extends LitElement {
             </paper-button>
           </div>
           <div style="margin-right:10px" ?hidden=${!this.show_ua}>
-            <textarea
-              class="user_agent" rows="4" readonly>${navigator.userAgent}
-            </textarea>
+            <textarea class="user_agent" rows="4" readonly>
+${navigator.userAgent}
+                  </textarea
+            >
           </div>
         </div>
       </ha-card>
@@ -132,18 +134,23 @@ class CompactCustomHeader extends LitElement {
     }
 
     // Retrieve cached config and set as default if this card isn't parent card.
-    this.cchCache = {}
+    this.cchCache = {};
     let retrievedCache = localStorage.getItem("cchCache");
     if (!this.config.parent_card && retrievedCache) {
       this.cchCache = JSON.parse(retrievedCache);
     }
 
-    this.cchConfig = { ...defaultConfig, ...this.cchCache,
-                     ...this.config, ...exceptionConfig, ...this.child };
+    this.cchConfig = {
+      ...defaultConfig,
+      ...this.cchCache,
+      ...this.config,
+      ...exceptionConfig,
+      ...this.child
+    };
 
     if (this.config.parent_card) {
       delete this.cchConfig.parent_card;
-      localStorage.setItem("cchCache", JSON.stringify(this.cchConfig))
+      localStorage.setItem("cchCache", JSON.stringify(this.cchConfig));
     }
 
     if (!this.cchConfig.disable) {
@@ -160,7 +167,9 @@ class CompactCustomHeader extends LitElement {
       if (
         this.userVars[condition] == conditions[condition] ||
         (condition == "user_agent" &&
-          this.userVars[condition].includes(conditions[condition]))
+          this.userVars[condition].includes(conditions[condition])) ||
+        (condition == "media_query" &&
+          window.matchMedia(conditions[condition]).matches)
       ) {
         count++;
       } else {
@@ -235,8 +244,7 @@ class CompactCustomHeader extends LitElement {
       // Add width of all visible elements on right side for tabs margin.
       this.pad = 0;
       this.pad +=
-        this.cchConfig.notifications &&
-        this.cchConfig.clock != "notifications"
+        this.cchConfig.notifications && this.cchConfig.clock != "notifications"
           ? 45
           : 0;
       this.pad +=
@@ -268,8 +276,8 @@ class CompactCustomHeader extends LitElement {
       chevron[0].style.cssText = "display:none;";
       chevron[1].style.cssText = "display:none;";
     }
-  this.styleButtons();
-  this.hideTabs();
+    this.styleButtons();
+    this.hideTabs();
   }
 
   styleButtons() {
@@ -351,9 +359,9 @@ class CompactCustomHeader extends LitElement {
   insertClock() {
     // Change non-plural strings for backwards compatability
     if (this.config.clock == "option") {
-      this.config.clock = "options"
+      this.config.clock = "options";
     } else if (this.config.clock == "notification") {
-      this.config.clock = "notifications"
+      this.config.clock = "notifications";
     }
 
     let clock_width =
