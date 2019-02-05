@@ -22,8 +22,8 @@ class CompactCustomHeader extends LitElement {
     return {
       config: {},
       hass: {},
-      edit_mode: {},
-      show_ua: {}
+      editMode: {},
+      showUa: {}
     };
   }
 
@@ -53,6 +53,9 @@ class CompactCustomHeader extends LitElement {
   }
 
   render() {
+    if (!this.editMode) {
+      return html``;
+    }
     return html`
       ${this.renderStyle()}
       <ha-card>
@@ -68,10 +71,10 @@ class CompactCustomHeader extends LitElement {
           <h2>Compact Custom Header</h2>
           <div>
             <paper-button @click="${this.toggleUserAgent}">
-              ${this.show_ua ? "Hide" : "Show"} user agent
+              ${this.showUa ? "Hide" : "Show"} user agent
             </paper-button>
           </div>
-          <div style="margin-right:10px" ?hidden=${!this.show_ua}>
+          <div style="margin-right:10px" ?hidden=${!this.showUa}>
             <textarea class="user_agent" rows="4" readonly>
 ${navigator.userAgent}
                   </textarea
@@ -138,15 +141,13 @@ ${navigator.userAgent}
     this.cchCache = {};
     let retrievedCache = localStorage.getItem("cchCache");
     if (!this.config.main_config && retrievedCache) {
-      this.cchCache = JSON.parse(retrievedCache);
+      this.config = JSON.parse(retrievedCache);
     }
 
     this.cchConfig = {
       ...defaultConfig,
-      ...this.cchCache,
       ...this.config,
-      ...exceptionConfig,
-      ...this.child
+      ...exceptionConfig
     };
 
     if (this.config.main_config) {
@@ -188,13 +189,28 @@ ${navigator.userAgent}
     const tabContainer = root.querySelector("paper-tabs");
     const tabs = tabContainer.querySelectorAll("paper-tab");
     if (this.editMode) {
-      this.insertMenuItems(buttons, tabs);
+      if (buttons.options) {
+        let show_tabs = document.createElement("paper-item");
+        show_tabs.setAttribute("id", "show_tabs");
+        show_tabs.addEventListener("click", () => {
+          for (let i = 0; i < tabs.length; i++) {
+            tabs[i].style.cssText = "";
+          }
+        });
+        show_tabs.innerHTML = "Show All Tabs";
+        this.insertMenuItem(
+          buttons.options.querySelector("paper-listbox"),
+          show_tabs
+        );
+      }
     } else {
       const pad = this.pad;
       this.hideCard();
       this.styleHeader(root, tabContainer, pad);
       this.styleButtons(buttons);
-      this.hideTabs(tabs);
+      if (this.cchConfig.hide_tabs) {
+        this.hideTabs(tabs);
+      }
       if (this.cchConfig.clock) {
         this.insertClock(buttons, tabContainer, pad);
       }
@@ -212,21 +228,21 @@ ${navigator.userAgent}
     } catch {
       console.log("Can't find 'hui-root', going to walk the DOM to find it.");
     }
-    this.recursiveWalk(document, "HUI-ROOT", function(node) {
+    this.recursiveWalk(document, "HUI-ROOT", node => {
       return node.nodeName == "HUI-ROOT" ? node.shadowRoot : null;
     });
   }
 
   getButtonElements(root) {
-    const button = {};
-    button.options = root.querySelector("paper-menu-button");
+    const buttons = {};
+    buttons.options = root.querySelector("paper-menu-button");
 
     if (!this.editMode) {
-      button.menu = root.querySelector("ha-menu-button");
-      button.voice = root.querySelector("ha-start-voice-button");
-      button.notifications = root.querySelector("hui-notifications-button");
+      buttons.menu = root.querySelector("ha-menu-button");
+      buttons.voice = root.querySelector("ha-start-voice-button");
+      buttons.notifications = root.querySelector("hui-notifications-button");
     }
-    return button;
+    return buttons;
   }
 
   styleHeader(root, tabContainer, pad) {
@@ -283,39 +299,50 @@ ${navigator.userAgent}
   }
 
   styleButtons(buttons) {
-    if (!this.editMode) {
-      for (const button in buttons) {
-        if (this.cchConfig[button]) {
-          buttons[button].style.cssText = `
+    for (const button in buttons) {
+      if (this.cchConfig[button]) {
+        buttons[button].style.cssText = `
             z-index:1;
             margin-top:111px;
             ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
           `;
-        } else {
-          buttons[button].style.cssText = "display: none;";
+      } else if (this.cchConfig.options) {
+        const menu_items = buttons.options.querySelector("paper-listbox");
+        const id = `menu_item_${button}`;
+        if (!menu_items.querySelector(`[id="${id}"]`)) {
+          const wrapper = document.createElement("paper-item");
+          wrapper.setAttribute("id", id);
+          wrapper.innerText = button.charAt(0).toUpperCase() + button.slice(1);
+          wrapper.appendChild(buttons[button]);
+          wrapper.addEventListener("click", () => {
+            buttons[button].shadowRoot
+              .querySelector("paper-icon-button")
+              .click();
+          });
+          this.insertMenuItem(menu_items, wrapper);
         }
+      } else {
+        buttons[button].style.cssText = "display: none;";
       }
     }
   }
 
   hideTabs(tabs) {
-    if (this.cchConfig.hide_tabs && !this.editMode) {
-      // Convert hide_tab config to array
-      let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
-      for (let i = 0; i < this.tabs.length; i++) {
-        if (hidden_tabs.includes(i)) {
-          tabs[i].style.cssText = "display:none;";
-        }
+    // Convert hide_tab config to array
+    let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
+    for (let i = 0; i < this.tabs.length; i++) {
+      if (hidden_tabs.includes(i)) {
+        tabs[i].style.cssText = "display:none;";
       }
-      // Check if current tab is a hidden tab.
-      for (let i = 0; i < tabs.length; i++) {
-        if (tabs[i].className == "iron-selected" && hidden_tabs.includes(i)) {
-          // Find first visable tab and navigate there.
-          for (let i = 0; i < tabs.length; i++) {
-            if (!hidden_tabs.includes(i)) {
-              tabs[parseInt(i)].click();
-              break;
-            }
+    }
+    // Check if current tab is a hidden tab.
+    for (let i = 0; i < tabs.length; i++) {
+      if (tabs[i].className == "iron-selected" && hidden_tabs.includes(i)) {
+        // Find first visable tab and navigate there.
+        for (let i = 0; i < tabs.length; i++) {
+          if (!hidden_tabs.includes(i)) {
+            tabs[parseInt(i)].click();
+            break;
           }
         }
       }
@@ -325,34 +352,24 @@ ${navigator.userAgent}
   hideCard() {
     // If this card is the only one in a column, hide column outside edit mode
     if (this.parentNode.children.length == 1) {
-      this.parentNode.style.cssText = "display:none";
+      this.parentNode.style.display = "none";
     }
+    this.style.display = "none";
   }
 
-  insertMenuItems(buttons, tabs) {
-    if (this.editMode && buttons.options) {
-      let menu_items = buttons.options.querySelector("paper-listbox");
-      let first_item = menu_items.querySelector("paper-item");
-      if (!menu_items.querySelector('[id="show_tabs"]')) {
-        let show_tabs = document.createElement("paper-item");
-        show_tabs.setAttribute("id", "show_tabs");
-        show_tabs.addEventListener("click", function() {
-          for (let i = 0; i < tabs.length; i++) {
-            tabs[i].style.cssText = "";
-          }
-        });
-        show_tabs.innerHTML = "Show All Tabs";
-        first_item.parentNode.insertBefore(show_tabs, first_item);
-      }
+  insertMenuItem(menu_items, element) {
+    let first_item = menu_items.querySelector("paper-item");
+    if (!menu_items.querySelector(`[id="${element.id}"]`)) {
+      first_item.parentNode.insertBefore(element, first_item);
     }
   }
 
   insertClock(buttons, tabContainer, pad) {
     // Change non-plural strings for backwards compatability
-    if (this.config.clock == "option") {
-      this.config.clock = "options";
-    } else if (this.config.clock == "notification") {
-      this.config.clock = "notifications";
+    if (this.cchConfig.clock == "option") {
+      this.cchConfig.clock = "options";
+    } else if (this.cchConfig.clock == "notification") {
+      this.cchConfig.clock = "notifications";
     }
 
     let clock_width =
@@ -360,47 +377,45 @@ ${navigator.userAgent}
         ? 110
         : 80;
 
-    if (!this.editMode) {
-      const clock_icon = (this.cchConfig.clock == "options"
-        ? buttons[this.cchConfig.clock]
-        : buttons[this.cchConfig.clock].shadowRoot
-      ).querySelector("paper-icon-button");
-      const clock_iron_icon = clock_icon.shadowRoot.querySelector("iron-icon");
+    const clock_icon = (this.cchConfig.clock == "options"
+      ? buttons[this.cchConfig.clock]
+      : buttons[this.cchConfig.clock].shadowRoot
+    ).querySelector("paper-icon-button");
+    const clock_iron_icon = clock_icon.shadowRoot.querySelector("iron-icon");
 
-      buttons.notifications.shadowRoot.querySelector(
-        '[class="indicator"]'
-      ).style.cssText =
-        this.cchConfig.clock == "notifications" ? "top:14.5px;left:-7px" : "";
+    buttons.notifications.shadowRoot.querySelector(
+      '[class="indicator"]'
+    ).style.cssText =
+      this.cchConfig.clock == "notifications" ? "top:14.5px;left:-7px" : "";
 
-      const clock_element = document.createElement("p");
-      clock_element.setAttribute("id", "cch_clock");
-      clock_element.style.cssText = `
+    const clock_element = document.createElement("p");
+    clock_element.setAttribute("id", "cch_clock");
+    clock_element.style.cssText = `
         width:${clock_width}px;
         margin-top:2px;
         margin-left:-8px;
       `;
-      clock_icon.style.cssText = `
+    clock_icon.style.cssText = `
         margin-right:-5px;
         width:${clock_width}px;
         text-align: center;
       `;
-      clock_iron_icon.parentNode.insertBefore(clock_element, clock_iron_icon);
-      clock_iron_icon.style.cssText = "display:none;";
+    clock_iron_icon.parentNode.insertBefore(clock_element, clock_iron_icon);
+    clock_iron_icon.style.cssText = "display:none;";
 
-      if (this.cchConfig.menu && this.cchConfig.clock == "menu") {
-        tabContainer.style.cssText = `
+    if (this.cchConfig.menu && this.cchConfig.clock == "menu") {
+      tabContainer.style.cssText = `
           margin-left:${clock_width + 15}px;
           margin-right:${pad}px;
         `;
-      }
-      const clock = clock_icon.shadowRoot.getElementById("cch_clock");
-      const clock_format = {
-        hour12: this.cchConfig.clock_format != 24,
-        hour: "2-digit",
-        minute: "2-digit"
-      };
-      this.updateClock(clock, clock_format);
     }
+    const clock = clock_icon.shadowRoot.getElementById("cch_clock");
+    const clock_format = {
+      hour12: this.cchConfig.clock_format != 24,
+      hour: "2-digit",
+      minute: "2-digit"
+    };
+    this.updateClock(clock, clock_format);
   }
 
   updateClock(clock, clock_format) {
@@ -432,7 +447,7 @@ ${navigator.userAgent}
 
   // Toggle user agent portion of card for button on element.card.
   toggleUserAgent() {
-    this.show_ua = !this.show_ua;
+    this.showUa = !this.showUa;
   }
 }
 
