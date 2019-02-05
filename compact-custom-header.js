@@ -121,6 +121,9 @@ ${navigator.userAgent}
         user_agent: navigator.userAgent
       };
     }
+
+    this.hideCard();
+
     let exceptionConfig = {};
     let highestMatch = 0;
     if (this.config.exceptions) {
@@ -155,9 +158,6 @@ ${navigator.userAgent}
 
     if (!this.cchConfig.disable) {
       this.run();
-    } else {
-      this.getElements();
-      this.hideCard();
     }
   }
 
@@ -184,137 +184,137 @@ ${navigator.userAgent}
   }
 
   run() {
-    this.getElements();
-    this.hideCard();
-    if (this.editMode) this.insertMenuItems();
-    if (!this.rawConfigMode && !this.editMode) {
-      this.styleHeader();
-      if (this.cchConfig.clock) this.insertClock();
-    }
-  }
-
-  getElements() {
-    let root;
-    let card;
-    // Find hui-root in DOM
-    if (!root) {
-      this.recursiveWalk(document, "HUI-ROOT", function(node) {
-        root = node.nodeName == "HUI-ROOT" ? node.shadowRoot : null;
-      });
-    }
-    this.root = root;
-    // Find this card's element in hui-root
-    if (!card) {
-      this.recursiveWalk(root, "COMPACT-CUSTOM-HEADER", function(node) {
-        card = node.nodeName == "COMPACT-CUSTOM-HEADER" ? node : null;
-      });
-    }
-    this.card = card;
-    this.button = {};
-    this.rawConfigMode = root.querySelector("ha-menu-button") == null;
+    const root = this.rootElement;
     this.editMode = root.querySelector("app-toolbar").className == "edit-mode";
-    this.button.options = root.querySelector("paper-menu-button");
-    this.tabContainer = root.querySelector("paper-tabs");
-    this.tabs = this.tabContainer.querySelectorAll("paper-tab");
-
-    if (!this.rawConfigMode && !this.editMode) {
-      this.button.menu = root.querySelector("ha-menu-button");
-      this.button.voice = root.querySelector("ha-start-voice-button");
-      this.button.notifications = root.querySelector(
-        "hui-notifications-button"
-      );
+    const buttons = this.getButtonElements(root);
+    const tabContainer = root.querySelector("paper-tabs");
+    const tabs = tabContainer.querySelectorAll("paper-tab");
+    const pad = this.pad;
+    if (this.editMode) {
+      this.insertMenuItems(buttons, tabs);
+    } else {
+      this.styleHeader(root, tabContainer, pad);
+      this.styleButtons(buttons);
+      this.hideTabs(tabs);
+      if (this.cchConfig.clock) {
+        this.insertClock(buttons, tabContainer, pad);
+      }
     }
   }
 
-  styleHeader() {
+  get rootElement() {
+    try {
+      return document
+        .querySelector("home-assistant")
+        .shadowRoot.querySelector("home-assistant-main")
+        .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver")
+        .shadowRoot.querySelector("ha-panel-lovelace")
+        .shadowRoot.querySelector("hui-root").shadowRoot;
+    } catch {
+      console.log("Can't find 'hui-root', going to walk the DOM to find it.");
+    }
+    this.recursiveWalk(document, "HUI-ROOT", function(node) {
+      return node.nodeName == "HUI-ROOT" ? node.shadowRoot : null;
+    });
+  }
+
+  getButtonElements(root) {
+    const button = {};
+    button.options = root.querySelector("paper-menu-button");
+
+    if (!this.editMode) {
+      button.menu = root.querySelector("ha-menu-button");
+      button.voice = root.querySelector("ha-start-voice-button");
+      button.notifications = root.querySelector("hui-notifications-button");
+    }
+    return button;
+  }
+
+  styleHeader(root, tabContainer, pad) {
     // Hide header completely if set to false in config.
     if (!this.cchConfig.header) {
-      this.root.querySelector("app-header").style.cssText = "display:none;";
+      root.querySelector("app-header").style.cssText = "display:none;";
       return;
     }
 
-    this.root
+    root
       .querySelector("ha-app-layout")
       .querySelector('[id="view"]').style.paddingBottom = this.cchConfig
       .background_image
       ? "64px"
       : "";
 
-    if (this.tabContainer) {
-      // Add width of all visible elements on right side for tabs margin.
-      this.pad = 0;
-      this.pad +=
-        this.cchConfig.notifications && this.cchConfig.clock != "notifications"
-          ? 45
-          : 0;
-      this.pad +=
-        this.cchConfig.voice && this.cchConfig.clock != "voice" ? 45 : 0;
-      this.pad +=
-        this.cchConfig.options && this.cchConfig.clock != "options" ? 45 : 0;
-      if (this.cchConfig.clock && this.cchConfig.clock != "menu") {
-        this.pad +=
-          this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12
-            ? 110
-            : 80;
-      }
-
+    if (tabContainer) {
       // Add margin to left side of tabs if menu is the clock.
       if (this.cchConfig.menu && this.cchConfig.clock != "menu") {
-        this.tabContainer.style.cssText = `
+        tabContainer.style.cssText = `
           margin-left:60px;
-          margin-right:${this.pad}px;
+          margin-right:${pad}px;
         `;
       }
 
       // Shift the header up to hide unused portion.
-      this.root.querySelector("app-toolbar").style.cssText = "margin-top:-64px";
+      root.querySelector("app-toolbar").style.cssText = "margin-top:-64px";
 
       // Hide tab bar scroll arrows to save space since we can still swipe.
-      let chevron = this.tabContainer.shadowRoot.querySelectorAll(
+      let chevron = tabContainer.shadowRoot.querySelectorAll(
         '[icon^="paper-tabs:chevron"]'
       );
       chevron[0].style.cssText = "display:none;";
       chevron[1].style.cssText = "display:none;";
     }
-    this.styleButtons();
-    this.hideTabs();
   }
 
-  styleButtons() {
+  get pad() {
+    // Add width of all visible elements on right side for tabs margin.
+    let pad = 0;
+    pad +=
+      this.cchConfig.notifications && this.cchConfig.clock != "notifications"
+        ? 45
+        : 0;
+    pad += this.cchConfig.voice && this.cchConfig.clock != "voice" ? 45 : 0;
+    pad += this.cchConfig.options && this.cchConfig.clock != "options" ? 45 : 0;
+    if (this.cchConfig.clock && this.cchConfig.clock != "menu") {
+      pad +=
+        this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12
+          ? 110
+          : 80;
+    }
+    return pad;
+  }
+
+  styleButtons(buttons) {
     if (!this.editMode) {
-      for (const button in this.button) {
+      for (const button in buttons) {
         if (this.cchConfig[button]) {
-          this.button[button].style.cssText = `
+          buttons[button].style.cssText = `
             z-index:1;
             margin-top:111px;
             ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
           `;
         } else {
-          this.button[button].style.cssText = "display: none;";
+          buttons[button].style.cssText = "display: none;";
         }
       }
     }
   }
 
-  hideTabs() {
+  hideTabs(tabs) {
     if (this.cchConfig.hide_tabs && !this.editMode) {
       // Convert hide_tab config to array
       let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
       for (let i = 0; i < this.tabs.length; i++) {
         if (hidden_tabs.includes(i)) {
-          this.tabs[i].style.cssText = "display:none;";
+          tabs[i].style.cssText = "display:none;";
         }
       }
       // Check if current tab is a hidden tab.
-      for (let i = 0; i < this.tabs.length; i++) {
-        if (
-          this.tabs[i].className == "iron-selected" &&
-          hidden_tabs.includes(i)
-        ) {
+      for (let i = 0; i < tabs.length; i++) {
+        if (tabs[i].className == "iron-selected" && hidden_tabs.includes(i)) {
           // Find first visable tab and navigate there.
-          for (let i = 0; i < this.tabs.length; i++) {
+          for (let i = 0; i < tabs.length; i++) {
             if (!hidden_tabs.includes(i)) {
-              this.tabs[parseInt(i)].click();
+              tabs[parseInt(i)].click();
               break;
             }
           }
@@ -325,25 +325,17 @@ ${navigator.userAgent}
 
   hideCard() {
     // If this card is the only one in a column, hide column outside edit mode
-    if (this.card.parentNode.children.length == 1 && !this.editMode) {
-      this.card.parentNode.style.cssText = "display:none";
-    } else {
-      this.card.parentNode.style.cssText = "";
-    }
-    if (!this.editMode) {
-      this.card.style.cssText = "display:none";
-    } else {
-      this.card.style.cssText = "";
+    if (this.parentNode.children.length == 1 && !this.editMode) {
+      this.parentNode.style.cssText = "display:none";
     }
   }
 
-  insertMenuItems() {
-    if (this.editMode && this.button.options) {
-      let menu_items = this.button.options.querySelector("paper-listbox");
+  insertMenuItems(buttons, tabs) {
+    if (this.editMode && buttons.options) {
+      let menu_items = buttons.options.querySelector("paper-listbox");
       let first_item = menu_items.querySelector("paper-item");
       if (!menu_items.querySelector('[id="show_tabs"]')) {
         let show_tabs = document.createElement("paper-item");
-        let tabs = this.tabs;
         show_tabs.setAttribute("id", "show_tabs");
         show_tabs.addEventListener("click", function() {
           for (let i = 0; i < tabs.length; i++) {
@@ -356,7 +348,7 @@ ${navigator.userAgent}
     }
   }
 
-  insertClock() {
+  insertClock(buttons, tabContainer, pad) {
     // Change non-plural strings for backwards compatability
     if (this.config.clock == "option") {
       this.config.clock = "options";
@@ -369,23 +361,19 @@ ${navigator.userAgent}
         ? 110
         : 80;
 
-    if (!this.rawConfigMode && !this.editMode && this.clock == null) {
-      let clock_icon;
-      let clock_iron_icon;
+    if (!this.editMode) {
+      const clock_icon = (this.cchConfig.clock == "options"
+        ? buttons[this.cchConfig.clock]
+        : buttons[this.cchConfig.clock].shadowRoot
+      ).querySelector("paper-icon-button");
+      const clock_iron_icon = clock_icon.shadowRoot.querySelector("iron-icon");
 
-      clock_icon =
-        this.cchConfig.clock == "options"
-          ? this.button[this.cchConfig.clock]
-          : this.button[this.cchConfig.clock].shadowRoot;
-      clock_icon = clock_icon.querySelector("paper-icon-button");
-      clock_iron_icon = clock_icon.shadowRoot.querySelector("iron-icon");
-
-      this.button.notifications.shadowRoot.querySelector(
+      buttons.notifications.shadowRoot.querySelector(
         '[class="indicator"]'
       ).style.cssText =
         this.cchConfig.clock == "notifications" ? "top:14.5px;left:-7px" : "";
 
-      let clock_element = document.createElement("p");
+      const clock_element = document.createElement("p");
       clock_element.setAttribute("id", "cch_clock");
       clock_element.style.cssText = `
         width:${clock_width}px;
@@ -401,30 +389,30 @@ ${navigator.userAgent}
       clock_iron_icon.style.cssText = "display:none;";
 
       if (this.cchConfig.menu && this.cchConfig.clock == "menu") {
-        this.tabContainer.style.cssText = `
+        tabContainer.style.cssText = `
           margin-left:${clock_width + 15}px;
-          margin-right:${this.pad}px;
+          margin-right:${pad}px;
         `;
       }
-      this.clock = clock_icon.shadowRoot.getElementById("cch_clock");
-      this.updateClock();
+      const clock = clock_icon.shadowRoot.getElementById("cch_clock");
+      const clock_format = {
+        hour12: this.cchConfig.clock_format != 24,
+        hour: "2-digit",
+        minute: "2-digit"
+      };
+      this.updateClock(clock, clock_format);
     }
   }
 
-  updateClock() {
-    let clock_format = {
-      hour12: this.cchConfig.clock_format != 24,
-      hour: "2-digit",
-      minute: "2-digit"
-    };
+  updateClock(clock, clock_format) {
     let date = new Date();
     date = date.toLocaleTimeString([], clock_format);
     if (!this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12) {
-      this.clock.innerHTML = date.slice(0, -3);
+      clock.innerHTML = date.slice(0, -3);
     } else {
-      this.clock.innerHTML = date;
+      clock.innerHTML = date;
     }
-    var t = window.setTimeout(() => this.updateClock(), 60000);
+    window.setTimeout(() => this.updateClock(clock, clock_format), 60000);
   }
 
   // Walk the DOM to find element.
