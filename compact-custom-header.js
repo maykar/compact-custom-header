@@ -13,7 +13,8 @@ const defaultConfig = {
   clock_format: 12,
   clock_am_pm: true,
   disable: false,
-  background_image: false
+  background_image: false,
+  parent_card: false
 };
 
 class CompactCustomHeader extends LitElement {
@@ -57,12 +58,11 @@ class CompactCustomHeader extends LitElement {
       <ha-card>
         <div>
           <svg viewBox="0 0 24 24">
-            <path
-              d="M12,7L17,12H14V16H10V12H7L12,7M19,
-                    21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
-                    3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
-                    21M19,19V5H5V19H19Z"
-            ></path>
+            <path d="M12,7L17,12H14V16H10V12H7L12,7M19,
+              21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,
+              3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,
+              21M19,19V5H5V19H19Z">
+            </path>
           </svg>
           <h2>Compact Custom Header</h2>
           <div>
@@ -70,11 +70,10 @@ class CompactCustomHeader extends LitElement {
               ${this.show_ua ? "Hide" : "Show"} user agent
             </paper-button>
           </div>
-          <div ?hidden=${!this.show_ua}>
-            <textarea class="user_agent" rows="4" readonly>
-                    ${navigator.userAgent}
-                  </textarea
-            >
+          <div style="margin-right:10px" ?hidden=${!this.show_ua}>
+            <textarea
+              class="user_agent" rows="4" readonly>${navigator.userAgent}
+            </textarea>
           </div>
         </div>
       </ha-card>
@@ -100,6 +99,9 @@ class CompactCustomHeader extends LitElement {
           fill: var(--text-primary-color);
         }
         .user_agent {
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
           padding: 5px;
           border: 0;
           resize: none;
@@ -128,9 +130,28 @@ class CompactCustomHeader extends LitElement {
         }
       });
     }
-    this.cchConfig = { ...defaultConfig, ...this.config, ...exceptionConfig };
 
-    if (!this.cchConfig.disable) this.run();
+    // Retrieve cached config and set as default if this card isn't parent card.
+    this.cchCache = {}
+    let retrievedCache = localStorage.getItem("cchCache");
+    if (!this.config.parent_card && retrievedCache) {
+      this.cchCache = JSON.parse(retrievedCache);
+    }
+
+    this.cchConfig = { ...defaultConfig, ...this.cchCache,
+                     ...this.config, ...exceptionConfig, ...this.child };
+
+    if (this.config.parent_card) {
+      delete this.cchConfig.parent_card;
+      localStorage.setItem("cchCache", JSON.stringify(this.cchConfig))
+    }
+
+    if (!this.cchConfig.disable) {
+      this.run();
+    } else {
+      this.getElements();
+      this.hideCard();
+    }
   }
 
   countMatches(conditions) {
@@ -238,7 +259,7 @@ class CompactCustomHeader extends LitElement {
       }
 
       // Shift the header up to hide unused portion.
-      this.root.querySelector("app-toolbar").style.cssText = "margin-top:-64px;";
+      this.root.querySelector("app-toolbar").style.cssText = "margin-top:-64px";
 
       // Hide tab bar scroll arrows to save space since we can still swipe.
       let chevron = this.tabContainer.shadowRoot.querySelectorAll(
@@ -306,7 +327,6 @@ class CompactCustomHeader extends LitElement {
     } else {
       this.card.style.cssText = "";
     }
-    
   }
 
   insertMenuItems() {
@@ -329,6 +349,13 @@ class CompactCustomHeader extends LitElement {
   }
 
   insertClock() {
+    // Change non-plural strings for backwards compatability
+    if (this.config.clock == "option") {
+      this.config.clock = "options"
+    } else if (this.config.clock == "notification") {
+      this.config.clock = "notifications"
+    }
+
     let clock_width =
       this.cchConfig.clock_format == 12 && this.cchConfig.clock_am_pm
         ? 110
@@ -373,7 +400,7 @@ class CompactCustomHeader extends LitElement {
       }
       this.clock = clock_icon.shadowRoot.getElementById("cch_clock");
       this.updateClock();
-    }  
+    }
   }
 
   updateClock() {
