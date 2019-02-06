@@ -307,6 +307,12 @@ ${navigator.userAgent}
             ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
           `;
       } else if (this.cchConfig.options) {
+        const paperIconButton = buttons[button].shadowRoot.querySelector(
+          "paper-icon-button"
+        );
+        if (paperIconButton.hasAttribute("hidden")) {
+          continue;
+        }
         const menu_items = buttons.options.querySelector("paper-listbox");
         const id = `menu_item_${button}`;
         if (!menu_items.querySelector(`[id="${id}"]`)) {
@@ -315,14 +321,12 @@ ${navigator.userAgent}
           wrapper.innerText = button.charAt(0).toUpperCase() + button.slice(1);
           wrapper.appendChild(buttons[button]);
           wrapper.addEventListener("click", () => {
-            buttons[button].shadowRoot
-              .querySelector("paper-icon-button")
-              .click();
+            paperIconButton.click();
           });
           this.insertMenuItem(menu_items, wrapper);
         }
       } else {
-        buttons[button].style.cssText = "display: none;";
+        buttons[button].style.display = "none";
       }
     }
   }
