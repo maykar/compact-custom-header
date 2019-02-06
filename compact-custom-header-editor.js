@@ -1,22 +1,6 @@
-const fireEvent = (node, type, detail, options) => {
-  options = options || {};
-  detail = detail === null || detail === undefined ? {} : detail;
-  const event = new Event(type, {
-    bubbles: options.bubbles === undefined ? true : options.bubbles,
-    cancelable: Boolean(options.cancelable),
-    composed: options.composed === undefined ? true : options.composed
-  });
-  event.detail = detail;
-  node.dispatchEvent(event);
-  return event;
-};
+import { LitElement, html, fireEvent, defaultConfig } from "./compact-custom-header.js";
 
-const LitElement = Object.getPrototypeOf(
-  customElements.get("ha-panel-lovelace")
-);
-const html = LitElement.prototype.html;
-
-const clockOptions = ["", "menu", "notifications", "voice", "options"];
+const clockOptions = ["none", "menu", "notifications", "voice", "options"];
 
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
@@ -31,6 +15,7 @@ export class CompactCustomHeaderEditor extends LitElement {
     return html`
       ${this.renderStyle()}
       <cch-config-editor
+        .defaultConfig="${defaultConfig}"
         .config="${this._config}"
         @cch-config-changed="${this._configChanged}"
       >
@@ -40,6 +25,7 @@ export class CompactCustomHeaderEditor extends LitElement {
         ? this._config.exceptions.map((exception, index) => {
             return html`
               <cch-exception-editor
+                .config="${this._config}"
                 .exception="${exception}"
                 .index="${index}"
                 @cch-exception-changed="${this._exceptionChanged}"
@@ -111,31 +97,51 @@ customElements.define(
 
 export class CchConfigEditor extends LitElement {
   static get properties() {
-    return { config: {}, minimal: {} };
+    return { defaultConfig: {}, config: {}, minimal: {} };
+  }
+
+  get _hide_tabs() {
+    return this.config.hide_tabs || this.defaultConfig.hide_tabs || "";
   }
 
   get _clock() {
-    return this.config.clock || "";
+    return this.config.clock || this.defaultConfig.clock;
   }
 
   get _clock_format() {
-    return this.config.clock_format || "12";
+    return this.config.clock_format || this.defaultConfig.clock_format;
   }
 
   get _clock_am_pm() {
-    return this.config.clock_am_pm || true;
+    return this.config.clock_am_pm !== undefined ? this.config.clock_am_pm : this.defaultConfig.clock_am_pm;
   }
 
   get _main_config() {
-    return this.config.main_config || false;
+    return this.config.main_config !== undefined ? this.config.main_config : this.defaultConfig.main_config;
   }
 
   get _disable() {
-    return this.config.disable || false;
+    return this.config.disable !== undefined ? this.config.disable : this.defaultConfig.disable;
   }
 
   get _background_image() {
-    return this.config.background_image || false;
+    return this.config.background_image !== undefined ? this.config.background_image : this.defaultConfig.background_image;
+  }
+
+  get _menu() {
+    return this.config.menu !== undefined ? this.config.menu : this.defaultConfig.menu;
+  }
+  
+  get _voice() {
+    return this.config.voice !== undefined ? this.config.voice : this.defaultConfig.voice;
+  }
+  
+  get _notifications() {
+    return this.config.notifications !== undefined ? this.config.notifications : this.defaultConfig.notifications;
+  }
+  
+  get _options() {
+    return this.config.option !== undefined ? this.config.option : this.defaultConfig.options;
   }
 
   render() {
@@ -169,14 +175,14 @@ export class CchConfigEditor extends LitElement {
       <h4>Button Visability:</h4>
       <div class="side-by-side">
         <paper-toggle-button
-          ?checked="${this.config.menu !== false}"
+          ?checked="${this._menu !== false}"
           .configValue="${"menu"}"
           @change="${this._valueChanged}"
         >
           <iron-icon icon="hass:menu"></iron-icon> Menu
         </paper-toggle-button>
         <paper-toggle-button
-          ?checked="${this.config.notifications !== false}"
+          ?checked="${this._notifications !== false}"
           .configValue="${"notifications"}"
           @change="${this._valueChanged}"
         >
@@ -185,20 +191,27 @@ export class CchConfigEditor extends LitElement {
       </div>
       <div class="side-by-side">
         <paper-toggle-button
-          ?checked="${this.config.voice !== false}"
+          ?checked="${this._voice !== false}"
           .configValue="${"voice"}"
           @change="${this._valueChanged}"
         >
           <iron-icon icon="hass:microphone"></iron-icon> Voice
         </paper-toggle-button>
         <paper-toggle-button
-          ?checked="${this.config.options !== false}"
+          ?checked="${this._options !== false}"
           .configValue="${"options"}"
           @change="${this._valueChanged}"
         >
           <iron-icon icon="hass:dots-vertical"></iron-icon> Options
         </paper-toggle-button>
       </div>
+      <paper-input
+        label="Hide tabs"
+        .value="${this._hide_tabs}"
+        .configValue="${"hide_tabs"}"
+        @value-changed="${this._valueChanged}"
+      >
+      </paper-input>
       <h4>Clock options:</h4>
       <div class="side-by-side">
         <paper-dropdown-menu
@@ -231,7 +244,7 @@ export class CchConfigEditor extends LitElement {
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-toggle-button
-          ?checked="${this.config.clock_am_pm !== false}"
+          ?checked="${this._clock_am_pm !== false}"
           .configValue="${"clock_am_pm"}"
           @change="${this._valueChanged}"
         >
@@ -293,7 +306,7 @@ customElements.define("cch-config-editor", CchConfigEditor);
 
 export class CchExceptionEditor extends LitElement {
   static get properties() {
-    return { exception: {}, _closed: {} };
+    return { config: {}, exception: {}, _closed: {} };
   }
 
   constructor() {
@@ -345,6 +358,7 @@ export class CchExceptionEditor extends LitElement {
           <h4>Config</h4>
           <cch-config-editor
             minimal
+            .defaultConfig="${{...defaultConfig, ...this.config}}"
             .config="${this.exception.config}"
             @cch-config-changed="${this._configChanged}"
           >
@@ -371,6 +385,7 @@ export class CchExceptionEditor extends LitElement {
 
   _toggleCard() {
     this._closed = !this._closed;
+    fireEvent(this, "iron-resize");
   }
 
   _deleteException() {
