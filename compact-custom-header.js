@@ -1,21 +1,36 @@
-const LitElement = Object.getPrototypeOf(
+export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
 );
-const html = LitElement.prototype.html;
+export const html = LitElement.prototype.html;
 
-const defaultConfig = {
+export const fireEvent = (node, type, detail, options) => {
+  options = options || {};
+  detail = detail === null || detail === undefined ? {} : detail;
+  const event = new Event(type, {
+    bubbles: options.bubbles === undefined ? true : options.bubbles,
+    cancelable: Boolean(options.cancelable),
+    composed: options.composed === undefined ? true : options.composed
+  });
+  event.detail = detail;
+  node.dispatchEvent(event);
+  return event;
+};
+
+export const defaultConfig = {
   header: true,
   menu: true,
   notifications: true,
   voice: true,
   options: true,
-  tabs: true,
-  clock_format: 12,
+  clock: 'none',
+  clockFormat: 12,
   clock_am_pm: true,
   disable: false,
   background_image: false,
   main_config: false
 };
+
+if (!customElements.get("compact-custom-header")) {
 
 class CompactCustomHeader extends LitElement {
   static get properties() {
@@ -72,6 +87,9 @@ class CompactCustomHeader extends LitElement {
           <div>
             <paper-button @click="${this.toggleUserAgent}">
               ${this.showUa ? "Hide" : "Show"} user agent
+            </paper-button>
+            <paper-button @click="${this.clearCache}">
+              Clear cache
             </paper-button>
           </div>
           <div style="margin-right:10px" ?hidden=${!this.showUa}>
@@ -187,34 +205,37 @@ ${navigator.userAgent}
     this.editMode = root.querySelector("app-toolbar").className == "edit-mode";
     const buttons = this.getButtonElements(root);
     const tabContainer = root.querySelector("paper-tabs");
-    const tabs = tabContainer.querySelectorAll("paper-tab");
+    const tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
     if (this.editMode) {
+      this.removeMargin(tabContainer);
       if (buttons.options) {
-        let show_tabs = document.createElement("paper-item");
-        show_tabs.setAttribute("id", "show_tabs");
-        show_tabs.addEventListener("click", () => {
-          for (let i = 0; i < tabs.length; i++) {
-            tabs[i].style.cssText = "";
-          }
-        });
-        show_tabs.innerHTML = "Show All Tabs";
-        this.insertMenuItem(
-          buttons.options.querySelector("paper-listbox"),
-          show_tabs
-        );
+        this.insertEditMenu(buttons.options, tabs);
       }
     } else {
-      const pad = this.pad;
+      const marginRight = this.marginRight;
       this.hideCard();
-      this.styleHeader(root, tabContainer, pad);
+      this.styleHeader(root, tabContainer, marginRight);
       this.styleButtons(buttons);
       if (this.cchConfig.hide_tabs) {
-        this.hideTabs(tabs);
+        this.hideTabs(tabContainer, tabs);
       }
-      if (this.cchConfig.clock) {
-        this.insertClock(buttons, tabContainer, pad);
+      if (this.cchConfig.clock && this.cchConfig.clock != "none") {
+        this.insertClock(buttons, tabContainer, marginRight);
       }
+      fireEvent(this, "iron-resize");
     }
+  }
+
+  get marginRight() {
+    // Add width of all visible elements on right side for tabs margin.
+    let marginRight = 0;
+    marginRight +=
+      this.cchConfig.notifications && this.cchConfig.clock != "notifications"
+        ? 45
+        : 0;
+    marginRight += this.cchConfig.voice && this.cchConfig.clock != "voice" ? 45 : 0;
+    marginRight += this.cchConfig.options && this.cchConfig.clock != "options" ? 45 : 0;
+    return marginRight;
   }
 
   get rootElement() {
@@ -233,6 +254,23 @@ ${navigator.userAgent}
     });
   }
 
+    insertEditMenu(optionsBtn, tabs) {
+      if (this.cchConfig.hide_tabs) {
+        let show_tabs = document.createElement("paper-item");
+        show_tabs.setAttribute("id", "show_tabs");
+        show_tabs.addEventListener("click", () => {
+          for (let i = 0; i < tabs.length; i++) {
+            tabs[i].style.cssText = "";
+          }
+        });
+        show_tabs.innerHTML = "Show all tabs";
+        this.insertMenuItem(
+          optionsBtn.querySelector("paper-listbox"),
+          show_tabs
+        );
+      }
+    }
+
   getButtonElements(root) {
     const buttons = {};
     buttons.options = root.querySelector("paper-menu-button");
@@ -245,10 +283,18 @@ ${navigator.userAgent}
     return buttons;
   }
 
-  styleHeader(root, tabContainer, pad) {
+  removeMargin(tabContainer) {
+    // Remove margin from tabs when in edit mode
+    if (tabContainer) {
+      tabContainer.style.marginLeft = "";
+      tabContainer.style.marginRight = "";
+    }
+  }
+
+  styleHeader(root, tabContainer, marginRight) {
     // Hide header completely if set to false in config.
     if (!this.cchConfig.header) {
-      root.querySelector("app-header").style.cssText = "display:none;";
+      root.querySelector("app-header").style.display = "none";
       return;
     }
 
@@ -260,42 +306,23 @@ ${navigator.userAgent}
       : "";
 
     if (tabContainer) {
-      // Add margin to left side of tabs if menu is the clock.
-      if (this.cchConfig.menu && this.cchConfig.clock != "menu") {
-        tabContainer.style.cssText = `
-          margin-left:60px;
-          margin-right:${pad}px;
-        `;
+      // Add margin to left side of tabs for menu buttom.
+      if (this.cchConfig.menu) {
+        tabContainer.style.marginLeft = "60px";
       }
+      // Add margin to right side of tabs for all buttons on the right.
+      tabContainer.style.marginRight = `${marginRight}px`;
 
       // Shift the header up to hide unused portion.
-      root.querySelector("app-toolbar").style.cssText = "margin-top:-64px";
+      root.querySelector("app-toolbar").style.marginTop = "-64px";
 
       // Hide tab bar scroll arrows to save space since we can still swipe.
       let chevron = tabContainer.shadowRoot.querySelectorAll(
         '[icon^="paper-tabs:chevron"]'
       );
-      chevron[0].style.cssText = "display:none;";
-      chevron[1].style.cssText = "display:none;";
+      chevron[0].style.display = "none";
+      chevron[1].style.display = "none";
     }
-  }
-
-  get pad() {
-    // Add width of all visible elements on right side for tabs margin.
-    let pad = 0;
-    pad +=
-      this.cchConfig.notifications && this.cchConfig.clock != "notifications"
-        ? 45
-        : 0;
-    pad += this.cchConfig.voice && this.cchConfig.clock != "voice" ? 45 : 0;
-    pad += this.cchConfig.options && this.cchConfig.clock != "options" ? 45 : 0;
-    if (this.cchConfig.clock && this.cchConfig.clock != "menu") {
-      pad +=
-        this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12
-          ? 110
-          : 80;
-    }
-    return pad;
   }
 
   styleButtons(buttons) {
@@ -318,7 +345,7 @@ ${navigator.userAgent}
         if (!menu_items.querySelector(`[id="${id}"]`)) {
           const wrapper = document.createElement("paper-item");
           wrapper.setAttribute("id", id);
-          wrapper.innerText = button.charAt(0).toUpperCase() + button.slice(1);
+          wrapper.innerText = this.getTranslation(button);
           wrapper.appendChild(buttons[button]);
           wrapper.addEventListener("click", () => {
             paperIconButton.click();
@@ -331,28 +358,37 @@ ${navigator.userAgent}
     }
   }
 
-  hideTabs(tabs) {
-    // Convert hide_tab config to array
-    let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
-    for (let i = 0; i < this.tabs.length; i++) {
-      if (hidden_tabs.includes(i)) {
-        tabs[i].style.cssText = "display:none;";
-      }
-    }
-    // Check if current tab is a hidden tab.
-    for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].className == "iron-selected" && hidden_tabs.includes(i)) {
-        // Find first visable tab and navigate there.
-        for (let i = 0; i < tabs.length; i++) {
-          if (!hidden_tabs.includes(i)) {
-            tabs[parseInt(i)].click();
-            break;
-          }
-        }
-      }
+  getTranslation(button) {
+    switch(button) {
+      case 'notifications':
+        return this.hass.localize('ui.notification_drawer.title');
+      default:
+        return button.charAt(0).toUpperCase() + button.slice(1);
     }
   }
 
+  hideTabs(tabContainer, tabs) {
+    // Convert hide_tabs config to array
+    const hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
+    for (const tab of hidden_tabs) {
+        if (!tabs[tab]) {
+            continue;
+        }
+        tabs[tab].style.display = "none";
+    }
+    // Check if current tab is a hidden tab.
+    const activeTab = tabContainer.querySelector("paper-tab.iron-selected");
+    const activeTabIndex = tabs.indexOf(activeTab);
+    if (hidden_tabs.includes(activeTabIndex)) {
+        let i = 0;
+        //find first not hidden view
+        while(hidden_tabs.includes(i)) {
+            i++;
+        }
+        tabs[i].click();
+    }
+  }
+  
   hideCard() {
     // If this card is the only one in a column, hide column outside edit mode
     if (this.parentNode.children.length == 1) {
@@ -368,7 +404,7 @@ ${navigator.userAgent}
     }
   }
 
-  insertClock(buttons, tabContainer, pad) {
+  insertClock(buttons, tabContainer, marginRight) {
     // Change non-plural strings for backwards compatability
     if (this.cchConfig.clock == "option") {
       this.cchConfig.clock = "options";
@@ -376,61 +412,63 @@ ${navigator.userAgent}
       this.cchConfig.clock = "notifications";
     }
 
-    let clock_width =
-      this.cchConfig.clock_format == 12 && this.cchConfig.clock_am_pm
-        ? 110
-        : 80;
-
-    const clock_icon = (this.cchConfig.clock == "options"
+    const clockIcon = (this.cchConfig.clock == "options"
       ? buttons[this.cchConfig.clock]
       : buttons[this.cchConfig.clock].shadowRoot
     ).querySelector("paper-icon-button");
-    const clock_iron_icon = clock_icon.shadowRoot.querySelector("iron-icon");
+    const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
 
     buttons.notifications.shadowRoot.querySelector(
       '[class="indicator"]'
     ).style.cssText =
       this.cchConfig.clock == "notifications" ? "top:14.5px;left:-7px" : "";
 
-    const clock_element = document.createElement("p");
-    clock_element.setAttribute("id", "cch_clock");
-    clock_element.style.cssText = `
-        width:${clock_width}px;
-        margin-top:2px;
-        margin-left:-8px;
-      `;
-    clock_icon.style.cssText = `
-        margin-right:-5px;
-        width:${clock_width}px;
-        text-align: center;
-      `;
-    clock_iron_icon.parentNode.insertBefore(clock_element, clock_iron_icon);
-    clock_iron_icon.style.cssText = "display:none;";
+    const clockWidth =
+      this.cchConfig.clock_format == 12 && this.cchConfig.clock_am_pm
+        ? 110
+        : 80;
+
+    let clockElement = clockIronIcon.parentNode.getElementById("cch_clock");
+    if (!clockElement) {
+        clockIcon.style.cssText = `
+            margin-right:-5px;
+            width:${clockWidth}px;
+            text-align: center;
+          `;
+      
+        clockElement = document.createElement("p");
+        clockElement.setAttribute('id','cch_clock');
+        clockElement.style.cssText = `
+            width:${clockWidth}px;
+            margin-top:2px;
+            margin-left:-8px;
+          `;
+        clockIronIcon.parentNode.insertBefore(clockElement, clockIronIcon);
+        clockIronIcon.style.display = "none";
+    }
 
     if (this.cchConfig.menu && this.cchConfig.clock == "menu") {
-      tabContainer.style.cssText = `
-          margin-left:${clock_width + 15}px;
-          margin-right:${pad}px;
-        `;
+      tabContainer.style.marginLeft = `${clockWidth + 15}px`;
+    } else {
+      tabContainer.style.marginRight = `${clockWidth + marginRight}px`;
     }
-    const clock = clock_icon.shadowRoot.getElementById("cch_clock");
-    const clock_format = {
+    const clockFormat = {
       hour12: this.cchConfig.clock_format != 24,
       hour: "2-digit",
       minute: "2-digit"
     };
-    this.updateClock(clock, clock_format);
+    this.updateClock(clockElement, clockFormat);
   }
 
-  updateClock(clock, clock_format) {
+  updateClock(clock, clockFormat) {
     let date = new Date();
-    date = date.toLocaleTimeString([], clock_format);
+    date = date.toLocaleTimeString([], clockFormat);
     if (!this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12) {
       clock.innerHTML = date.slice(0, -3);
     } else {
       clock.innerHTML = date;
     }
-    window.setTimeout(() => this.updateClock(clock, clock_format), 60000);
+    window.setTimeout(() => this.updateClock(clock, clockFormat), 60000);
   }
 
   // Walk the DOM to find element.
@@ -453,6 +491,12 @@ ${navigator.userAgent}
   toggleUserAgent() {
     this.showUa = !this.showUa;
   }
+  
+  clearCache() {
+    localStorage.removeItem("cchCache");
+  }
+
 }
 
 customElements.define("compact-custom-header", CompactCustomHeader);
+}
