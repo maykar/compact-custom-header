@@ -345,7 +345,7 @@ ${navigator.userAgent}
         if (!menu_items.querySelector(`[id="${id}"]`)) {
           const wrapper = document.createElement("paper-item");
           wrapper.setAttribute("id", id);
-          wrapper.innerText = button.charAt(0).toUpperCase() + button.slice(1);
+          wrapper.innerText = this.getTranslation(button);
           wrapper.appendChild(buttons[button]);
           wrapper.addEventListener("click", () => {
             paperIconButton.click();
@@ -355,6 +355,15 @@ ${navigator.userAgent}
       } else {
         buttons[button].style.display = "none";
       }
+    }
+  }
+
+  getTranslation(button) {
+    switch(button) {
+      case 'notifications':
+        return this.hass.localize('ui.notification_drawer.title');
+      default:
+        return button.charAt(0).toUpperCase() + button.slice(1);
     }
   }
 
