@@ -24,7 +24,7 @@ export class CompactCustomHeaderEditor extends LitElement {
         @cch-config-changed="${this._configChanged}"
       >
       </cch-config-editor>
-      <h3>Exceptions</h3>
+      <h3>Exceptions:</h3>
       ${this._config.exceptions
         ? this._config.exceptions.map((exception, index) => {
             return html`
@@ -39,9 +39,15 @@ export class CompactCustomHeaderEditor extends LitElement {
             `;
           })
         : ""}
+      <br>
       <paper-button raised @click="${this._addException}"
         >Add Exception
       </paper-button>
+      <br>
+      <h3>Current User Agent:</h3>
+      <br>
+      <textarea class="user_agent" rows="3" readonly>${navigator.userAgent}
+      </textarea>
     `;
   }
 
@@ -89,6 +95,19 @@ export class CompactCustomHeaderEditor extends LitElement {
         h4 {
           margin-bottom: 0;
         }
+        paper-button {
+          background-color: #1aba92;
+          margin-left: 0;
+        }
+        .user_agent {
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
+          padding: 5px;
+          border: 0;
+          resize: none;
+          width: 100%;
+        }
       </style>
     `;
   }
@@ -128,6 +147,14 @@ export class CchConfigEditor extends LitElement {
     return this.config.disable !== undefined ? this.config.disable : this.defaultConfig.disable;
   }
 
+  get _header() {
+    return this.config.header !== undefined ? this.config.header : this.defaultConfig.header;
+  }
+
+  get _move_hidden() {
+    return this.config.move_hidden !== undefined ? this.config.move_hidden : this.defaultConfig.move_hidden;
+  }
+
   get _background_image() {
     return this.config.background_image !== undefined ? this.config.background_image : this.defaultConfig.background_image;
   }
@@ -151,6 +178,24 @@ export class CchConfigEditor extends LitElement {
   render() {
     this.exception = this.exception !== undefined && this.exception !== false;
     return html`
+      ${!this.exception
+        ? html`
+            <div class="warning">
+              <iron-icon icon="hass:alert"></iron-icon
+              >
+                Warning: Hiding the header or options button
+                will remove your ability to edit from the UI.</div>
+          `
+        : ""}
+      ${!this.exception && localStorage.getItem("cchCache") && !this.config.main_config
+        ? html`
+            <div class="alert">
+              <iron-icon icon="hass:alert"></iron-icon
+              >
+                Alert: This card is not the main configuration card.
+                Edits made here will not have an effect.</div>
+          `
+        : ""}
       ${this.renderStyle()}
       <paper-toggle-button
         class="${this.exception && this.config.disable === undefined ? "inherited": ""}"
@@ -159,6 +204,22 @@ export class CchConfigEditor extends LitElement {
         @change="${this._valueChanged}"
       >
         Disable Custom Compact Header
+      </paper-toggle-button>
+      <paper-toggle-button
+        class="${this.exception && this.config.header === undefined ? "inherited": ""}"
+        ?checked="${this._header !== false}"
+        .configValue="${"header"}"
+        @change="${this._valueChanged}"
+      >
+        Display Header
+      </paper-toggle-button>
+      <paper-toggle-button
+        class="${this.exception && this.config.move_hidden === undefined ? "inherited": ""}"
+        ?checked="${this._move_hidden !== false}"
+        .configValue="${"move_hidden"}"
+        @change="${this._valueChanged}"
+      >
+        Move Hidden Buttons to Options Menu
       </paper-toggle-button>
       ${!this.exception
         ? html`
@@ -175,7 +236,8 @@ export class CchConfigEditor extends LitElement {
               @change="${this._valueChanged}"
             >
               Background Image Fix
-            </paper-toggle-button>
+            </paper-toggle-button><br>
+            <paper-button raised class="pink">Clear CCH Cache</paper-button>
           `
         : ""}
       <h4>Button Visability:</h4>
@@ -215,15 +277,16 @@ export class CchConfigEditor extends LitElement {
           <iron-icon icon="hass:dots-vertical"></iron-icon> Options
         </paper-toggle-button>
       </div>
+      <h4>Hide Tabs:</h4>
       <paper-input
         class="${this.exception && this.config.hide_tabs === undefined ? "inherited": ""}"
-        label="Hide tabs"
+        label="Comma-separated list of tab numbers to hide:"
         .value="${this._hide_tabs}"
         .configValue="${"hide_tabs"}"
         @value-changed="${this._valueChanged}"
       >
       </paper-input>
-      <h4>Clock options:</h4>
+      <h4>Clock Options:</h4>
       <div class="side-by-side">
         <paper-dropdown-menu
           class="${this.exception && this.config.clock === undefined ? "inherited": ""}"
@@ -300,6 +363,10 @@ export class CchConfigEditor extends LitElement {
         paper-toggle-button {
           padding-top: 16px;
         }
+        paper-button {
+          background-color: #eb5f59;
+          margin-left: 0;
+        }
         iron-icon {
           padding-right: 5px;
         }
@@ -308,11 +375,22 @@ export class CchConfigEditor extends LitElement {
         }
         .side-by-side {
           display: flex;
+          max-width: 450px;
         }
         .side-by-side > * {
           flex: 1;
           padding-right: 4px;
           width: 33%;
+        }
+        .warning {
+          background-color:#616161;
+          padding:5px;
+          color:#f4c343;
+        }
+        .alert {
+          background-color:#eb5f59;
+          padding:5px;
+          color:#fff;
         }
       </style>
     `;
