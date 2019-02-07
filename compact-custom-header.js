@@ -27,11 +27,11 @@ export const defaultConfig = {
   clock_am_pm: true,
   disable: false,
   background_image: false,
-  main_config: false
+  main_config: false,
+  move_hidden: true
 };
 
 if (!customElements.get("compact-custom-header")) {
-
 class CompactCustomHeader extends LitElement {
   static get properties() {
     return {
@@ -74,7 +74,6 @@ class CompactCustomHeader extends LitElement {
     return html`
       ${this.renderStyle()}
       <ha-card>
-        <div>
           <svg viewBox="0 0 24 24">
             <path
               d="M12,7L17,12H14V16H10V12H7L12,7M19,
@@ -84,21 +83,6 @@ class CompactCustomHeader extends LitElement {
             ></path>
           </svg>
           <h2>Compact Custom Header</h2>
-          <div>
-            <paper-button @click="${this.toggleUserAgent}">
-              ${this.showUa ? "Hide" : "Show"} user agent
-            </paper-button>
-            <paper-button @click="${this.clearCache}">
-              Clear cache
-            </paper-button>
-          </div>
-          <div style="margin-right:10px" ?hidden=${!this.showUa}>
-            <textarea class="user_agent" rows="4" readonly>
-${navigator.userAgent}
-                  </textarea
-            >
-          </div>
-        </div>
       </ha-card>
     `;
   }
@@ -110,7 +94,7 @@ ${navigator.userAgent}
           display: none;
         }
         h2 {
-          margin: auto auto 10px auto;
+          margin: auto;
           padding: 20px;
           background-color: var(--primary-color);
           color: var(--text-primary-color);
@@ -155,7 +139,6 @@ ${navigator.userAgent}
       });
     }
 
-    // Retrieve cached config and set as default if this card isn't parent card.
     this.cchCache = {};
     let retrievedCache = localStorage.getItem("cchCache");
     if (!this.config.main_config && retrievedCache) {
@@ -173,9 +156,7 @@ ${navigator.userAgent}
       localStorage.setItem("cchCache", JSON.stringify(this.cchConfig));
     }
 
-    if (!this.cchConfig.disable) {
-      this.run();
-    }
+    this.run();
   }
 
   countMatches(conditions) {
@@ -202,27 +183,29 @@ ${navigator.userAgent}
 
   run() {
     const root = this.rootElement;
-    this.editMode = root.querySelector("app-toolbar").className == "edit-mode";
+    this.editMode = root.querySelector("app-toolbar").className ==
+      "edit-mode";
     const buttons = this.getButtonElements(root);
     const tabContainer = root.querySelector("paper-tabs");
     const tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
-    if (this.editMode) {
+    if (!this.editMode) this.hideCard();
+    if (this.editMode && !this.config.disable) {
       this.removeMargin(tabContainer);
       if (buttons.options) {
         this.insertEditMenu(buttons.options, tabs);
       }
-    } else {
-      const marginRight = this.marginRight;
-      this.hideCard();
-      this.styleHeader(root, tabContainer, marginRight);
-      this.styleButtons(buttons);
-      if (this.cchConfig.hide_tabs) {
-        this.hideTabs(tabContainer, tabs);
-      }
-      if (this.cchConfig.clock && this.cchConfig.clock != "none") {
-        this.insertClock(buttons, tabContainer, marginRight);
-      }
-      fireEvent(this, "iron-resize");
+    } else if (!this.config.disable &&
+      !window.location.href.includes('disablecch')) {
+        const marginRight = this.marginRight;
+        this.styleHeader(root, tabContainer, marginRight);
+        this.styleButtons(buttons);
+        if (this.cchConfig.hide_tabs) {
+          this.hideTabs(tabContainer, tabs);
+        }
+        if (this.cchConfig.clock && this.cchConfig.clock != "none") {
+          this.insertClock(buttons, tabContainer, marginRight);
+        }
+        fireEvent(this, "iron-resize");
     }
   }
 
@@ -233,8 +216,12 @@ ${navigator.userAgent}
       this.cchConfig.notifications && this.cchConfig.clock != "notifications"
         ? 45
         : 0;
-    marginRight += this.cchConfig.voice && this.cchConfig.clock != "voice" ? 45 : 0;
-    marginRight += this.cchConfig.options && this.cchConfig.clock != "options" ? 45 : 0;
+    marginRight += this.cchConfig.voice && this.cchConfig.clock != "voice"
+      ? 45
+      : 0;
+    marginRight += this.cchConfig.options && this.cchConfig.clock != "options"
+      ? 45
+      : 0;
     return marginRight;
   }
 
@@ -254,22 +241,22 @@ ${navigator.userAgent}
     });
   }
 
-    insertEditMenu(optionsBtn, tabs) {
-      if (this.cchConfig.hide_tabs) {
-        let show_tabs = document.createElement("paper-item");
-        show_tabs.setAttribute("id", "show_tabs");
-        show_tabs.addEventListener("click", () => {
-          for (let i = 0; i < tabs.length; i++) {
-            tabs[i].style.cssText = "";
-          }
-        });
-        show_tabs.innerHTML = "Show all tabs";
-        this.insertMenuItem(
-          optionsBtn.querySelector("paper-listbox"),
-          show_tabs
-        );
-      }
+  insertEditMenu(optionsBtn, tabs) {
+    if (this.cchConfig.hide_tabs) {
+      let show_tabs = document.createElement("paper-item");
+      show_tabs.setAttribute("id", "show_tabs");
+      show_tabs.addEventListener("click", () => {
+        for (let i = 0; i < tabs.length; i++) {
+          tabs[i].style.cssText = "";
+        }
+      });
+      show_tabs.innerHTML = "Show all tabs";
+      this.insertMenuItem(
+        optionsBtn.querySelector("paper-listbox"),
+        show_tabs
+      );
     }
+  }
 
   getButtonElements(root) {
     const buttons = {};
@@ -388,9 +375,9 @@ ${navigator.userAgent}
         tabs[i].click();
     }
   }
-  
+
   hideCard() {
-    // If this card is the only one in a column, hide column outside edit mode
+    // If this card is the only one in a column, hide column outside edit mode.
     if (this.parentNode.children.length == 1) {
       this.parentNode.style.display = "none";
     }
@@ -398,9 +385,11 @@ ${navigator.userAgent}
   }
 
   insertMenuItem(menu_items, element) {
-    let first_item = menu_items.querySelector("paper-item");
-    if (!menu_items.querySelector(`[id="${element.id}"]`)) {
-      first_item.parentNode.insertBefore(element, first_item);
+    if (this.config.move_hidden) {
+      let first_item = menu_items.querySelector("paper-item");
+      if (!menu_items.querySelector(`[id="${element.id}"]`)) {
+        first_item.parentNode.insertBefore(element, first_item);
+      }
     }
   }
 
@@ -435,7 +424,7 @@ ${navigator.userAgent}
             width:${clockWidth}px;
             text-align: center;
           `;
-      
+
         clockElement = document.createElement("p");
         clockElement.setAttribute('id','cch_clock');
         clockElement.style.cssText = `
@@ -491,7 +480,7 @@ ${navigator.userAgent}
   toggleUserAgent() {
     this.showUa = !this.showUa;
   }
-  
+
   clearCache() {
     localStorage.removeItem("cchCache");
   }
