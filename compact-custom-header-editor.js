@@ -6,6 +6,7 @@ import {
 } from "./compact-custom-header.js";
 
 const clockOptions = ["none", "menu", "notifications", "voice", "options"];
+const buttonOptions = ["show", "hide", "overflow"];
 
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
@@ -193,12 +194,6 @@ export class CchConfigEditor extends LitElement {
       : this.defaultConfig.header;
   }
 
-  get _move_hidden() {
-    return this.config.move_hidden !== undefined
-      ? this.config.move_hidden
-      : this.defaultConfig.move_hidden;
-  }
-
   get _background_image() {
     return this.config.background_image !== undefined
       ? this.config.background_image
@@ -206,9 +201,7 @@ export class CchConfigEditor extends LitElement {
   }
 
   get _menu() {
-    return this.config.menu !== undefined
-      ? this.config.menu
-      : this.defaultConfig.menu;
+    return this.config.menu || this.defaultConfig.menu;
   }
 
   get _voice() {
@@ -273,16 +266,6 @@ export class CchConfigEditor extends LitElement {
       >
         Display Header
       </paper-toggle-button>
-      <paper-toggle-button
-        class="${this.exception && this.config.move_hidden === undefined
-    ? "inherited"
-    : ""}"
-        ?checked="${this._move_hidden !== false}"
-        .configValue="${"move_hidden"}"
-        @change="${this._valueChanged}"
-      >
-        Move Hidden Buttons to Options Menu
-      </paper-toggle-button>
       ${!this.exception
     ? html`
             <paper-toggle-button
@@ -309,48 +292,88 @@ export class CchConfigEditor extends LitElement {
     : ""}
       <h4>Button Visability:</h4>
       <div class="side-by-side">
-        <paper-toggle-button
+        <iron-icon icon="hass:menu"></iron-icon> Menu
+        <paper-dropdown-menu
           class="${this.exception && this.config.menu === undefined
     ? "inherited"
     : ""}"
-          ?checked="${this._menu !== false}"
+          @value-changed="${this._valueChanged}"
           .configValue="${"menu"}"
-          @change="${this._valueChanged}"
         >
-          <iron-icon icon="hass:menu"></iron-icon> Menu
-        </paper-toggle-button>
-        <paper-toggle-button
+          <paper-listbox
+            slot="dropdown-content"
+            .selected="${buttonOptions.indexOf(this._menu)}"
+          >
+            ${buttonOptions.map(option => {
+    return html`
+                <paper-item>${option}</paper-item>
+              `;
+  })}
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <iron-icon icon="hass:bell"></iron-icon> Notifications
+        <paper-dropdown-menu
           class="${this.exception && this.config.notifications === undefined
     ? "inherited"
     : ""}"
-          ?checked="${this._notifications !== false}"
+          @value-changed="${this._valueChanged}"
           .configValue="${"notifications"}"
-          @change="${this._valueChanged}"
         >
-          <iron-icon icon="hass:bell"></iron-icon> Notifications
-        </paper-toggle-button>
+          <paper-listbox
+            slot="dropdown-content"
+            .selected="${buttonOptions.indexOf(this._notifications)}"
+          >
+            ${buttonOptions.map(option => {
+    return html`
+                <paper-item>${option}</paper-item>
+              `;
+  })}
+          </paper-listbox>
+        </paper-dropdown-menu>
       </div>
       <div class="side-by-side">
-        <paper-toggle-button
+        <iron-icon icon="hass:microphone"></iron-icon> Voice
+        <paper-dropdown-menu
           class="${this.exception && this.config.voice === undefined
     ? "inherited"
     : ""}"
-          ?checked="${this._voice !== false}"
+          @value-changed="${this._valueChanged}"
           .configValue="${"voice"}"
-          @change="${this._valueChanged}"
         >
-          <iron-icon icon="hass:microphone"></iron-icon> Voice
-        </paper-toggle-button>
-        <paper-toggle-button
+          <paper-listbox
+            slot="dropdown-content"
+            .selected="${buttonOptions.indexOf(this._voice)}"
+          >
+            ${buttonOptions.map(option => {
+    return html`
+                <paper-item>${option}</paper-item>
+              `;
+  })}
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <iron-icon icon="hass:dots-vertical"></iron-icon> Options
+        <paper-dropdown-menu
           class="${this.exception && this.config.options === undefined
     ? "inherited"
     : ""}"
-          ?checked="${this._options !== false}"
+          @value-changed="${this._valueChanged}"
           .configValue="${"options"}"
-          @change="${this._valueChanged}"
         >
-          <iron-icon icon="hass:dots-vertical"></iron-icon> Options
-        </paper-toggle-button>
+          <paper-listbox
+            slot="dropdown-content"
+            .selected="${buttonOptions.indexOf(this._options)}"
+          >
+            ${buttonOptions.map(option => {
+    if (option != "overflow") {
+      return html`
+                  <paper-item>${option}</paper-item>
+                `;
+    }
+  })}
+          </paper-listbox>
+        </paper-dropdown-menu>
       </div>
       <h4>Hide Tabs:</h4>
       <paper-input
@@ -460,7 +483,6 @@ export class CchConfigEditor extends LitElement {
         }
         .side-by-side {
           display: flex;
-          max-width: 450px;
         }
         .side-by-side > * {
           flex: 1;
