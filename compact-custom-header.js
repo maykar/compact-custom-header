@@ -203,8 +203,12 @@ if (!customElements.get("compact-custom-header")) {
         if (this.cchConfig.hide_tabs) {
           this.hideTabs(tabContainer, tabs);
         }
-        if (this.cchConfig.clock && this.cchConfig.clock != "none") {
-          this.insertClock(buttons, tabContainer, marginRight);
+        for (const button in buttons) {
+          if (this.cchConfig[button] == "clock" && button == "options") {
+            this.insertClock(buttons, buttons[button], tabContainer, marginRight);
+          } else if (this.cchConfig[button] == "clock") {
+            this.insertClock(buttons, buttons[button].shadowRoot, tabContainer, marginRight);
+          }
         }
         fireEvent(this, "iron-resize");
       }
@@ -214,18 +218,17 @@ if (!customElements.get("compact-custom-header")) {
       // Add width of all visible elements on right side for tabs margin.
       let marginRight = 0;
       marginRight +=
-        this.cchConfig.notifications == "show" &&
-        this.cchConfig.clock != "notifications"
-          ? 45
-          : 0;
+        this.cchConfig.notifications == "hide"
+          ? 0
+          : 45;
       marginRight +=
-        this.cchConfig.voice == "show" && this.cchConfig.clock != "voice"
-          ? 45
-          : 0;
+        this.cchConfig.voice == "hide"
+          ? 0
+          : 45;
       marginRight +=
-        this.cchConfig.options == "show" && this.cchConfig.clock != "options"
-          ? 45
-          : 0;
+        this.cchConfig.options == "hide"
+          ? 0
+          : 45;
       return marginRight;
     }
 
@@ -321,7 +324,7 @@ if (!customElements.get("compact-custom-header")) {
         if (button == "options" && this.cchConfig[button] == "overflow") {
           this.cchConfig[button] = "show";
         }
-        if (this.cchConfig[button] == "show") {
+        if (this.cchConfig[button] == "show" || this.cchConfig[button] == "clock") {
           buttons[button].style.cssText = `
               z-index:1;
               margin-top:111px;
@@ -331,6 +334,9 @@ if (!customElements.get("compact-custom-header")) {
           const paperIconButton = buttons[button].shadowRoot.querySelector(
             "paper-icon-button"
           );
+          if (paperIconButton.hasAttribute("hidden")) {
+            continue;
+          }
           const menu_items = buttons.options.querySelector("paper-listbox");
           const id = `menu_item_${button}`;
           if (!menu_items.querySelector(`[id="${id}"]`)) {
@@ -343,7 +349,7 @@ if (!customElements.get("compact-custom-header")) {
             });
             this.insertMenuItem(menu_items, wrapper);
           }
-        } else {
+        } else if (this.cchConfig[button] == "hide"){
           buttons[button].style.display = "none";
         }
       }
@@ -395,24 +401,14 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    insertClock(buttons, tabContainer, marginRight) {
-      // Change non-plural strings for backwards compatability
-      if (this.cchConfig.clock == "option") {
-        this.cchConfig.clock = "options";
-      } else if (this.cchConfig.clock == "notification") {
-        this.cchConfig.clock = "notifications";
-      }
-
-      const clockIcon = (this.cchConfig.clock == "options"
-        ? buttons[this.cchConfig.clock]
-        : buttons[this.cchConfig.clock].shadowRoot
-      ).querySelector("paper-icon-button");
+    insertClock(buttons, clock_button, tabContainer, marginRight) {
+      const clockIcon = clock_button.querySelector("paper-icon-button");
       const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
 
       buttons.notifications.shadowRoot.querySelector(
         '[class="indicator"]'
       ).style.cssText =
-        this.cchConfig.clock == "notifications" ? "top:14.5px;left:-7px" : "";
+        this.cchConfig.notifications == "clock" ? "top:14.5px;left:-7px" : "";
 
       const clockWidth =
         this.cchConfig.clock_format == 12 && this.cchConfig.clock_am_pm
@@ -438,7 +434,7 @@ if (!customElements.get("compact-custom-header")) {
         clockIronIcon.style.display = "none";
       }
 
-      if (this.cchConfig.menu == "show" && this.cchConfig.clock == "menu") {
+      if (this.cchConfig.menu == "clock") {
         tabContainer.style.marginLeft = `${clockWidth + 15}px`;
       } else {
         tabContainer.style.marginRight = `${clockWidth + marginRight}px`;
