@@ -6,7 +6,7 @@ import {
 } from "./compact-custom-header.js";
 
 const buttonOptions = ["show", "hide", "clock", "overflow"];
-const overflowOptions = ["show", "hide", "clock"]
+const overflowOptions = ["show", "hide", "clock"];
 
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
@@ -36,8 +36,8 @@ export class CompactCustomHeaderEditor extends LitElement {
       </cch-config-editor>
       <h3>Exceptions:</h3>
       ${this._config.exceptions
-    ? this._config.exceptions.map((exception, index) => {
-      return html`
+        ? this._config.exceptions.map((exception, index) => {
+            return html`
               <cch-exception-editor
                 .config="${this._config}"
                 .exception="${exception}"
@@ -47,8 +47,8 @@ export class CompactCustomHeaderEditor extends LitElement {
               >
               </cch-exception-editor>
             `;
-    })
-    : ""}
+          })
+        : ""}
       <br />
       <paper-button raised @click="${this._addException}"
         >Add Exception
@@ -127,8 +127,9 @@ ${navigator.userAgent}
           margin-bottom: 0;
         }
         paper-button {
+          margin-top: 5px;
           background-color: var(--primary-color);
-          margin-left: 0;
+          color: var(--text-primary-color, #fff);
         }
         .user_agent {
           display: block;
@@ -160,6 +161,15 @@ export class CchConfigEditor extends LitElement {
 
   get _hide_tabs() {
     return this.config.hide_tabs || this.defaultConfig.hide_tabs || "";
+  }
+
+  get _clock() {
+    return (
+      this._menu == "clock" ||
+      this._voice == "clock" ||
+      this._notifications == "clock" ||
+      this._options == "clock"
+    );
   }
 
   get _clock_format() {
@@ -222,62 +232,69 @@ export class CchConfigEditor extends LitElement {
     this.exception = this.exception !== undefined && this.exception !== false;
     return html`
       ${!this.exception
-    ? html`
+        ? html`
             <div class="warning">
               <iron-icon icon="hass:alert"></iron-icon>
-              Warning: Hiding the header or options button will remove your
-              ability to edit from the UI.
+              Hiding the header or options button will remove your ability to
+              edit from the UI.
             </div>
           `
-    : ""}
+        : ""}
       ${!this.exception &&
       localStorage.getItem("cchCache") &&
       !this.config.main_config
-    ? html`
+        ? html`
             <div class="alert">
               <iron-icon icon="hass:alert"></iron-icon>
-              Alert: This card is not the main configuration card. Edits made
-              here will not have an effect.
+              This card is not the main configuration card. Edits made here will
+              not have an effect.
             </div>
           `
-    : ""}
+        : ""}
       ${this.renderStyle()}
-      <paper-toggle-button
-        class="${this.exception && this.config.disable === undefined
-    ? "inherited"
-    : ""}"
-        ?checked="${this._disable !== false}"
-        .configValue="${"disable"}"
-        @change="${this._valueChanged}"
-      >
-        Disable Custom Compact Header
-      </paper-toggle-button>
-      <paper-toggle-button
-        class="${this.exception && this.config.header === undefined
-    ? "inherited"
-    : ""}"
-        ?checked="${this._header !== false}"
-        .configValue="${"header"}"
-        @change="${this._valueChanged}"
-      >
-        Display Header
-      </paper-toggle-button>
+      <div class="side-by-side">
+        <paper-toggle-button
+          class="${this.exception && this.config.disable === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this._disable !== false}"
+          .configValue="${"disable"}"
+          @change="${this._valueChanged}"
+        >
+          Disable Custom Compact Header
+        </paper-toggle-button>
+        <paper-toggle-button
+          class="${this.exception && this.config.header === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this._header !== false}"
+          .configValue="${"header"}"
+          @change="${this._valueChanged}"
+        >
+          Display Header
+        </paper-toggle-button>
+        ${!this.exception
+          ? html`
+              <paper-toggle-button
+                ?checked="${this._main_config !== false}"
+                .configValue="${"main_config"}"
+                @change="${this._valueChanged}"
+              >
+                Main Config
+              </paper-toggle-button>
+              <paper-toggle-button
+                ?checked="${this._background_image !== false}"
+                .configValue="${"background_image"}"
+                @change="${this._valueChanged}"
+              >
+                Background Image Fix
+              </paper-toggle-button>
+            `
+          : ""}
+      </div>
       ${!this.exception
-    ? html`
-            <paper-toggle-button
-              ?checked="${this._main_config !== false}"
-              .configValue="${"main_config"}"
-              @change="${this._valueChanged}"
-            >
-              Main Config
-            </paper-toggle-button>
-            <paper-toggle-button
-              ?checked="${this._background_image !== false}"
-              .configValue="${"background_image"}"
-              @change="${this._valueChanged}"
-            >
-              Background Image Fix </paper-toggle-button
-            ><br />
+        ? html`
+            <br />
             <paper-button
               @click="${localStorage.removeItem("cchCache")}"
               raised
@@ -285,130 +302,147 @@ export class CchConfigEditor extends LitElement {
               >Clear CCH Cache</paper-button
             >
           `
-    : ""}
+        : ""}
       <h4>Button Visability:</h4>
-        <iron-icon icon="hass:menu"></iron-icon>
-        <paper-dropdown-menu
+      <div class="buttons side-by-side">
+        <div
           class="${this.exception && this.config.menu === undefined
-    ? "inherited"
-    : ""}"
-          @value-changed="${this._valueChanged}"
-          label="Menu Button:"
-          .configValue="${"menu"}"
+            ? "inherited"
+            : ""}"
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${buttonOptions.indexOf(this._menu)}"
+          <iron-icon icon="hass:menu"></iron-icon>
+          <paper-dropdown-menu
+            @value-changed="${this._valueChanged}"
+            label="Menu Button:"
+            .configValue="${"menu"}"
           >
-            ${buttonOptions.map(option => {
-    return html`
-                <paper-item>${option}</paper-item>
-              `;
-  })}
-          </paper-listbox>
-        </paper-dropdown-menu>
-
-        <iron-icon icon="hass:bell"></iron-icon>
-        <paper-dropdown-menu
+            <paper-listbox
+              slot="dropdown-content"
+              .selected="${buttonOptions.indexOf(this._menu)}"
+            >
+              ${buttonOptions.map(option => {
+                return html`
+                  <paper-item>${option}</paper-item>
+                `;
+              })}
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+        <div
           class="${this.exception && this.config.notifications === undefined
-    ? "inherited"
-    : ""}"
-          @value-changed="${this._valueChanged}"
-          label="Notifications Button:"
-          .configValue="${"notifications"}"
+            ? "inherited"
+            : ""}"
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${buttonOptions.indexOf(this._notifications)}"
+          <iron-icon icon="hass:bell"></iron-icon>
+          <paper-dropdown-menu
+            @value-changed="${this._valueChanged}"
+            label="Notifications Button:"
+            .configValue="${"notifications"}"
           >
-            ${buttonOptions.map(option => {
-    return html`
-                <paper-item>${option}</paper-item>
-              `;
-  })}
-          </paper-listbox>
-        </paper-dropdown-menu><br>
-        <iron-icon icon="hass:microphone"></iron-icon>
-        <paper-dropdown-menu
+            <paper-listbox
+              slot="dropdown-content"
+              .selected="${buttonOptions.indexOf(this._notifications)}"
+            >
+              ${buttonOptions.map(option => {
+                return html`
+                  <paper-item>${option}</paper-item>
+                `;
+              })}
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+        <div
           class="${this.exception && this.config.voice === undefined
-    ? "inherited"
-    : ""}"
-          @value-changed="${this._valueChanged}"
-          label="Voice Button:"
-          .configValue="${"voice"}"
+            ? "inherited"
+            : ""}"
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${buttonOptions.indexOf(this._voice)}"
+          <iron-icon icon="hass:microphone"></iron-icon>
+          <paper-dropdown-menu
+            @value-changed="${this._valueChanged}"
+            label="Voice Button:"
+            .configValue="${"voice"}"
           >
-            ${buttonOptions.map(option => {
-    return html`
-                <paper-item>${option}</paper-item>
-              `;
-  })}
-          </paper-listbox>
-        </paper-dropdown-menu>
-
-        <iron-icon icon="hass:dots-vertical"></iron-icon>
-        <paper-dropdown-menu
+            <paper-listbox
+              slot="dropdown-content"
+              .selected="${buttonOptions.indexOf(this._voice)}"
+            >
+              ${buttonOptions.map(option => {
+                return html`
+                  <paper-item>${option}</paper-item>
+                `;
+              })}
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+        <div
           class="${this.exception && this.config.options === undefined
-    ? "inherited"
-    : ""}"
-          @value-changed="${this._valueChanged}"
-          label="Options Button:"
-          .configValue="${"options"}"
+            ? "inherited"
+            : ""}"
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${overflowOptions.indexOf(this._options)}"
+          <iron-icon icon="hass:dots-vertical"></iron-icon>
+          <paper-dropdown-menu
+            @value-changed="${this._valueChanged}"
+            label="Options Button:"
+            .configValue="${"options"}"
           >
-            ${overflowOptions.map(option => {
-    return html`
-                <paper-item>${option}</paper-item>
-              `;
-  })}
-          </paper-listbox>
-        </paper-dropdown-menu>
+            <paper-listbox
+              slot="dropdown-content"
+              .selected="${overflowOptions.indexOf(this._options)}"
+            >
+              ${overflowOptions.map(option => {
+                return html`
+                  <paper-item>${option}</paper-item>
+                `;
+              })}
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+      </div>
+      ${this._clock
+        ? html`
+            <h4>Clock Options:</h4>
+            <div class="side-by-side">
+              <paper-dropdown-menu
+                class="${this.exception &&
+                this.config.clock_format === undefined
+                  ? "inherited"
+                  : ""}"
+                label="Clock format"
+                @value-changed="${this._valueChanged}"
+                .configValue="${"clock_format"}"
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  .selected="${this._clock_format === "24" ? 1 : 0}"
+                >
+                  <paper-item>12</paper-item>
+                  <paper-item>24</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-toggle-button
+                class="${this.exception && this.config.clock_am_pm === undefined
+                  ? "inherited"
+                  : ""}"
+                ?checked="${this._clock_am_pm !== false}"
+                .configValue="${"clock_am_pm"}"
+                @change="${this._valueChanged}"
+              >
+                AM / PM</paper-toggle-button
+              >
+            </div>
+          `
+        : ""}
       <h4>Hide Tabs:</h4>
       <paper-input
         class="${this.exception && this.config.hide_tabs === undefined
-    ? "inherited"
-    : ""}"
+          ? "inherited"
+          : ""}"
         label="Comma-separated list of tab numbers to hide:"
         .value="${this._hide_tabs}"
         .configValue="${"hide_tabs"}"
         @value-changed="${this._valueChanged}"
       >
       </paper-input>
-      <h4>Clock Options:</h4>
-        </paper-dropdown-menu>
-        <paper-dropdown-menu
-          class="${this.exception && this.config.clock_format === undefined
-    ? "inherited"
-    : ""}"
-          label="Clock format"
-          @value-changed="${this._valueChanged}"
-          .configValue="${"clock_format"}"
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${this._clock_format === "24" ? 1 : 0}"
-          >
-            <paper-item>12</paper-item>
-            <paper-item>24</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
-        <paper-toggle-button
-          class="${this.exception && this.config.clock_am_pm === undefined
-    ? "inherited"
-    : ""}"
-          ?checked="${this._clock_am_pm !== false}"
-          .configValue="${"clock_am_pm"}"
-          @change="${this._valueChanged}"
-        >
-          AM / PM</paper-toggle-button
-        >
-      </div>
     `;
   }
 
@@ -446,10 +480,6 @@ export class CchConfigEditor extends LitElement {
         paper-toggle-button {
           padding-top: 16px;
         }
-        paper-button {
-          background-color: var(--primary-color);
-          margin-left: 0;
-        }
         iron-icon {
           padding-right: 5px;
         }
@@ -458,21 +488,31 @@ export class CchConfigEditor extends LitElement {
         }
         .side-by-side {
           display: flex;
+          flex-wrap: wrap;
         }
         .side-by-side > * {
           flex: 1;
           padding-right: 4px;
-          width: 33%;
+          flex-basis: 33%;
+        }
+        .buttons > div {
+          display: flex;
+          align-items: center;
+        }
+        .buttons > div paper-dropdown-menu {
+          flex-grow: 1;
         }
         .warning {
-          background-color: #616161;
-          padding: 5px;
-          color: #f4c343;
+          background-color: #455a64;
+          padding: 10px;
+          color: #ffcd4c;
+          border-radius: 5px;
         }
         .alert {
           background-color: #eb5f59;
-          padding: 5px;
+          padding: 10px;
           color: #fff;
+          border-radius: 5px;
         }
       </style>
     `;
