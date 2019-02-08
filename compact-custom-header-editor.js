@@ -287,13 +287,13 @@ export class CchConfigEditor extends LitElement {
           `
     : ""}
       <h4>Button Visability:</h4>
-      <div class="side-by-side">
-        <iron-icon icon="hass:menu"></iron-icon> Menu
+        <iron-icon icon="hass:menu"></iron-icon>
         <paper-dropdown-menu
           class="${this.exception && this.config.menu === undefined
     ? "inherited"
     : ""}"
           @value-changed="${this._valueChanged}"
+          label="Menu Button:"
           .configValue="${"menu"}"
         >
           <paper-listbox
@@ -308,12 +308,13 @@ export class CchConfigEditor extends LitElement {
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <iron-icon icon="hass:bell"></iron-icon> Notifications
+        <iron-icon icon="hass:bell"></iron-icon>
         <paper-dropdown-menu
           class="${this.exception && this.config.notifications === undefined
     ? "inherited"
     : ""}"
           @value-changed="${this._valueChanged}"
+          label="Notifications Button:"
           .configValue="${"notifications"}"
         >
           <paper-listbox
@@ -326,15 +327,14 @@ export class CchConfigEditor extends LitElement {
               `;
   })}
           </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-      <div class="side-by-side">
-        <iron-icon icon="hass:microphone"></iron-icon> Voice
+        </paper-dropdown-menu><br>
+        <iron-icon icon="hass:microphone"></iron-icon>
         <paper-dropdown-menu
           class="${this.exception && this.config.voice === undefined
     ? "inherited"
     : ""}"
           @value-changed="${this._valueChanged}"
+          label="Voice Button:"
           .configValue="${"voice"}"
         >
           <paper-listbox
@@ -349,12 +349,13 @@ export class CchConfigEditor extends LitElement {
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <iron-icon icon="hass:dots-vertical"></iron-icon> Options
+        <iron-icon icon="hass:dots-vertical"></iron-icon>
         <paper-dropdown-menu
           class="${this.exception && this.config.options === undefined
     ? "inherited"
     : ""}"
           @value-changed="${this._valueChanged}"
+          label="Options Button:"
           .configValue="${"options"}"
         >
           <paper-listbox
@@ -368,7 +369,6 @@ export class CchConfigEditor extends LitElement {
   })}
           </paper-listbox>
         </paper-dropdown-menu>
-      </div>
       <h4>Hide Tabs:</h4>
       <paper-input
         class="${this.exception && this.config.hide_tabs === undefined
