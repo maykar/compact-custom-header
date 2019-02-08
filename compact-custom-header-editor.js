@@ -5,8 +5,7 @@ import {
   defaultConfig
 } from "./compact-custom-header.js";
 
-const clockOptions = ["none", "menu", "notifications", "voice", "options"];
-const buttonOptions = ["show", "hide", "overflow"];
+const buttonOptions = ["show", "hide", "clock", "overflow"];
 
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
@@ -160,10 +159,6 @@ export class CchConfigEditor extends LitElement {
 
   get _hide_tabs() {
     return this.config.hide_tabs || this.defaultConfig.hide_tabs || "";
-  }
-
-  get _clock() {
-    return this.config.clock || this.defaultConfig.clock;
   }
 
   get _clock_format() {
@@ -387,25 +382,6 @@ export class CchConfigEditor extends LitElement {
       >
       </paper-input>
       <h4>Clock Options:</h4>
-      <div class="side-by-side">
-        <paper-dropdown-menu
-          class="${this.exception && this.config.clock === undefined
-    ? "inherited"
-    : ""}"
-          label="Clock"
-          @value-changed="${this._valueChanged}"
-          .configValue="${"clock"}"
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${clockOptions.indexOf(this._clock)}"
-          >
-            ${clockOptions.map(option => {
-    return html`
-                <paper-item>${option}</paper-item>
-              `;
-  })}
-          </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu
           class="${this.exception && this.config.clock_format === undefined
