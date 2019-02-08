@@ -18,17 +18,16 @@ export const fireEvent = (node, type, detail, options) => {
 
 export const defaultConfig = {
   header: true,
-  menu: true,
-  notifications: true,
-  voice: true,
-  options: true,
+  menu: "show",
+  notifications: "show",
+  voice: "show",
+  options: "show",
   clock: "none",
   clockFormat: 12,
   clock_am_pm: true,
   disable: false,
   background_image: false,
-  main_config: false,
-  move_hidden: true
+  main_config: false
 };
 
 if (!customElements.get("compact-custom-header")) {
@@ -215,13 +214,18 @@ if (!customElements.get("compact-custom-header")) {
       // Add width of all visible elements on right side for tabs margin.
       let marginRight = 0;
       marginRight +=
-        this.cchConfig.notifications && this.cchConfig.clock != "notifications"
+        this.cchConfig.notifications == "show" &&
+        this.cchConfig.clock != "notifications"
           ? 45
           : 0;
       marginRight +=
-        this.cchConfig.voice && this.cchConfig.clock != "voice" ? 45 : 0;
+        this.cchConfig.voice == "show" && this.cchConfig.clock != "voice"
+          ? 45
+          : 0;
       marginRight +=
-        this.cchConfig.options && this.cchConfig.clock != "options" ? 45 : 0;
+        this.cchConfig.options == "show" && this.cchConfig.clock != "options"
+          ? 45
+          : 0;
       return marginRight;
     }
 
@@ -294,7 +298,7 @@ if (!customElements.get("compact-custom-header")) {
 
       if (tabContainer) {
         // Add margin to left side of tabs for menu buttom.
-        if (this.cchConfig.menu) {
+        if (this.cchConfig.menu == "show") {
           tabContainer.style.marginLeft = "60px";
         }
         // Add margin to right side of tabs for all buttons on the right.
@@ -314,19 +318,19 @@ if (!customElements.get("compact-custom-header")) {
 
     styleButtons(buttons) {
       for (const button in buttons) {
-        if (this.cchConfig[button]) {
+        if (button == "options" && this.cchConfig[button] == "overflow") {
+          this.cchConfig[button] = "show";
+        }
+        if (this.cchConfig[button] == "show") {
           buttons[button].style.cssText = `
               z-index:1;
               margin-top:111px;
               ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
             `;
-        } else if (this.cchConfig.options) {
+        } else if (this.cchConfig[button] == "overflow") {
           const paperIconButton = buttons[button].shadowRoot.querySelector(
             "paper-icon-button"
           );
-          if (paperIconButton.hasAttribute("hidden")) {
-            continue;
-          }
           const menu_items = buttons.options.querySelector("paper-listbox");
           const id = `menu_item_${button}`;
           if (!menu_items.querySelector(`[id="${id}"]`)) {
@@ -368,7 +372,7 @@ if (!customElements.get("compact-custom-header")) {
       const activeTabIndex = tabs.indexOf(activeTab);
       if (hidden_tabs.includes(activeTabIndex)) {
         let i = 0;
-        //find first not hidden view
+        // Find first not hidden view
         while (hidden_tabs.includes(i)) {
           i++;
         }
@@ -385,11 +389,9 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     insertMenuItem(menu_items, element) {
-      if (this.config.move_hidden) {
-        let first_item = menu_items.querySelector("paper-item");
-        if (!menu_items.querySelector(`[id="${element.id}"]`)) {
-          first_item.parentNode.insertBefore(element, first_item);
-        }
+      let first_item = menu_items.querySelector("paper-item");
+      if (!menu_items.querySelector(`[id="${element.id}"]`)) {
+        first_item.parentNode.insertBefore(element, first_item);
       }
     }
 
@@ -436,7 +438,7 @@ if (!customElements.get("compact-custom-header")) {
         clockIronIcon.style.display = "none";
       }
 
-      if (this.cchConfig.menu && this.cchConfig.clock == "menu") {
+      if (this.cchConfig.menu == "show" && this.cchConfig.clock == "menu") {
         tabContainer.style.marginLeft = `${clockWidth + 15}px`;
       } else {
         tabContainer.style.marginRight = `${clockWidth + marginRight}px`;
