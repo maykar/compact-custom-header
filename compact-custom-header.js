@@ -218,17 +218,17 @@ if (!customElements.get("compact-custom-header")) {
       // Add width of all visible elements on right side for tabs margin.
       let marginRight = 0;
       marginRight +=
-        this.cchConfig.notifications == "hide"
-          ? 0
-          : 45;
+        this.cchConfig.notifications == "show"
+          ? 45
+          : 0;
       marginRight +=
-        this.cchConfig.voice == "hide"
-          ? 0
-          : 45;
+        this.cchConfig.voice == "show"
+          ? 45
+          : 0;
       marginRight +=
-        this.cchConfig.options == "hide"
-          ? 0
-          : 45;
+        this.cchConfig.options == "show"
+          ? 45
+          : 0;
       return marginRight;
     }
 
