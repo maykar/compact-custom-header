@@ -6,6 +6,7 @@ import {
 } from "./compact-custom-header.js";
 
 const buttonOptions = ["show", "hide", "clock", "overflow"];
+const overflowOptions = ["show", "hide", "clock"]
 
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
@@ -212,8 +213,8 @@ export class CchConfigEditor extends LitElement {
   }
 
   get _options() {
-    return this.config.option !== undefined
-      ? this.config.option
+    return this.config.options !== undefined
+      ? this.config.options
       : this.defaultConfig.options;
   }
 
@@ -358,14 +359,12 @@ export class CchConfigEditor extends LitElement {
         >
           <paper-listbox
             slot="dropdown-content"
-            .selected="${buttonOptions.indexOf(this._options)}"
+            .selected="${overflowOptions.indexOf(this._options)}"
           >
-            ${buttonOptions.map(option => {
-    if (option != "overflow") {
-      return html`
-                  <paper-item>${option}</paper-item>
-                `;
-    }
+            ${overflowOptions.map(option => {
+    return html`
+                <paper-item>${option}</paper-item>
+              `;
   })}
           </paper-listbox>
         </paper-dropdown-menu>
