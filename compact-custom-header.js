@@ -206,6 +206,12 @@ if (!customElements.get("compact-custom-header")) {
         this.styleButtons(buttons);
         if (this.cchConfig.hide_tabs) {
           this.hideTabs(tabContainer, tabs);
+        } else {
+          for (let i = 0; i < tabs.length; i++) {
+            if (tabs[i].style.display = "none") {
+              tabs[i].style.removeProperty("display");
+            }
+          }
         }
         for (const button in buttons) {
           if (this.cchConfig[button] == "clock" && button == "options") {
@@ -259,7 +265,7 @@ if (!customElements.get("compact-custom-header")) {
         show_tabs.setAttribute("id", "show_tabs");
         show_tabs.addEventListener("click", () => {
           for (let i = 0; i < tabs.length; i++) {
-            tabs[i].style.cssText = "";
+            tabs[i].style.removeProperty("display");
           }
         });
         show_tabs.innerHTML = "Show all tabs";
