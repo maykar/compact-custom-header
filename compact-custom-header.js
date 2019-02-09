@@ -191,6 +191,9 @@ if (!customElements.get("compact-custom-header")) {
       const buttons = this.getButtonElements(root);
       const tabContainer = root.querySelector("paper-tabs");
       const tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
+      const hidden_tabs = this.cchConfig.hide_tabs 
+        ? JSON.parse("[" + this.cchConfig.hide_tabs + "]")
+        : [];
       if (!this.editMode) this.hideCard();
       if (this.editMode && !this.config.disable) {
         this.removeMargin(tabContainer);
@@ -205,14 +208,9 @@ if (!customElements.get("compact-custom-header")) {
         this.styleHeader(root, tabContainer, marginRight);
         this.styleButtons(buttons);
         if (this.cchConfig.hide_tabs) {
-          this.hideTabs(tabContainer, tabs);
-        } else {
-          for (let i = 0; i < tabs.length; i++) {
-            if (tabs[i].style.display = "none") {
-              tabs[i].style.removeProperty("display");
-            }
-          }
+          this.hideTabs(tabContainer, tabs, hidden_tabs);
         }
+        this.restoreTabs(tabs, hidden_tabs);
         for (const button in buttons) {
           if (this.cchConfig[button] == "clock" && button == "options") {
             this.insertClock(
@@ -378,15 +376,24 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    hideTabs(tabContainer, tabs) {
+    restoreTabs(tabs, hidden_tabs) {
+      for (let i = 0; i < tabs.length; i++) {
+        let hidden = hidden_tabs.includes(i);
+        if (tabs[i].style.display = "none" && !hidden) {
+          tabs[i].style.removeProperty("display");
+        }
+      }
+    }
+
+    hideTabs(tabContainer, tabs, hidden_tabs) {
       // Convert hide_tabs config to array
-      const hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
       for (const tab of hidden_tabs) {
         if (!tabs[tab]) {
           continue;
         }
         tabs[tab].style.display = "none";
       }
+
       // Check if current tab is a hidden tab.
       const activeTab = tabContainer.querySelector("paper-tab.iron-selected");
       const activeTabIndex = tabs.indexOf(activeTab);
@@ -401,7 +408,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     hideCard() {
-      // If this card is the only one in a column, hide column outside edit mode.
+      // If this card is the only one in a column hide column outside edit mode.
       if (this.parentNode.children.length == 1) {
         this.parentNode.style.display = "none";
       }
