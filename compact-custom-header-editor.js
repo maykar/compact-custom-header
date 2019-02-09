@@ -127,7 +127,7 @@ ${navigator.userAgent}
           margin-bottom: 0;
         }
         paper-button {
-          margin-top: 5px;
+          margin: 0;
           background-color: var(--primary-color);
           color: var(--text-primary-color, #fff);
         }
@@ -261,7 +261,7 @@ export class CchConfigEditor extends LitElement {
           .configValue="${"disable"}"
           @change="${this._valueChanged}"
         >
-          Disable Custom Compact Header
+          Disable CCH
         </paper-toggle-button>
         <paper-toggle-button
           class="${this.exception && this.config.header === undefined
@@ -287,7 +287,7 @@ export class CchConfigEditor extends LitElement {
                 .configValue="${"background_image"}"
                 @change="${this._valueChanged}"
               >
-                Background Image Fix
+                Background Fix
               </paper-toggle-button>
             `
           : ""}
@@ -483,8 +483,16 @@ export class CchConfigEditor extends LitElement {
         iron-icon {
           padding-right: 5px;
         }
+        iron-input {
+          max-width: 115px;
+        }
+        paper-button {
+          margin: 0;
+          background-color: var(--primary-color);
+          color: var(--text-primary-color, #fff);
+        }
         .inherited {
-          opacity: 0.5;
+          opacity: 0.4;
         }
         .side-by-side {
           display: flex;
@@ -502,6 +510,14 @@ export class CchConfigEditor extends LitElement {
         .buttons > div paper-dropdown-menu {
           flex-grow: 1;
         }
+        .buttons > div iron-icon {
+          padding-right:15px;
+          padding-top:20px;
+          margin-left:-3px;
+        }
+        .buttons > div:nth-of-type(2n) iron-icon {
+          padding-left: 20px;
+        }
         .warning {
           background-color: #455a64;
           padding: 10px;
@@ -509,6 +525,7 @@ export class CchConfigEditor extends LitElement {
           border-radius: 5px;
         }
         .alert {
+          margin-top: 5px;
           background-color: #eb5f59;
           padding: 10px;
           color: #fff;
