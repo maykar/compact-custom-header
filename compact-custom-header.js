@@ -48,7 +48,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     static async getConfigElement() {
-      await import("./compact-custom-header-editor.js");
+      await import("./compact-custom-header-editor.js?v=0.3.0");
       return document.createElement("compact-custom-header-editor");
     }
 
@@ -138,6 +138,10 @@ if (!customElements.get("compact-custom-header")) {
         });
       }
 
+      if (window.location.href.includes("clear_cch_cache") && !cleared) {
+        localStorage.removeItem("cchCache");
+      }
+
       this.cchCache = {};
       let retrievedCache = localStorage.getItem("cchCache");
       if (!this.config.main_config && retrievedCache) {
@@ -195,7 +199,7 @@ if (!customElements.get("compact-custom-header")) {
         }
       } else if (
         !this.config.disable &&
-        !window.location.href.includes("disablecch")
+        !window.location.href.includes("disable_cch")
       ) {
         const marginRight = this.marginRight;
         this.styleHeader(root, tabContainer, marginRight);
@@ -205,9 +209,19 @@ if (!customElements.get("compact-custom-header")) {
         }
         for (const button in buttons) {
           if (this.cchConfig[button] == "clock" && button == "options") {
-            this.insertClock(buttons, buttons[button], tabContainer, marginRight);
+            this.insertClock(
+              buttons,
+              buttons[button],
+              tabContainer,
+              marginRight
+            );
           } else if (this.cchConfig[button] == "clock") {
-            this.insertClock(buttons, buttons[button].shadowRoot, tabContainer, marginRight);
+            this.insertClock(
+              buttons,
+              buttons[button].shadowRoot,
+              tabContainer,
+              marginRight
+            );
           }
         }
         fireEvent(this, "iron-resize");
@@ -217,18 +231,9 @@ if (!customElements.get("compact-custom-header")) {
     get marginRight() {
       // Add width of all visible elements on right side for tabs margin.
       let marginRight = 0;
-      marginRight +=
-        this.cchConfig.notifications == "show"
-          ? 45
-          : 0;
-      marginRight +=
-        this.cchConfig.voice == "show"
-          ? 45
-          : 0;
-      marginRight +=
-        this.cchConfig.options == "show"
-          ? 45
-          : 0;
+      marginRight += this.cchConfig.notifications == "show" ? 45 : 0;
+      marginRight += this.cchConfig.voice == "show" ? 45 : 0;
+      marginRight += this.cchConfig.options == "show" ? 45 : 0;
       return marginRight;
     }
 
@@ -324,7 +329,10 @@ if (!customElements.get("compact-custom-header")) {
         if (button == "options" && this.cchConfig[button] == "overflow") {
           this.cchConfig[button] = "show";
         }
-        if (this.cchConfig[button] == "show" || this.cchConfig[button] == "clock") {
+        if (
+          this.cchConfig[button] == "show" ||
+          this.cchConfig[button] == "clock"
+        ) {
           buttons[button].style.cssText = `
               z-index:1;
               margin-top:111px;
@@ -349,7 +357,7 @@ if (!customElements.get("compact-custom-header")) {
             });
             this.insertMenuItem(menu_items, wrapper);
           }
-        } else if (this.cchConfig[button] == "hide"){
+        } else if (this.cchConfig[button] == "hide") {
           buttons[button].style.display = "none";
         }
       }
