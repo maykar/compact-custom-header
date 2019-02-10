@@ -82,13 +82,10 @@ Under exceptions set your conditions and then setup their config below. Example:
 ```
 - type: 'custom:compact-custom-header'
   main_config: true
-  move_hidden: true
-  options: show
-  voice: hide
-  disable: false
-  clock_format: 12
   menu: overflow
-  notifications: hide
+  options: clock
+  voice: hide
+  clock_format: 12
   exceptions:
     - conditions:
         user: maykar
