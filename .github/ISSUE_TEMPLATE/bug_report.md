@@ -15,7 +15,7 @@ A clear and concise description of what the bug is.
 Insert your lovelace code for the card here as a codeblock, do not paste as plain text.
 
 **Error**
-Any error messages that display for the card. Please explain if card is functional despite error message.
+Any error messages that display for the card. HA errors from the log as well as Chrome Dev-Tools errors (F12) are helpful. Please explain if card is functional despite error message.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
