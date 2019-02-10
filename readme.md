@@ -1,9 +1,15 @@
 # Compact Custom Header
-:warning:
-* <b>Starting with version 1.0.0b0 configuration has completely changed, be sure to follow this updated readme.
-* Update to 1.0.0b0 manually. This card has been temporarily removed from custom-updater.</b>
+<b>Customize the Home Assistant header!</b><br/><br/>
+:warning:<b>   Breaking Changes and Notes on version 1.0.0b0 and above.</b>
 
-### Customize the Home Assistant header!<br/><br/>
+* Starting with version 1.0.0b0 configuration has completely changed, be sure to follow this updated readme.
+* This is a major update from previous versions and everything should be considered a breaking change.
+* This card should now be "type: module" in your lovelace resources.
+* Please, update manually. The card has been temporarily removed from custom-updater.
+* The compact-custom-header.lib.js file is no longer used and can be safely deleted.
+
+
+<br/><br/>
 Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
 
 <img src="https://i.imgur.com/kz0gnZm.jpg" width="500px">
