@@ -495,6 +495,9 @@ export class CchConfigEditor extends LitElement {
         .inherited {
           opacity: 0.4;
         }
+        .inherited:hover {
+          opacity: 1;
+        }
         .side-by-side {
           display: flex;
           flex-wrap: wrap;
