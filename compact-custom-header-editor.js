@@ -54,12 +54,23 @@ export class CompactCustomHeaderEditor extends LitElement {
         >Add Exception
       </paper-button>
       <br />
+      <br />
+      <hr />
       <h3>Current User Agent:</h3>
       <br />
       <textarea class="user_agent" rows="3" readonly>
 ${navigator.userAgent}
       </textarea
       >
+      ${!this.exception
+        ? html`
+            <br />
+            <paper-button class="toggle-button"
+              @click="${localStorage.removeItem("cchCache")}"
+              >Clear CCH Cache</paper-button
+            >
+          `
+        : ""}
     `;
   }
 
@@ -130,6 +141,11 @@ ${navigator.userAgent}
           margin: 0;
           background-color: var(--primary-color);
           color: var(--text-primary-color, #fff);
+        }
+        .toggle-button {
+          margin: 4px;
+          background-color: transparent;
+          color: var(--primary-color);
         }
         .user_agent {
           display: block;
@@ -292,17 +308,7 @@ export class CchConfigEditor extends LitElement {
             `
           : ""}
       </div>
-      ${!this.exception
-        ? html`
-            <br />
-            <paper-button
-              @click="${localStorage.removeItem("cchCache")}"
-              raised
-              class="pink"
-              >Clear CCH Cache</paper-button
-            >
-          `
-        : ""}
+
       <h4>Button Visability:</h4>
       <div class="buttons side-by-side">
         <div
@@ -485,11 +491,6 @@ export class CchConfigEditor extends LitElement {
         }
         iron-input {
           max-width: 115px;
-        }
-        paper-button {
-          margin: 0;
-          background-color: var(--primary-color);
-          color: var(--text-primary-color, #fff);
         }
         .inherited {
           opacity: 0.4;
