@@ -23,7 +23,7 @@ This goes under "resources:" in ui-lovelace.yaml or by using the raw config edit
   type: module
 ```
 
-Add the following into all your views under "cards:".
+Add the following into all your views under "cards:" (See important notes below for views with `panel: true`).
 
 ```
 - type: custom:compact-custom-header
