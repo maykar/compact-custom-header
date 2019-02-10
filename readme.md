@@ -1,6 +1,6 @@
 # Compact Custom Header
 <b>Customize the Home Assistant header!</b><br/><br/>
-:warning:<b>   Breaking changes and notes on version 1.0.0b0 and above.</b>
+:warning:<b>   Breaking changes and notes on version 1.0.0b0 and above:</b>
 
 * Starting with version 1.0.0b0 configuration has completely changed, be sure to follow this updated readme.
 * This is a major update from previous versions and everything should be considered a breaking change.
