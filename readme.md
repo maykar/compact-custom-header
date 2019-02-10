@@ -99,9 +99,9 @@ Under exceptions set your conditions and then setup their config below. Example:
     - conditions:
         user: maykar
         user_agent: mobile
-        media_query: '(max-width: 600px)'
+        media_query: (max-width: 600px)
       config:
         options: clock
         clock_format: 12
-        hide_tabs: '4,5,9'
+        hide_tabs: 4,5,9
 ```
