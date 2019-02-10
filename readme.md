@@ -35,7 +35,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * Hiding the header or options button will remove your ability to edit from the UI. In this case you can restore the default header by adding "?disable_cch" to the end of your url. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
 
-* To use with panel view place this card inside a "container card" with the panel card (a stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. An example would be placing this card in a vertical stack with the card in the panel view.
+* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load.
 
 * The card will automatically display when "configuring ui" to allow for editing, but is otherwise hidden.
 
@@ -67,15 +67,17 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 
 ## Button Config:
 
-Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". With the exception of the options button they can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the options button drop down menu.
+Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". With the exception of the options button they can also be set to "overflow". The overflow option hides the button from the header and places it inside the options button drop down menu.
 
 ## Exception Config:
 
-You can have different settings depending on username, user agent, and media query. You can also combine any of them as an exception as well.
+You can have different settings depending on username, user agent, and media query. You can use any combination as well.
 
-* <b>user:</b> would be the Home Assistant username.
-* <b>user_agent:</b> would be any matching word or phrase from the devices user agent. You can find this at the bottom of this cards editor or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question.
-* <b>media_query:</b> can be any valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp).
+* <b>user:</b> A Home Assistant username.
+* <b>user_agent:</b> A matching word or phrase from the devices user agent. You can find this at the bottom of this cards editor or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question.
+* <b>media_query:</b> A valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp).
+
+If a config item is left out of an exceptions config the main config vaule is used.
 
 Under exceptions set your conditions and then setup their config below. Example:
 
