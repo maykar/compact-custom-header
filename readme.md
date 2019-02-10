@@ -48,6 +48,8 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 * The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
 
+* If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.
+
 ## Config Caching:
 
 Since it is required for this card to be placed on each view, caching is used so that you only need to configure the card once. The card in your first view should be set as the main config either by using the editor or by setting `main_config: true`.
