@@ -1,152 +1,117 @@
-# Compact Custom Header & Custom User/Device Views
+# Compact Custom Header
+<b>Customize the Home Assistant header!</b><br/><br/>
+:warning:<b>   Breaking changes and notes on version 1.0.0b0 and above:</b>
 
-### Customize the Home Assistant header!<br/><br/>
+* Starting with version 1.0.0b0 configuration has completely changed, be sure to follow this updated readme.
+* This is a major update from previous versions and everything should be considered a breaking change.
+* This card should now be "type: module" in your lovelace resources.
+* Please, update manually. The card has been temporarily removed from custom-updater.
+* The compact-custom-header.lib.js file is no longer used and can be safely deleted.
+
+
+<br/><br/>
 Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
 
-<img src="https://i.imgur.com/kz0gnZm.jpg" width="500px"> 
-
-<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee</span></a><br/><br/><br/>
+<img src="https://i.imgur.com/kz0gnZm.jpg" width="500px">
 
 ## Features:
-* Per user/device views and settings using usernames or user agents.
-* Hide any item or the entire header altogether.
-* Replace any icon button with a clock while keeping the buttons functionality.
-* Notifications & indicator still display if notification icon is a clock
-* Compact design.
-* Removes header text.
-* 12 or 24 hour display for time.
+* Per user/device settings using usernames, user agents, and media queries.
+* Any icon button can be hidden, made a clock, or put into options menu.
+* Hide tabs from user's and devices.
+* Compact design that removes header text.
+* 12 or 24-hour display for time.
 
 ## Installation:
 
 Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`.
 
-This goes into under "resources:" in ui-lovelace.yaml or using the raw config editor.
+This goes under "resources:" in ui-lovelace.yaml or by using the raw config editor. When updating be sure add to the version number at the end of this code.
 
 ```
 - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
-  type: js
+  type: module
 ```
 
-This goes into one of your views under "cards:" in the same file, this works best when added to each view.
+Add the following into every view under "cards:" (See important notes below for views with `panel: true`).
 
 ```
-  - type: custom:compact-custom-header
+- type: custom:compact-custom-header
 ```
-
-When updating, if not using [custom-updater](https://github.com/custom-components/custom_updater), be sure add to the version number at the end of your lovelace resources.
-
-You can use [custom-updater](https://github.com/custom-components/custom_updater) to update this card with no additional configuration. Keep in mind that custom-updater only fully works yaml mode or with Home Assistant versions below 0.84.0.
 
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
 
-# Config:
+# Important notes:
+
+* Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
+
+* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load.
+
+* The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
+
+* If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.
+
+## Config Caching:
+
+Since it is required for this card to be placed on each view, caching is used so that you only need to configure the card once. The card in your first view should be set as the main config either by using the editor or by setting `main_config: true`.
+
+You may clear the cache by clicking the button on the bottom of the editor or by adding "?clear_cch_cache" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?clear_cch_cache` Be sure to remove "?clear_cch_cache" afterwards and before making any new changes.
+
+## Config:
+
+### If not using YAML mode you can configure everything by editing the card in the editor's UI.
 
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
 |type|string|**REQUIRED**||<code>**custom:compact-custom-header**</code>|
+|main_config|boolean|false||Set this to true on your first lovelace view.
+|disable|boolean|false||Disable Compact Custom Header. Useful to use default header on a certain user agent.
 |header|boolean|true||Display or hide the header.|
-|menu|boolean|true|<img src="https://github.com/google/material-design-icons/blob/master/navigation/2x_web/ic_menu_black_18dp.png?raw=true">|Display or hide the menu icon|
-|notification|boolean|true|<img src="https://github.com/google/material-design-icons/blob/master/social/2x_web/ic_notifications_black_18dp.png?raw=true">|Display or hide the notification icon |
-|voice|boolean|true|<img src="https://github.com/google/material-design-icons/blob/master/av/2x_web/ic_mic_black_18dp.png?raw=true">|Display or hide the voice icon|
-|options|boolean|true|<img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true">|Display or hide the options icon|
-|tabs|boolean|true||Display or hide the tabs/views|
-|clock|string|no default||Change icon to clock. Choices are menu, notification, voice, and options.|
+|background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
+|menu|string|show|<img src="https://github.com/google/material-design-icons/blob/master/navigation/2x_web/ic_menu_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
+|notifications|string|show|<img src="https://github.com/google/material-design-icons/blob/master/social/2x_web/ic_notifications_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
+|voice|string|show|<img src="https://github.com/google/material-design-icons/blob/master/av/2x_web/ic_mic_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
+|options|string|show|<img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
 |clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|
-|user_agent|string|no default||Use a different config per device using username or user agent info. More on this below.
-|user_agent_views|list|no default||Hide/show tabs depending on username or user agent. More info below.
-|disable|boolean|false||Disable Compact Custom Header. To use default header on a certain user agent.
-|dir|string|'/www/custom-lovelace/compact-custom-header/'||Directory that contains this card.
-|background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
+|hide_tabs|string|||Comma-seperated list of tabs to hide. (i.e. "4,6,8")|
+|exception||||Allows for different configs when exceptions are met, see "Exception Config" below.
 
-## Example
-<b>Do not just copy and paste this example</b>, build your own using the config options above.
-Be sure to read the important notes section and the user agent/views sections.
+## Button Config:
+
+Each button (menu, notifications, voice, and options) can be set as "show", "hide", "clock", and "overflow". The overflow option hides the button from the header and places it inside the options button drop-down menu. You cannot set options to overflow as it cannot be placed inside itself.
+
+## Exception Config:
+
+You can have different settings depending on username, user agent, and media query. You can use any combination as well.
+
+* <b>user:</b> A Home Assistant username.
+* <b>user_agent:</b> A matching word or phrase from the devices user agent. You can find this at the bottom of this cards editor or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question.
+* <b>media_query:</b> A valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp).
+
+If a config item is left out of an exceptions config the main config value is used.
+
+Under exceptions set your conditions and then set up their config below. Example:
+
 ```
-- type: custom:compact-custom-header
-  header: true
-  menu: false
-  notification: true
-  voice: false
-  options: true
-  tabs: false
-  clock: notification
+- type: 'custom:compact-custom-header'
+  main_config: true
+  menu: overflow
+  options: clock
+  voice: hide
   clock_format: 12
-  clock_am_pm: true
-  disable: false
-  background_image: true
-  user_agent: maykar, mobile
-  user_agent_views:
-    - 0,1,2,3,4
-    - 1,2,4
-```
-## Important notes:
-
-* Works best when the card is added to each view with the same settings. You can try only adding this card in the first view, but if you have issues add it to each (when the browser refreshes on a page without this card, it won't load. This usually only happens on mobile devices when exiting and returning to the browser app).
-
-* When using user_agent_views and hiding this cards view for an agent, be sure to add this card to the agents new first view or else it will not load.
-
-* To use with panel view place this card inside a "container card" with the panel card (stack cards, layout-card, etc.), otherwise this card isn't "displayed" and won't load. An example would be placing this card in a vertical stack with the card in the panel view.
-
-* The clock will only display if you have set an icon to be the clock in the config.
-
-* When changing config options, you may need to refresh the page or by doing a [hard refresh](https://en.wikipedia.org/wiki/Wikipedia:Bypass_your_cache) with the cards "refresh" button or manually to get everything to display properly. You may even need to clear your cache.
-
-* If you notice your cards shifting when changing views, place this card in a vertical stack with another card in the view.
-
-* Avoid using ```header: false``` unless you're using yaml mode. Otherwise you'll have no way to edit your config other than either deleting this cards files or editing .storage (which you shouldn't do). Wait for expanding tab feature, coming soon.
-
-## Card:
-
-The card will automatically display when "configuring ui" in lovelace and has a few features to help with config.
-
-<img src="https://i.imgur.com/yjKLd9l.jpg" width="400px">
-
-* Show your current devices user agent information for easy copy and paste to config.
-* Show all tabs so that when using a device where tabs are hidden, you can temporarily show all to allow for easy configuration.
-* The refresh button will do a "hard refresh", refreshing the page ignoring cache. Helps when changing config options and things don't display correctly and will load new code after an update of the card.
-
-## User Agent (or Username) Config:
-
-You can have a different set of settings per device by using username or user agent. To find the user agent you can click "show user agent" on the card when configuring the lovelace ui or by [googling "get user agent"](http://www.google.com/search?q=get+user+agent) on the device. This is the result from my phone:
-
-<img src="https://i.imgur.com/BWs8zj8.jpg" width="300px">
-
-You could choose a few things here like "Mobile" if you wanted to use a custom header for all mobile devices, or "Android" if you wanted all android devices, or even a HA username like "maykar" but instead lets use the model number from the results "SM-G955U".
-
-Add "SM-G955U" to "user_agent" in your config and lets add my wifes username as well "thewife". So we'll use ```user_agent: SM-G955U, thewife```. Seperate each user agent with a comma.
-
-Then in any config option add a new option after a comma. These options happen in order, the first one being the default, the second being the first user_agent in config, the third being the second user_agent in config and so on.
-
-If any option is not set or empty it will fall back to the first option or default. So ```true, , false``` with the second option empty is essentially ```true, true, false``` and just ```true``` will be true for all user agents. If a device matches more than one user agent, for example: ```user_agent: Mobile, Android``` then the last matched user agent is the one used, so in this case ```Android```.
-
-Here's an example config showing:<br>
-
-|User Agent|Config
-|-|-
-|**default** |menu button shown and "notifications" as a 24 hour clock,<br>
-|**my phone "SM-G955U"** |menu button hidden and "options" as a 12 hour clock with AM/PM shown,<br>
-|**wife's username "thewife"** |menu button shown and "menu" as a 12 hour clock without AM/PM.
-
-
-```
-- type: custom:compact-custom-header
-  user_agent: SM-G955U, thewife
-  menu: true, false
-  clock: notification, options, menu
-  clock_format: 24, 12, 12
-  clock_am_pm: false, true  # don't need to set a third, will fall back to the first option (false) when not set
-```
-
-## User Agent (or Username) Views:
-
-You can set what tabs are shown/hidden depending on username or user agent. This option follows the same user agent rules explained above.<br><br>Start each view with a hyphen and seperate each tab number with a comma. View numbering starts at zero. If the first visible tab is not tab 0, like ```- 2,3,4``` then the user agent's device is automatically redirected to the first visible tab, in this case tab 2. To avoid issues, add this card with the same config options in each view or, at the very least, the starting views for each user agent. Example:
-
-```
-- type: custom:compact-custom-header
-  user_agent: thewife, NHG47Q
-  user_agent_views:
-    - 0,1,2,3,4   # Default view.
-    - 2,3,4     # The user thewife's view. Will automatically redirect from first view to second.
-    - 0,1,4       # NHG47Q's view.
+  exceptions:
+    - conditions:
+        user: maykar
+      config:
+        voice: show
+        options: clock
+        clock_format: 24
+    - conditions:
+        user: maykar
+        user_agent: mobile
+        media_query: (max-width: 600px)
+      config:
+        options: clock
+        clock_format: 12
+        hide_tabs: 4,5,9
 ```
