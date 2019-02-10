@@ -48,7 +48,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     static async getConfigElement() {
-      await import("./compact-custom-header-editor.js?v=0.3.0");
+      await import("./compact-custom-header-editor.js?v=1.0.0b0");
       return document.createElement("compact-custom-header-editor");
     }
 
