@@ -1,6 +1,7 @@
 # Compact Custom Header
-
-<b>:warning: Starting with version 1.0.0b0 configuration has completely changed, be sure to follow this updated readme.</b>
+:warning:
+* <b>Starting with version 1.0.0b0 configuration has completely changed, be sure to follow this updated readme.
+* Update to 1.0.0b0 manually. This card has been temporarily removed from custom-updater.</b>
 
 ### Customize the Home Assistant header!<br/><br/>
 Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
@@ -12,7 +13,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 * Any icon button can be hidden, made a clock, or put into options menu.
 * Hide tabs from user's and devices.
 * Compact design that removes header text.
-* 12 or 24 hour display for time.
+* 12 or 24-hour display for time.
 
 ## Installation:
 
@@ -35,21 +36,21 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 # Important notes:
 
-* Hiding the header or options button will remove your ability to edit from the UI. In this case you can restore the default header by adding "?disable_cch" to the end of your url. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
+* Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
 
 * To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load.
 
-* The card will automatically display when "configuring ui" to allow for editing, but is otherwise hidden.
+* The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
 
 ## Config Caching:
 
 Since it is required for this card to be placed on each view, caching is used so that you only need to configure the card once. The card in your first view should be set as the main config either by using the editor or by setting `main_config: true`.
 
-You may clear the cache by clicking the button on the bottom of the editor or by adding "?clear_cch_cache" to the end of your url. Example: `http://192.168.1.42:8123/lovelace/0?clear_cch_cache`
+You may clear the cache by clicking the button on the bottom of the editor or by adding "?clear_cch_cache" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?clear_cch_cache`
 
 ## Config:
 
-### If not using yaml mode you can configure everything by editing the card in the editor's UI.
+### If not using YAML mode you can configure everything by editing the card in the editor's UI.
 
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
@@ -69,7 +70,7 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 
 ## Button Config:
 
-Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". With the exception of the options button they can also be set to "overflow". The overflow option hides the button from the header and places it inside the options button drop down menu.
+Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". With the exception of the options button, they can also be set to "overflow". The overflow option hides the button from the header and places it inside the options button drop-down menu.
 
 ## Exception Config:
 
@@ -79,9 +80,9 @@ You can have different settings depending on username, user agent, and media que
 * <b>user_agent:</b> A matching word or phrase from the devices user agent. You can find this at the bottom of this cards editor or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question.
 * <b>media_query:</b> A valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp).
 
-If a config item is left out of an exceptions config the main config vaule is used.
+If a config item is left out of an exceptions config the main config value is used.
 
-Under exceptions set your conditions and then setup their config below. Example:
+Under exceptions set your conditions and then set up their config below. Example:
 
 ```
 - type: 'custom:compact-custom-header'
