@@ -54,6 +54,8 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 Since it is required for this card to be placed on each view, caching is used so that you only need to configure the card once. The card in your first view should be set as the main config either by using the editor or by setting `main_config: true`.
 
+Add `- type: custom:compact-custom-header` to each view and on the first lovelace view set `main_config: true` or use the toggle in the editor. Then set all of your config in the first (main_config) view.
+
 You may clear the cache by clicking the button on the bottom of the editor or by adding "?clear_cch_cache" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?clear_cch_cache` Be sure to remove "?clear_cch_cache" afterwards and before making any new changes.
 
 ## Config:
