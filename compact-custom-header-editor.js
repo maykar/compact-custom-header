@@ -56,12 +56,10 @@ export class CompactCustomHeaderEditor extends LitElement {
       <br />
       <br />
       <hr />
-      <h3>Current User Agent:</h3>
+      <h3>Current User:</h3> ${this.hass.user.name}
       <br />
-      <textarea class="user_agent" rows="3" readonly>
-${navigator.userAgent}
-      </textarea
-      >
+      <h3>Current User Agent:</h3> ${navigator.userAgent}
+      <br />
       ${!this.exception
         ? html`
             <br />
@@ -136,6 +134,7 @@ ${navigator.userAgent}
         h3,
         h4 {
           margin-bottom: 0;
+          text-decoration: underline;
         }
         paper-button {
           margin: 0;
@@ -482,6 +481,7 @@ export class CchConfigEditor extends LitElement {
         h3,
         h4 {
           margin-bottom: 0;
+          text-decoration: underline;
         }
         paper-toggle-button {
           padding-top: 16px;
