@@ -23,7 +23,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 ## Installation:
 
-Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`.
+Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. If you're copy/pasting the code always copy from raw files on github (button on top right when viewing code).
 
 This goes under "resources:" in ui-lovelace.yaml or by using the raw config editor. When updating be sure add to the version number at the end of this code.
 
