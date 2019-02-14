@@ -1,10 +1,12 @@
 import {
-  LitElement,
   html,
   fireEvent,
   defaultConfig
 } from "./compact-custom-header.js";
 
+const LitElement = Object.getPrototypeOf(
+  customElements.get("ha-panel-lovelace")
+);
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
 
