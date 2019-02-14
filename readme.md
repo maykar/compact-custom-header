@@ -5,7 +5,7 @@
 * Starting with version 1.0.0b0 configuration has completely changed, be sure to follow this updated readme.
 * This is a major update from previous versions and everything should be considered a breaking change.
 * This card should now be "type: module" in your lovelace resources.
-* Please, update manually. The card has been temporarily removed from custom-updater.
+* Please, update manually if updating from a version lower than 1.0.0b0.
 * The compact-custom-header.lib.js file is no longer used and can be safely deleted.
 
 
