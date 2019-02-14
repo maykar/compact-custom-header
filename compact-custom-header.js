@@ -1,8 +1,9 @@
-import "./compact-custom-header-editor.js?v=1.0.0b1";
+import "./compact-custom-header-editor.js?v=1.0.0b2";
 
-export const LitElement = Object.getPrototypeOf(
+const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
 );
+
 export const html = LitElement.prototype.html;
 
 export const fireEvent = (node, type, detail, options) => {
@@ -24,12 +25,12 @@ export const defaultConfig = {
   notifications: "show",
   voice: "show",
   options: "show",
-  clock: "none",
   clockFormat: 12,
   clock_am_pm: true,
   disable: false,
   background_image: false,
-  main_config: false
+  main_config: false,
+  hide_tabs: []
 };
 
 if (!customElements.get("compact-custom-header")) {
@@ -156,6 +157,7 @@ if (!customElements.get("compact-custom-header")) {
       };
 
       if (this.config.main_config) {
+        localStorage.removeItem("cchCache");
         delete this.cchConfig.main_config;
         localStorage.setItem("cchCache", JSON.stringify(this.cchConfig));
       }
