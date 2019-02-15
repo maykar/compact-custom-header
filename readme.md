@@ -1,6 +1,6 @@
 # Compact Custom Header
-<b>Customize the Home Assistant header!</b><br/><br/>
-:warning:<b>   Breaking changes and notes on version 1.0.0b0 and above:</b>
+**Customize the Home Assistant header!**<br/><br/>
+:warning: **Breaking changes and notes on version 1.0.0b0 and above:**
 
 * Starting with version 1.0.0b0 configuration has completely changed, be sure to follow this updated readme.
 * This is a major update from previous versions and everything should be considered a breaking change.
@@ -86,11 +86,11 @@ Each button (menu, notifications, voice, and options) can be set as "show", "hid
 
 You can have different settings depending on username, user agent, and media query. You can use any combination as well.
 
-* <b>user:</b> A Home Assistant username.
-* <b>user_agent:</b> A matching word or phrase from the devices user agent. You can find this at the bottom of this cards editor or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question.
-* <b>media_query:</b> A valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp).
+* **user:** A Home Assistant username.
+* **user_agent:** A matching word or phrase from the devices user agent. You can find this at the bottom of this cards editor or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question.
+* **media_query:** A valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp).
 
-If a config item is left out of an exceptions config the main config value is used.
+**If a config item is left out of an exceptions config the main config value is used.**
 
 Under exceptions set your conditions and then set up their config below. Example:
 
