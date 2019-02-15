@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.0b3";
+import "./compact-custom-header-editor.js?v=1.0.0b4";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -120,6 +120,13 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     buildConfig() {
+      if (window.location.href.includes("clear_cch_cache")) {
+        localStorage.removeItem("cchCache");
+        window.location.replace(
+          window.location.href.replace("?clear_cch_cache","")
+        );
+      }
+
       if (this.firstRun) {
         this.firstRun = false;
         this.userVars = {
@@ -138,10 +145,6 @@ if (!customElements.get("compact-custom-header")) {
             exceptionConfig = exception.config;
           }
         });
-      }
-
-      if (window.location.href.includes("clear_cch_cache") && !cleared) {
-        localStorage.removeItem("cchCache");
       }
 
       this.cchCache = {};
@@ -389,7 +392,6 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     hideTabs(tabContainer, tabs, hidden_tabs) {
-      // Convert hide_tabs config to array
       for (const tab of hidden_tabs) {
         if (!tabs[tab]) {
           continue;
@@ -400,7 +402,10 @@ if (!customElements.get("compact-custom-header")) {
       // Check if current tab is a hidden tab.
       const activeTab = tabContainer.querySelector("paper-tab.iron-selected");
       const activeTabIndex = tabs.indexOf(activeTab);
-      if (hidden_tabs.includes(activeTabIndex)) {
+      if (
+        hidden_tabs.includes(activeTabIndex) &&
+        hidden_tabs.length != tabs.length
+      ) {
         let i = 0;
         // Find first not hidden view
         while (hidden_tabs.includes(i)) {
