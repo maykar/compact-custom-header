@@ -22,6 +22,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Version**
 Home Assistant Version
+Yaml mode or storage mode?
 Compact Custom Header Version
 Browser type and version
 
