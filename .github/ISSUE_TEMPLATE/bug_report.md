@@ -1,23 +1,23 @@
 ---
 name: Bug report
-about: Do not post an issue here until you have read the readme especially the "important
-  notes" section and have done a hard browser refresh.
+about: Do not post an issue here until you have read the readme and have cleared both
+  your browser's and CCH's cache. Submit report if problem persists.
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-Failure to follow the template below will result in your issue being closed.
+## Failure to follow the template will result in your issue being closed.
 
 **Describe the bug**
 A clear and concise description of what the bug is.
 
 **Config**
-Insert your lovelace code for the card here as a codeblock, do not paste as plain text.
+Insert your lovelace code for the card as a codeblock, do not paste as plain text.
 
 **Error**
-HA errors from the log as well as your browser's Dev-Tools errors (F12) are helpful. Please explain if card is functional despite error message.
+HA log errors & browser Dev-Tools errors (F12). Please explain if card is functional despite error message.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
