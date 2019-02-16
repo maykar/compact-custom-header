@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.0b4";
+import "./compact-custom-header-editor.js?v=1.0.0b5";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -201,13 +201,13 @@ if (!customElements.get("compact-custom-header")) {
         ? JSON.parse("[" + this.cchConfig.hide_tabs + "]")
         : [];
       if (!this.editMode) this.hideCard();
-      if (this.editMode && !this.config.disable) {
+      if (this.editMode && !this.cchConfig.disable) {
         this.removeMargin(tabContainer);
         if (buttons.options) {
           this.insertEditMenu(buttons.options, tabs);
         }
       } else if (
-        !this.config.disable &&
+        !this.cchConfig.disable &&
         !window.location.href.includes("disable_cch")
       ) {
         const marginRight = this.marginRight;
