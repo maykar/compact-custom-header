@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Do not post an issue here until you have read the readme and have cleared both
-  your browser's and CCH's cache. Submit report if problem persists.
+  your browser's and CCH's cache. Submit report if the issue persists.
 title: ''
 labels: ''
 assignees: ''
