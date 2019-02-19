@@ -335,7 +335,7 @@ export class CchConfigEditor extends LitElement {
           : ""}
       </div>
 
-      <h4>Button Visability:</h4>
+      <h4>Button Visibility:</h4>
       <div class="buttons side-by-side">
         <div
           class="${this.exception && this.config.menu === undefined
@@ -464,8 +464,8 @@ export class CchConfigEditor extends LitElement {
             </div>
           `
         : ""}
-      <h4>Tab Visability:</h4>
-        <paper-dropdown-menu id="tabs" @value-changed="${this._tabVisability}">
+      <h4>Tab Visibility:</h4>
+        <paper-dropdown-menu id="tabs" @value-changed="${this._tabVisibility}">
         <paper-listbox slot="dropdown-content"
           .selected="${this._show_tabs.length > 0 ? "1" : "0"}"
         >
@@ -504,7 +504,7 @@ export class CchConfigEditor extends LitElement {
     `;
   }
 
-  _tabVisability() {
+  _tabVisibility() {
     let show = this.shadowRoot.querySelector('[id="show"]');
     let hide = this.shadowRoot.querySelector('[id="hide"]');
     if (this.shadowRoot.querySelector('[id="tabs"]').value == "Hide Tabs") {
