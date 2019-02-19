@@ -49,6 +49,20 @@ export class CompactCustomHeaderEditor extends LitElement {
   }
 
   render() {
+    const mwc_button = customElements.get("mwc-button") ? true : false;
+    const clear_cache_button = mwc_button
+      ? html`
+        <mwc-button style="margin-left:-15px" class="toggle-button"
+          @click="${localStorage.removeItem("cchCache")}"
+          >Clear CCH Cache</mwc-button
+        >
+      `
+      : html`
+        <paper-button class="toggle-button"
+          @click="${localStorage.removeItem("cchCache")}"
+          >Clear CCH Cache</paper-button
+        >
+      `;
     return html`
       ${this.renderStyle()}
       <cch-config-editor
@@ -73,9 +87,17 @@ export class CompactCustomHeaderEditor extends LitElement {
           })
         : ""}
       <br />
-      <paper-button raised @click="${this._addException}"
-        >Add Exception
-      </paper-button>
+      ${mwc_button
+        ? html`
+          <mwc-button raised @click="${this._addException}"
+            >Add Exception
+          </mwc-button>
+        `
+        : html`
+          <paper-button raised @click="${this._addException}"
+            >Add Exception
+          </paper-button>
+        `}
       <br />
       <br />
       <hr />
@@ -86,10 +108,7 @@ export class CompactCustomHeaderEditor extends LitElement {
       ${!this.exception
         ? html`
             <br />
-            <paper-button class="toggle-button"
-              @click="${localStorage.removeItem("cchCache")}"
-              >Clear CCH Cache</paper-button
-            >
+            ${clear_cache_button}
           `
         : ""}
     `;
