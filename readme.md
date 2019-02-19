@@ -23,22 +23,37 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 ## Installation:
 
+### Manual installation
 Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. Be sure you're using the raw files from github (button on top right when viewing code).
 
 This goes under "resources:" in ui-lovelace.yaml or by using the raw config editor. When updating be sure add to the version number at the end of this code.
 
-```
+```yaml
 - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
   type: module
 ```
 
 Add the following into every view under "cards:" (See important notes below for views with `panel: true`).
 
-```
+```yaml
 - type: custom:compact-custom-header
 ```
 
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
+
+### Installation and tracking with `custom_updater`
+
+1. Make sure the [custom_updater](https://github.com/custom-components/custom_updater) component is installed and working.
+2. Configure Lovelace to load the card.
+
+```yaml
+resources:
+  - url: /customcards/github/maykar/compact-custom-header.js?track=true
+    type: module
+```
+
+3. Run the service `custom_updater.check_all` or click the "CHECK" button if you use the tracker-card.
+4. Refresh the website.
 
 # Important notes:
 
@@ -95,7 +110,7 @@ You can have different settings depending on username, user agent, and media que
 
 Under exceptions set your conditions and then set up their config below. Example:
 
-```
+```yaml
 - type: 'custom:compact-custom-header'
   main_config: true
   menu: overflow
@@ -111,7 +126,7 @@ Under exceptions set your conditions and then set up their config below. Example
         clock_format: 24
     - conditions:
         user: maykar
-        user_agent: mobile
+        user_agent: Mobile
         media_query: (max-width: 600px)
       config:
         options: clock
