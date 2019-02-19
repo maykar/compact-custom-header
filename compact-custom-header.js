@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.0b5";
+import "./compact-custom-header-editor.js?v=1.0.0b6";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -30,7 +30,8 @@ export const defaultConfig = {
   disable: false,
   background_image: false,
   main_config: false,
-  hide_tabs: []
+  hide_tabs: [],
+  show_tabs: []
 };
 
 if (!customElements.get("compact-custom-header")) {
@@ -196,10 +197,19 @@ if (!customElements.get("compact-custom-header")) {
         root.querySelector("app-toolbar").className == "edit-mode";
       const buttons = this.getButtonElements(root);
       const tabContainer = root.querySelector("paper-tabs");
-      const tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
-      const hidden_tabs = this.cchConfig.hide_tabs 
-        ? JSON.parse("[" + this.cchConfig.hide_tabs + "]")
+      const tabs = tabContainer
+        ? Array.from(tabContainer.querySelectorAll("paper-tab"))
         : [];
+      let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
+      const shown_tabs = JSON.parse("[" + this.cchConfig.show_tabs + "]");
+      // Invert shown_tabs to hidden tabs.
+      if (!hidden_tabs.length && shown_tabs.length) {
+        let total_tabs = [];
+        for (let i = 0; i < tabs.length; i++) {
+          total_tabs.push(i);
+        }
+        hidden_tabs = total_tabs.filter( ( el ) => !shown_tabs.includes( el ) );
+      }
       if (!this.editMode) this.hideCard();
       if (this.editMode && !this.cchConfig.disable) {
         this.removeMargin(tabContainer);
@@ -212,23 +222,18 @@ if (!customElements.get("compact-custom-header")) {
       ) {
         const marginRight = this.marginRight;
         this.styleHeader(root, tabContainer, marginRight);
-        this.styleButtons(buttons);
-        if (this.cchConfig.hide_tabs) {
+        this.styleButtons(buttons, tabs);
+        if (this.cchConfig.hide_tabs && tabContainer) {
           this.hideTabs(tabContainer, tabs, hidden_tabs);
         }
         this.restoreTabs(tabs, hidden_tabs);
         for (const button in buttons) {
-          if (this.cchConfig[button] == "clock" && button == "options") {
+          if (this.cchConfig[button] == "clock") {
             this.insertClock(
               buttons,
-              buttons[button],
-              tabContainer,
-              marginRight
-            );
-          } else if (this.cchConfig[button] == "clock") {
-            this.insertClock(
-              buttons,
-              buttons[button].shadowRoot,
+              button == "options"
+                ? buttons[button]
+                : buttons[button].shadowRoot,
               tabContainer,
               marginRight
             );
@@ -255,7 +260,7 @@ if (!customElements.get("compact-custom-header")) {
           .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver")
           .shadowRoot.querySelector("ha-panel-lovelace")
           .shadowRoot.querySelector("hui-root").shadowRoot;
-      } catch {
+      } catch(e) {
         console.log("Can't find 'hui-root', going to walk the DOM to find it.");
       }
       this.recursiveWalk(document, "HUI-ROOT", node => {
@@ -334,7 +339,8 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    styleButtons(buttons) {
+    styleButtons(buttons, tabs) {
+      let topMargin = tabs.length > 0 ? "margin-top:111px;" : ""
       for (const button in buttons) {
         if (button == "options" && this.cchConfig[button] == "overflow") {
           this.cchConfig[button] = "show";
@@ -345,7 +351,7 @@ if (!customElements.get("compact-custom-header")) {
         ) {
           buttons[button].style.cssText = `
               z-index:1;
-              margin-top:111px;
+              ${topMargin}
               ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
             `;
         } else if (this.cchConfig[button] == "overflow") {
@@ -385,7 +391,7 @@ if (!customElements.get("compact-custom-header")) {
     restoreTabs(tabs, hidden_tabs) {
       for (let i = 0; i < tabs.length; i++) {
         let hidden = hidden_tabs.includes(i);
-        if (tabs[i].style.display = "none" && !hidden) {
+        if (tabs[i].style.display == "none" && !hidden) {
           tabs[i].style.removeProperty("display");
         }
       }
@@ -463,9 +469,9 @@ if (!customElements.get("compact-custom-header")) {
         clockIronIcon.style.display = "none";
       }
 
-      if (this.cchConfig.menu == "clock") {
+      if (this.cchConfig.menu == "clock" && tabContainer) {
         tabContainer.style.marginLeft = `${clockWidth + 15}px`;
-      } else {
+      } else if (tabContainer) {
         tabContainer.style.marginRight = `${clockWidth + marginRight}px`;
       }
       const clockFormat = {
