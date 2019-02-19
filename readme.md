@@ -44,7 +44,7 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 ### Installation and tracking with `custom_updater`
 
 1. Make sure you've the [custom_updater](https://github.com/custom-components/custom_updater) component installed and working.
-2. Configure Lovelace to load the card:.
+2. Configure Lovelace to load the card.
 
 ```yaml
 resources:
@@ -54,7 +54,6 @@ resources:
 
 3. Run the service `custom_updater.check_all` or click the "CHECK" button if you use the tracker-card.
 4. Refresh the website.
-
 
 # Important notes:
 
