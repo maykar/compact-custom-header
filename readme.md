@@ -23,7 +23,7 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 ## Installation:
 
-### Manual installation
+### Manual installation:
 Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. Be sure you're using the raw files from github (button on top right when viewing code).
 
 This goes under "resources:" in ui-lovelace.yaml or by using the raw config editor. When updating be sure add to the version number at the end of this code.
@@ -41,7 +41,7 @@ Add the following into every view under "cards:" (See important notes below for 
 
 You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
 
-### Installation and tracking with `custom_updater`
+### Installation and tracking with custom_updater:
 
 1. Make sure the [custom_updater](https://github.com/custom-components/custom_updater) component is installed and working.
 2. Configure Lovelace to load the card.
