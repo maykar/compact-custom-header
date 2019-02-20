@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.0b7";
+import "./compact-custom-header-editor.js?v=1.0.0b8";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -439,12 +439,6 @@ if (!customElements.get("compact-custom-header")) {
     insertClock(buttons, clock_button, tabContainer, marginRight) {
       const clockIcon = clock_button.querySelector("paper-icon-button");
       const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
-
-      buttons.notifications.shadowRoot.querySelector(
-        '[class="indicator"]'
-      ).style.cssText =
-        this.cchConfig.notifications == "clock" ? "top:14.5px;left:-7px" : "";
-
       const clockWidth =
         this.cchConfig.clock_format == 12 && this.cchConfig.clock_am_pm
           ? 110
