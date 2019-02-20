@@ -8,7 +8,7 @@ assignees: ''
 
 ---
 
-<!-- Failure to follow this template will result in your issue being closed. Please, search existing and closed issues to see if other's have already posted the issue. -->
+<!-- Failure to use the template will result in an issue's closing. Do not post until you've read the readme, searched existing and closed issues, and cleared your browser and CCH cache. Continue if the problem persists. -->
 
 ## Describe the bug:
 <!-- A clear and concise description of what the bug is. -->
