@@ -8,26 +8,20 @@ assignees: ''
 
 ---
 
-## Failure to follow the template will result in your issue being closed.
+<!-- Failure to follow this template will result in your issue being closed. -->
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Describe the bug:
+<!-- A clear and concise description of what the bug is. -->
 
-**Config**
-Insert your lovelace code for the card as a codeblock, do not paste as plain text.
+## Config:
+<!-- Insert your lovelace code for the card as a codeblock, do not paste as plain text. -->
 
-**Error**
-HA log errors & browser Dev-Tools errors (F12). Please explain if card is functional despite error message.
+## Error:
+<!-- HA log errors & browser Dev-Tools errors (F12). Please explain if card is functional despite error message. -->
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## Versions:
+<!-- Please include all of the following: Version of this card, Home Assistant version, browser type and version, and if you use YAML or Storage Mode -->
 
-**Versions**
-Please include all of the following:
-* Compact Custom Header Version:
-* Home Assistant version:
-* YAML or storage mode:
-* Browser type and version:
+<!-- If applicable, add screenshots to help explain your problem. -->
 
-**Additional context**
-Any other information that would be helpful.
+<!-- Please include any other information that you think may be helpful. -->
