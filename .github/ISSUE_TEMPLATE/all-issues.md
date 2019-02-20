@@ -1,7 +1,7 @@
 ---
 name: All Issues
-about: Do not post an issue here until you have read the readme and have cleared both
-  your browser's and CCH's cache. Submit report if the issue persists.
+about: Failure to use the template will result in an issue's closing. Do not post
+  until you've read the readme and cleared your browser's and CCH's cache.
 title: ''
 labels: ''
 assignees: ''
