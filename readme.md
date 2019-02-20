@@ -96,7 +96,7 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 
 ## Button Config:
 
-Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". Each button except for the options button can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the options button's drop-down menu.
+Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". Each button except for the options button can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the option button's drop-down menu.
 
 ## Exception Config:
 
