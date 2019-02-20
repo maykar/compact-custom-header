@@ -8,7 +8,7 @@ assignees: ''
 
 ---
 
-<!-- Failure to follow this template will result in your issue being closed. -->
+<!-- Failure to follow this template will result in your issue being closed. Please, search existing and closed issues to see if other's have already posted the issue. -->
 
 ## Describe the bug:
 <!-- A clear and concise description of what the bug is. -->
