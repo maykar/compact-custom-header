@@ -22,7 +22,7 @@ const defaultConfig = {
   notifications: "show",
   voice: "show",
   options: "show",
-  clockFormat: 12,
+  clock_format: 12,
   clock_am_pm: true,
   disable: false,
   background_image: false,
