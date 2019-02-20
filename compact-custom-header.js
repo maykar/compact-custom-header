@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.0b8";
+import "./compact-custom-header-editor.js?v=1.0.0b9";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -25,7 +25,7 @@ export const defaultConfig = {
   notifications: "show",
   voice: "show",
   options: "show",
-  clockFormat: 12,
+  clock_format: 12,
   clock_am_pm: true,
   disable: false,
   background_image: false,
@@ -136,6 +136,11 @@ if (!customElements.get("compact-custom-header")) {
         };
       }
 
+      let retrievedCache = localStorage.getItem("cchCache");
+      if (!this.config.main_config && retrievedCache) {
+        this.config = JSON.parse(retrievedCache);
+      }
+
       let exceptionConfig = {};
       let highestMatch = 0;
       if (this.config.exceptions) {
@@ -148,12 +153,6 @@ if (!customElements.get("compact-custom-header")) {
         });
       }
 
-      this.cchCache = {};
-      let retrievedCache = localStorage.getItem("cchCache");
-      if (!this.config.main_config && retrievedCache) {
-        this.config = JSON.parse(retrievedCache);
-      }
-
       this.cchConfig = {
         ...defaultConfig,
         ...this.config,
@@ -161,9 +160,9 @@ if (!customElements.get("compact-custom-header")) {
       };
 
       if (this.config.main_config) {
-        localStorage.removeItem("cchCache");
-        delete this.cchConfig.main_config;
-        localStorage.setItem("cchCache", JSON.stringify(this.cchConfig));
+        let cache = this.config;
+        delete cache.main_config;
+        localStorage.setItem("cchCache", JSON.stringify(cache));
       }
 
       this.run();
