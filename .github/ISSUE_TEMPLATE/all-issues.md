@@ -1,7 +1,8 @@
 ---
 name: All Issues
-about: Failure to use the template will result in an issue's closing. Do not post
-  until you've read the readme and cleared your browser and CCH cache.
+about: Failure to use the template will result in an issue's closing. Don't post until
+  you read the readme, searched existing/closed issues, & cleared your browser & CCH
+  cache. Continue if the issue persists
 title: ''
 labels: ''
 assignees: ''
