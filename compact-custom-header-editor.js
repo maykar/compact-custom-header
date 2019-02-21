@@ -34,6 +34,8 @@ const defaultConfig = {
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
     this._config = config;
+    console.log("Update...");
+    this.requestUpdate();
   }
 
   static get properties() {
@@ -135,27 +137,26 @@ export class CompactCustomHeaderEditor extends LitElement {
         }
       ];
     }
-    const newConfig = {
+    this._config = {
       ...this._config,
       exceptions: newExceptions
     };
 
     fireEvent(this, "config-changed", {
-      config: newConfig
+      config: this._config
     });
-    this.requestUpdate();
   }
 
   _configChanged(ev) {
     if (!this._config) {
       return;
     }
-    const newConfig = {
+    this._config = {
       ...this._config,
       ...ev.detail.config
     };
     fireEvent(this, "config-changed", {
-      config: newConfig
+      config: this._config
     });
   }
 
@@ -166,13 +167,13 @@ export class CompactCustomHeaderEditor extends LitElement {
     const target = ev.target.index;
     const newExceptions = this._config.exceptions.slice(0);
     newExceptions[target] = ev.detail.exception;
-    const newConfig = {
+    this._config = {
       ...this._config,
       exceptions: newExceptions
     };
 
     fireEvent(this, "config-changed", {
-      config: newConfig
+      config: this._config
     });
   }
 
@@ -181,7 +182,13 @@ export class CompactCustomHeaderEditor extends LitElement {
       return;
     }
     const target = ev.target;
-    this._config.exceptions.splice(target.index, 1);
+    const newExceptions = this._config.exceptions.slice(0);
+    newExceptions.splice(target.index, 1);
+    this._config = {
+      ...this._config,
+      exceptions: newExceptions
+    };
+
     fireEvent(this, "config-changed", {
       config: this._config
     });
