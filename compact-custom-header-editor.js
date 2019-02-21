@@ -52,17 +52,20 @@ export class CompactCustomHeaderEditor extends LitElement {
     const mwc_button = customElements.get("mwc-button") ? true : false;
     const clear_cache_button = mwc_button
       ? html`
-        <mwc-button style="margin-left:-15px" class="toggle-button"
-          @click="${localStorage.removeItem("cchCache")}"
-          >Clear CCH Cache</mwc-button
-        >
-      `
+          <mwc-button
+            style="margin-left:-15px"
+            class="toggle-button"
+            @click="${localStorage.removeItem("cchCache")}"
+            >Clear CCH Cache</mwc-button
+          >
+        `
       : html`
-        <paper-button class="toggle-button"
-          @click="${localStorage.removeItem("cchCache")}"
-          >Clear CCH Cache</paper-button
-        >
-      `;
+          <paper-button
+            class="toggle-button"
+            @click="${localStorage.removeItem("cchCache")}"
+            >Clear CCH Cache</paper-button
+          >
+        `;
     return html`
       ${this.renderStyle()}
       <cch-config-editor
@@ -89,21 +92,23 @@ export class CompactCustomHeaderEditor extends LitElement {
       <br />
       ${mwc_button
         ? html`
-          <mwc-button raised @click="${this._addException}"
-            >Add Exception
-          </mwc-button>
-        `
+            <mwc-button raised @click="${this._addException}"
+              >Add Exception
+            </mwc-button>
+          `
         : html`
-          <paper-button raised @click="${this._addException}"
-            >Add Exception
-          </paper-button>
-        `}
+            <paper-button raised @click="${this._addException}"
+              >Add Exception
+            </paper-button>
+          `}
       <br />
       <br />
       <hr />
-      <h3>Current User:</h3> ${this.hass.user.name}
+      <h3>Current User:</h3>
+      ${this.hass.user.name}
       <br />
-      <h3>Current User Agent:</h3> ${navigator.userAgent}
+      <h3>Current User Agent:</h3>
+      ${navigator.userAgent}
       <br />
       ${!this.exception
         ? html`
@@ -115,21 +120,28 @@ export class CompactCustomHeaderEditor extends LitElement {
   }
 
   _addException() {
+    let newExceptions;
     if (this._config.exceptions) {
-      this._config.exceptions.push({
+      newExceptions = this._config.exceptions.slice(0);
+      newExceptions.push({
         conditions: {},
         config: {}
       });
     } else {
-      this._config.exceptions = [
+      newExceptions = [
         {
           conditions: {},
           config: {}
         }
       ];
     }
+    const newConfig = {
+      ...this._config,
+      exceptions: newExceptions
+    };
+
     fireEvent(this, "config-changed", {
-      config: this._config
+      config: newConfig
     });
     this.requestUpdate();
   }
@@ -138,12 +150,12 @@ export class CompactCustomHeaderEditor extends LitElement {
     if (!this._config) {
       return;
     }
-    this._config = {
+    const newConfig = {
       ...this._config,
       ...ev.detail.config
     };
     fireEvent(this, "config-changed", {
-      config: this._config
+      config: newConfig
     });
   }
 
@@ -151,10 +163,16 @@ export class CompactCustomHeaderEditor extends LitElement {
     if (!this._config) {
       return;
     }
-    const target = ev.target;
-    this._config.exceptions[target.index] = ev.detail.exception;
+    const target = ev.target.index;
+    const newExceptions = this._config.exceptions.slice(0);
+    newExceptions[target] = ev.detail.exception;
+    const newConfig = {
+      ...this._config,
+      exceptions: newExceptions
+    };
+
     fireEvent(this, "config-changed", {
-      config: this._config
+      config: newConfig
     });
   }
 
@@ -484,15 +502,17 @@ export class CchConfigEditor extends LitElement {
           `
         : ""}
       <h4>Tab Visibility:</h4>
-        <paper-dropdown-menu id="tabs" @value-changed="${this._tabVisibility}">
-        <paper-listbox slot="dropdown-content"
+      <paper-dropdown-menu id="tabs" @value-changed="${this._tabVisibility}">
+        <paper-listbox
+          slot="dropdown-content"
           .selected="${this._show_tabs.length > 0 ? "1" : "0"}"
         >
           <paper-item>Hide Tabs</paper-item>
           <paper-item>Show Tabs</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
-      <div id="show"
+      <div
+        id="show"
         style="display:${this._show_tabs.length > 0 ? "initial" : "none"}"
       >
         <paper-input
@@ -506,7 +526,8 @@ export class CchConfigEditor extends LitElement {
         >
         </paper-input>
       </div>
-      <div id="hide"
+      <div
+        id="hide"
         style="display:${this._show_tabs.length > 0 ? "none" : "initial"}"
       >
         <paper-input
@@ -599,9 +620,9 @@ export class CchConfigEditor extends LitElement {
           flex-grow: 1;
         }
         .buttons > div iron-icon {
-          padding-right:15px;
-          padding-top:20px;
-          margin-left:-3px;
+          padding-right: 15px;
+          padding-top: 20px;
+          margin-left: -3px;
         }
         .buttons > div:nth-of-type(2n) iron-icon {
           padding-left: 20px;
@@ -723,9 +744,12 @@ export class CchExceptionEditor extends LitElement {
     if (!this.exception) {
       return;
     }
-    this.exception.conditions = ev.detail.conditions;
+    const newException = {
+      ...this.exception,
+      conditions: ev.detail.conditions
+    };
     fireEvent(this, "cch-exception-changed", {
-      exception: this.exception
+      exception: newException
     });
   }
 
@@ -734,9 +758,9 @@ export class CchExceptionEditor extends LitElement {
     if (!this.exception) {
       return;
     }
-    this.exception.config = ev.detail.config;
+    const newException = { ...this.exception, config: ev.detail.config };
     fireEvent(this, "cch-exception-changed", {
-      exception: this.exception
+      exception: newException
     });
   }
 }
