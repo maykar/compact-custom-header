@@ -34,7 +34,6 @@ const defaultConfig = {
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
     this._config = config;
-    console.log("Update...");
     this.requestUpdate();
   }
 
