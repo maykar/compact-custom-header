@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.1b0";
+import "./compact-custom-header-editor.js?v=1.0.1b1";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -27,6 +27,7 @@ export const defaultConfig = {
   options: "show",
   clock_format: 12,
   clock_am_pm: true,
+  clock_date: false,
   disable: false,
   background_image: false,
   main_config: false,
@@ -136,9 +137,12 @@ if (!customElements.get("compact-custom-header")) {
         };
       }
 
-      let retrievedCache = localStorage.getItem("cchCache");
-      if (!this.config.main_config && retrievedCache) {
-        this.config = JSON.parse(retrievedCache);
+      if (this.config.main_config) {
+        let cache = Object.assign({}, this.config);
+        delete cache.main_config;
+        localStorage.setItem("cchCache", JSON.stringify(cache));
+      } else if (localStorage.getItem("cchCache")) {
+        this.config = JSON.parse(localStorage.getItem("cchCache"));
       }
 
       let exceptionConfig = {};
@@ -158,12 +162,6 @@ if (!customElements.get("compact-custom-header")) {
         ...this.config,
         ...exceptionConfig
       };
-
-      if (this.config.main_config) {
-        let cache = this.config;
-        delete cache.main_config;
-        localStorage.setItem("cchCache", JSON.stringify(cache));
-      }
 
       this.run();
     }
@@ -439,9 +437,43 @@ if (!customElements.get("compact-custom-header")) {
       const clockIcon = clock_button.querySelector("paper-icon-button");
       const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
       const clockWidth =
-        this.cchConfig.clock_format == 12 && this.cchConfig.clock_am_pm
+        this.cchConfig.clock_format == 12 &&
+        this.cchConfig.clock_am_pm ||
+        this.cchConfig.clock_date
           ? 110
           : 80;
+
+      if (this.cchConfig.notifications == "clock") {
+        let style = document.createElement( 'style' );
+        if (this.config.clock_date) {
+          style.innerHTML = `
+          .indicator {
+            top: unset;
+            bottom: -3px;
+            right: -10px;
+            width: 90%;
+            height: 3px;
+            border-radius: 0;
+          }
+          .indicator > div{
+            display:none;
+          }
+        `;
+        } else {
+          style.innerHTML = `
+          .indicator {
+            top: 5px;
+            right: -10px;
+            width: 10px;
+            height: 10px;
+          }
+          .indicator > div{
+            display:none;
+          }
+        `;
+        }
+        buttons.notifications.shadowRoot.appendChild( style )
+      }
 
       let clockElement = clockIronIcon.parentNode.getElementById("cch_clock");
       if (!clockElement) {
@@ -453,10 +485,13 @@ if (!customElements.get("compact-custom-header")) {
 
         clockElement = document.createElement("p");
         clockElement.setAttribute("id", "cch_clock");
+        let clockAlign = this.cchConfig.menu == "clock" ? "left" : "right";
+        let marginTop = this.cchConfig.clock_date ? "-6px" : "2px";
         clockElement.style.cssText = `
-              width:${clockWidth}px;
-              margin-top:2px;
-              margin-left:-8px;
+              width: ${clockWidth}px;
+              margin-top: ${marginTop};
+              margin-left: -8px;
+              text-align: ${clockAlign};
             `;
         clockIronIcon.parentNode.insertBefore(clockElement, clockIronIcon);
         clockIronIcon.style.display = "none";
@@ -477,11 +512,20 @@ if (!customElements.get("compact-custom-header")) {
 
     updateClock(clock, clockFormat) {
       let date = new Date();
-      date = date.toLocaleTimeString([], clockFormat);
+      let locale = this.hass.language;
+      let time = date.toLocaleTimeString([], clockFormat);
+      let options = {
+        "weekday": "short",
+        "month": "2-digit",
+        "day": "2-digit"
+      }
+      date = this.cchConfig.clock_date
+        ? `</br>${date.toLocaleDateString( locale, options )}`
+        : "";
       if (!this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12) {
-        clock.innerHTML = date.slice(0, -3);
+        clock.innerHTML = time.slice(0, -3) + date;
       } else {
-        clock.innerHTML = date;
+        clock.innerHTML = time + date;
       }
       window.setTimeout(() => this.updateClock(clock, clockFormat), 60000);
     }
