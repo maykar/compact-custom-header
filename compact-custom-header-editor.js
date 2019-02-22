@@ -24,6 +24,7 @@ const defaultConfig = {
   options: "show",
   clock_format: 12,
   clock_am_pm: true,
+  clock_date: false,
   disable: false,
   background_image: false,
   main_config: false,
@@ -47,6 +48,8 @@ export class CompactCustomHeaderEditor extends LitElement {
     this.parentElement.parentElement.querySelector(
       "hui-card-preview"
     ).style.display = "none";
+    this.parentElement.parentElement.parentElement
+      .parentElement.style.maxWidth = "650px";
   }
 
   render() {
@@ -267,6 +270,12 @@ export class CchConfigEditor extends LitElement {
       : this.defaultConfig.clock_am_pm;
   }
 
+  get _clock_date() {
+    return this.config.clock_date !== undefined
+      ? this.config.clock_date
+      : this.defaultConfig.clock_date;
+  }
+
   get _main_config() {
     return this.config.main_config !== undefined
       ? this.config.main_config
@@ -326,8 +335,7 @@ export class CchConfigEditor extends LitElement {
           `
         : ""}
       ${!this.exception &&
-      localStorage.getItem("cchCache") &&
-      !this.config.main_config
+      !this._main_config
         ? html`
             <div class="alert">
               <iron-icon icon="hass:alert"></iron-icon>
@@ -494,6 +502,7 @@ export class CchConfigEditor extends LitElement {
                   <paper-item>24</paper-item>
                 </paper-listbox>
               </paper-dropdown-menu>
+              <div class="side-by-side">
               <paper-toggle-button
                 class="${this.exception && this.config.clock_am_pm === undefined
                   ? "inherited"
@@ -504,6 +513,17 @@ export class CchConfigEditor extends LitElement {
               >
                 AM / PM</paper-toggle-button
               >
+              <paper-toggle-button
+                class="${this.exception && this.config.clock_date === undefined
+                  ? "inherited"
+                  : ""}"
+                ?checked="${this._clock_date !== false}"
+                .configValue="${"clock_date"}"
+                @change="${this._valueChanged}"
+              >
+                Date</paper-toggle-button
+              >
+              </div>
             </div>
           `
         : ""}
