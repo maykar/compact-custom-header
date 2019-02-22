@@ -89,7 +89,8 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 |voice|string|show|<img src="https://github.com/google/material-design-icons/blob/master/av/2x_web/ic_mic_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |options|string|show|<img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true">|Can be "show", "hide" or "clock".|
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
-|clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|
+|clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|clock_date:
+|clock_date|boolean|false||Adds a date below the clock.|
 |hide_tabs|string|||Comma-seperated list of tab numbers to hide. Do not use with show_tabs.|
 |show_tabs|string|||Comma-seperated list of tab numbers to show, all others hidden. Do not use with hide_tabs.|
 |exception||||Allows for different configs when exceptions are met, see "Exception Config" below.
