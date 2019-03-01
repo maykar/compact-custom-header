@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.1b1";
+import "./compact-custom-header-editor.js?v=1.0.1b2";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -352,9 +352,9 @@ if (!customElements.get("compact-custom-header")) {
               ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
             `;
         } else if (this.cchConfig[button] == "overflow") {
-          const paperIconButton = buttons[button].shadowRoot.querySelector(
-            "paper-icon-button"
-          );
+          const paperIconButton = buttons[button].shadowRoot
+            ? buttons[button].shadowRoot.querySelector("paper-icon-button")
+            : buttons[button].querySelector("paper-icon-button");
           if (paperIconButton.hasAttribute("hidden")) {
             continue;
           }
