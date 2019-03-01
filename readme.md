@@ -59,7 +59,7 @@ resources:
 
 * Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
 
-* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load.
+* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example at the end of this readme.
 
 * The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
 
@@ -133,4 +133,18 @@ Under exceptions set your conditions and then set up their config below. Example
         options: clock
         clock_format: 12
         hide_tabs: 4,5,9
+```
+
+## Panel View Example:
+Placing this card at the end of the vertical stack can help with some spacing issues.
+
+```yaml
+views:
+- title: Panel View Example
+  panel: true
+  cards:
+  - type: vertical-stack
+    cards:
+    - type: another-card
+    - type: custom:compact-custom-header
 ```
