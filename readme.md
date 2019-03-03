@@ -23,6 +23,8 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 ## Installation:
 
+[@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for common issues in lovelace.
+
 ### Manual installation:
 Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. Be sure you're using the raw files from github (button on top right when viewing code).
 
