@@ -23,6 +23,8 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 ## Installation:
 
+There are 2 methods of installation: Manual or with [Custom_Updater](https://github.com/custom-components/custom_updater). Follow only one of these methods.
+
 [@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for issues and installation of cards in lovelace.
 
 ### Manual installation:
