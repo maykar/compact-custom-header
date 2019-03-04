@@ -30,7 +30,7 @@ There are 2 methods of installation: Manual or with [Custom_Updater](https://git
 ### Manual installation:
 Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. Be sure you're using the raw files from github (button on top right when viewing code).
 
-This goes under "resources:" in ui-lovelace.yaml or by using the raw config editor. When updating be sure add to the version number at the end of this code.
+This goes under "resources:" in ui-lovelace.yaml or by using the "Raw Config" editor while "Configuring UI". When updating be sure add to the version number at the end of this code.
 
 ```yaml
 - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
