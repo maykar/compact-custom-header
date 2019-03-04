@@ -9,4 +9,6 @@ issueConfigs:
   - "HA and/or Browser Error"
   - "HA, Card, and Browser Versions"
 - content:
-  - "Feature Request"
+  - "feature request"
+  - "Describe the solution"
+  - "Additional Context"
