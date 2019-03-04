@@ -1,0 +1,15 @@
+name: Compact custom header
+description: Customize the Home Assistant header!
+type: lovelace
+keywords:
+  - header
+  - compact
+  - layout
+  - views
+  - custom
+author:
+  name: Ryan Meek
+license: Apache License, Version 2.0
+files:
+  - compact-custom-header.js
+  - compact-custom-header-editor.js
