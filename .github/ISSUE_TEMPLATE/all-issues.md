@@ -9,19 +9,20 @@ assignees: ''
 
 ---
 
-<!-- Failure to use the template will result in an issue's closing. Do not post until you've read the readme, searched existing and closed issues, and cleared your browser and CCH cache. Continue if the problem persists. -->
+<!-- Failure to use the template will result in an issue's closing. -->
+<!-- Fill out as many items as you can and do not remove ## Headers. -->
 
 ## Describe the bug:
 <!-- A clear and concise description of what the bug is. -->
 
-## Config:
-<!-- Insert your lovelace code for the card as a codeblock, do not paste as plain text. -->
+## Config YAML:
+<!-- Insert your lovelace code for the card as a code block, do not paste as plain text. -->
 
-## Error:
+## HA and/or Browser Error:
 <!-- HA log errors & browser Dev-Tools errors (F12). Please explain if card is functional despite error message. -->
 
-## Versions:
-<!-- Please include all of the following: Version of this card, Home Assistant version, browser type and version, and if you use YAML or Storage Mode -->
+## HA, Card, and Browser Versions:
+<!-- Please include all of the following: Version of this card, Home Assistant version, browser type and version, as well as, if you use YAML or Storage Mode -->
 
 <!-- If applicable, add screenshots to help explain your problem. -->
 
