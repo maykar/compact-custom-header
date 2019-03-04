@@ -23,7 +23,9 @@ Inspired by [this gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5
 
 ## Installation:
 
-[@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for common issues in lovelace.
+There are 2 methods of installation: Manual or with [Custom_Updater](https://github.com/custom-components/custom_updater). Follow only one of these methods.
+
+[@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for issues and installation of cards in lovelace.
 
 ### Manual installation:
 Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. Be sure you're using the raw files from github (button on top right when viewing code).
@@ -56,6 +58,11 @@ resources:
 
 3. Run the service `custom_updater.check_all` or click the "CHECK" button if you use the tracker-card.
 4. Refresh the website.
+5. Add the following into every view under "cards:" (See important notes below for views with `panel: true`).
+
+```yaml
+- type: custom:compact-custom-header
+```
 
 # Important notes:
 
