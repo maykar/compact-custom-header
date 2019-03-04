@@ -5,6 +5,8 @@ keywords:
   - header
   - compact
   - layout
+  - views
+  - custom
 author:
   name: Ryan Meek
 license: Apache License, Version 2.0
