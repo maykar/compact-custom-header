@@ -8,3 +8,5 @@ issueConfigs:
   - "Config YAML"
   - "HA and/or Browser Error"
   - "HA, Card, and Browser Versions"
+- content:
+  - "Feature Request"
