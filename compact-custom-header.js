@@ -485,13 +485,12 @@ if (!customElements.get("compact-custom-header")) {
 
         clockElement = document.createElement("p");
         clockElement.setAttribute("id", "cch_clock");
-        let clockAlign = this.cchConfig.menu == "clock" ? "left" : "right";
         let marginTop = this.cchConfig.clock_date ? "-6px" : "2px";
         clockElement.style.cssText = `
               width: ${clockWidth}px;
               margin-top: ${marginTop};
               margin-left: -8px;
-              text-align: ${clockAlign};
+              text-align: center;
             `;
         clockIronIcon.parentNode.insertBefore(clockElement, clockIronIcon);
         clockIronIcon.style.display = "none";
