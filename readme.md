@@ -112,7 +112,7 @@ Each button (menu, notifications, voice, and options) can be set as "show", "hid
 
 You can have different settings depending on username, user agent, and media query. You can use any combination as well.
 
-* **user:** A Home Assistant username or user's name. This will be the username if the user has no name set, otherwise it is the user's name. You can look to the bottom of the editor to see which to use. This option is case sensitive.
+* **user:** This is the Home Assistant user's name, not username. You can look to the bottom of the editor to see which to use. This option is case sensitive.
 * **user_agent:** A matching word or phrase from the devices user agent. You can find this at the bottom of this cards editor or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question. This option is case sensitive.
 * **media_query:** A valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp).
 
