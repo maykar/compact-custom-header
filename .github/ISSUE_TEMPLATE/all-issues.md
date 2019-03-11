@@ -16,8 +16,10 @@ assignees: ''
 <!-- A clear and concise description of what the bug is. -->
 
 ## Config YAML:
-<!-- Insert your lovelace code for the card as a code block, do not paste as plain text. -->
+```yaml
+<!-- Paste your lovelace code for the card after this line -->
 
+```
 ## HA and/or Browser Error:
 <!-- HA log errors & browser Dev-Tools errors (F12). Please explain if card is functional despite error message. -->
 
