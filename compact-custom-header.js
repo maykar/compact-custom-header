@@ -188,6 +188,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     run() {
+      const hassVersion = parseFloat(this.hass.config.version.slice(0, 4));
       const root = this.rootElement;
       this.editMode =
         root.querySelector("app-toolbar").className == "edit-mode";
@@ -227,7 +228,7 @@ if (!customElements.get("compact-custom-header")) {
           if (this.cchConfig[button] == "clock") {
             this.insertClock(
               buttons,
-              button == "options"
+              button == "options" || button == "menu" && hassVersion > 0.88
                 ? buttons[button]
                 : buttons[button].shadowRoot,
               tabContainer,
@@ -457,10 +458,10 @@ if (!customElements.get("compact-custom-header")) {
           ? 110
           : 80;
 
-      if (this.cchConfig.notifications == "clock") {
+      if (this.cchConfig.notifications == "clock" &&
+          this.cchConfig.clock_date) {
         let style = document.createElement( 'style' );
-        if (this.config.clock_date) {
-          style.innerHTML = `
+        style.innerHTML = `
           .indicator {
             top: unset;
             bottom: -3px;
@@ -473,19 +474,6 @@ if (!customElements.get("compact-custom-header")) {
             display:none;
           }
         `;
-        } else {
-          style.innerHTML = `
-          .indicator {
-            top: 5px;
-            right: -10px;
-            width: 10px;
-            height: 10px;
-          }
-          .indicator > div{
-            display:none;
-          }
-        `;
-        }
         buttons.notifications.shadowRoot.appendChild( style )
       }
 
@@ -499,13 +487,26 @@ if (!customElements.get("compact-custom-header")) {
 
         clockElement = document.createElement("p");
         clockElement.setAttribute("id", "cch_clock");
-        let clockAlign = this.cchConfig.menu == "clock" ? "left" : "right";
-        let marginTop = this.cchConfig.clock_date ? "-6px" : "2px";
+        let clockAlign = "center";
+        let padding = "";
+        let fontSize = "";
+        if (this.cchConfig.clock_date && this.cchConfig.menu == "clock") {
+          clockAlign = "left";
+          padding = "padding-left:5px";
+          fontSize = "font-size:12pt";
+        } else if (this.cchConfig.clock_date) {
+          clockAlign = "right";
+          padding = "padding-right:5px";
+          fontSize = "font-size:12pt";
+        }
+        let marginTop = this.cchConfig.clock_date ? "-4px" : "2px";
         clockElement.style.cssText = `
               width: ${clockWidth}px;
               margin-top: ${marginTop};
               margin-left: -8px;
               text-align: ${clockAlign};
+              ${padding};
+              ${fontSize};
             `;
         clockIronIcon.parentNode.insertBefore(clockElement, clockIronIcon);
         clockIronIcon.style.display = "none";
