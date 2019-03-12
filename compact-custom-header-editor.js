@@ -26,7 +26,6 @@ const defaultConfig = {
   clock_am_pm: true,
   clock_date: false,
   disable: false,
-  background_image: false,
   main_config: false,
   hide_tabs: [],
   show_tabs: []
@@ -294,12 +293,6 @@ export class CchConfigEditor extends LitElement {
       : this.defaultConfig.header;
   }
 
-  get _background_image() {
-    return this.config.background_image !== undefined
-      ? this.config.background_image
-      : this.defaultConfig.background_image;
-  }
-
   get _menu() {
     return this.config.menu || this.defaultConfig.menu;
   }
@@ -374,13 +367,6 @@ export class CchConfigEditor extends LitElement {
                 @change="${this._valueChanged}"
               >
                 Main Config
-              </paper-toggle-button>
-              <paper-toggle-button
-                ?checked="${this._background_image !== false}"
-                .configValue="${"background_image"}"
-                @change="${this._valueChanged}"
-              >
-                Background Fix
               </paper-toggle-button>
             `
           : ""}
