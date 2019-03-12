@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.1b4";
+import "./compact-custom-header-editor.js?v=1.0.1b5";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -28,6 +28,7 @@ export const defaultConfig = {
   clock_format: 12,
   clock_am_pm: true,
   clock_date: false,
+  date_locale: false,
   disable: false,
   main_config: false,
   hide_tabs: [],
@@ -205,7 +206,7 @@ if (!customElements.get("compact-custom-header")) {
         for (let i = 0; i < tabs.length; i++) {
           total_tabs.push(i);
         }
-        hidden_tabs = total_tabs.filter( ( el ) => !shown_tabs.includes( el ) );
+        hidden_tabs = total_tabs.filter((el) => !shown_tabs.includes(el));
       }
       if (!this.editMode) this.hideCard();
       if (this.editMode && !this.cchConfig.disable) {
@@ -527,7 +528,7 @@ if (!customElements.get("compact-custom-header")) {
 
     updateClock(clock, clockFormat) {
       let date = new Date();
-      let locale = this.hass.language;
+      let locale = this.cchConfig.date_locale || this.hass.language;
       let time = date.toLocaleTimeString([], clockFormat);
       let options = {
         "weekday": "short",
