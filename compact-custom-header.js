@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.1b3";
+import "./compact-custom-header-editor.js?v=1.0.1b4";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -29,7 +29,6 @@ export const defaultConfig = {
   clock_am_pm: true,
   clock_date: false,
   disable: false,
-  background_image: false,
   main_config: false,
   hide_tabs: [],
   show_tabs: []
@@ -303,18 +302,17 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     styleHeader(root, tabContainer, marginRight) {
-      // Hide header completely if set to false in config.
+      let view = root.querySelector("ha-app-layout").querySelector(
+        '[id="view"]'
+      );
+
       if (!this.cchConfig.header) {
         root.querySelector("app-header").style.display = "none";
-        return;
+        view.style.minHeight = "100vh"
+        return
+      } else {
+        view.style.minHeight = "calc(100vh - 49px)"
       }
-
-      root
-        .querySelector("ha-app-layout")
-        .querySelector('[id="view"]').style.paddingBottom = this.cchConfig
-        .background_image
-        ? "64px"
-        : "";
 
       if (tabContainer) {
         // Add margin to left side of tabs for menu buttom.
@@ -368,7 +366,23 @@ if (!customElements.get("compact-custom-header")) {
             wrapper.addEventListener("click", () => {
               paperIconButton.click();
             });
+            paperIconButton.style.pointerEvents="none";
             this.insertMenuItem(menu_items, wrapper);
+            if (button == "notifications") {
+              let style = document.createElement( 'style' );
+              style.innerHTML = `
+                .indicator {
+                  top: 5px;
+                  right: 0px;
+                  width: 10px;
+                  height: 10px;
+                }
+                .indicator > div{
+                  display:none;
+                }
+              `;
+              paperIconButton.parentNode.appendChild( style )
+            }
           }
         } else if (this.cchConfig[button] == "hide") {
           buttons[button].style.display = "none";
