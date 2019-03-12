@@ -11,5 +11,4 @@ issueConfigs:
 - content:
   - "feature request"
   - "Describe the solution"
-  - "Additional Context"
 caseInsensitive: true
