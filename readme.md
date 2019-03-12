@@ -100,6 +100,7 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
 |clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|clock_date:
 |clock_date|boolean|false||Adds a date below the clock.|
+|date_format|string|||Allows overriding of date format/language with [locale codes](http://download1.parallels.com/SiteBuilder/Windows/docs/3.2/en_US/sitebulder-3.2-win-sdk-localization-pack-creation-guide/30801.htm). Must be set manually in yaml code.
 |hide_tabs|string|||Comma-seperated list of tab numbers to hide. Do not use with show_tabs.|
 |show_tabs|string|||Comma-seperated list of tab numbers to show, all others hidden. Do not use with hide_tabs.|
 |exception||||Allows for different configs when exceptions are met, see "Exception Config" below.
