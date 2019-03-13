@@ -66,7 +66,7 @@ resources:
 
 ## Config Caching:
 
-Since it is required for this card to be placed on each view, caching is used so that you only need to configure the card once. The card in your first view should be set as the main config either by using the editor or by setting `main_config: true`.
+Since it is required for this card to be placed on each view, caching is used so that you only need to configure the card once.
 
 Add `- type: custom:compact-custom-header` to each view and on the first lovelace view set `main_config: true` or use the toggle in the editor. Then set all of your config in the first (main_config) view.
 
