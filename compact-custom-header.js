@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.1b5";
+import "./compact-custom-header-editor.js?v=1.0.1b7";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -31,6 +31,8 @@ export const defaultConfig = {
   date_locale: false,
   disable: false,
   main_config: false,
+  chevrons: false,
+  redirect: true,
   background_color: "",
   background_image: "",
   hide_tabs: [],
@@ -194,27 +196,29 @@ if (!customElements.get("compact-custom-header")) {
       const hassVersion = parseFloat(this.hass.config.version.slice(0, 4));
       const root = this.rootElement;
       const header = root.querySelector("app-header");
-      const view = root.querySelector("ha-app-layout").querySelector(
-        '[id="view"]'
-      );
-
-      this.editMode =
-        root.querySelector("app-toolbar").className == "edit-mode";
-
-      if (this.editMode) {
-        header.style.backgroundColor = null;
-        header.style.backgroundImage = null;
-        view.style.marginTop = "0px"
-      }
-
       const buttons = this.getButtonElements(root);
       const tabContainer = root.querySelector("paper-tabs");
       const tabs = tabContainer
         ? Array.from(tabContainer.querySelectorAll("paper-tab"))
         : [];
+      const view = root.querySelector("ha-app-layout").querySelector(
+        '[id="view"]'
+      );
+      this.editMode =
+        root.querySelector("app-toolbar").className == "edit-mode";
+
+      // Remove default header dropshadow.
+      let style = document.createElement("style");
+      style.innerHTML = `
+        :host([shadow])::before {
+          opacity: 0;
+        }
+      `;
+      header.shadowRoot.appendChild(style)
+
+      // Get hidden/shown tab config. Invert shown tabs.
       let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
       const shown_tabs = JSON.parse("[" + this.cchConfig.show_tabs + "]");
-      // Invert shown_tabs to hidden tabs.
       if (!hidden_tabs.length && shown_tabs.length) {
         let total_tabs = [];
         for (let i = 0; i < tabs.length; i++) {
@@ -222,9 +226,10 @@ if (!customElements.get("compact-custom-header")) {
         }
         hidden_tabs = total_tabs.filter((el) => !shown_tabs.includes(el));
       }
+
       if (!this.editMode) this.hideCard();
       if (this.editMode && !this.cchConfig.disable) {
-        this.removeMargin(tabContainer);
+        this.removeStyles(tabContainer, header, view);
         if (buttons.options) {
           this.insertEditMenu(buttons.options, tabs);
         }
@@ -309,12 +314,14 @@ if (!customElements.get("compact-custom-header")) {
       return buttons;
     }
 
-    removeMargin(tabContainer) {
-      // Remove margin from tabs when in edit mode
+    removeStyles(tabContainer, header, view) {
       if (tabContainer) {
         tabContainer.style.marginLeft = "";
         tabContainer.style.marginRight = "";
       }
+      header.style.backgroundColor = null;
+      header.style.backgroundImage = null;
+      view.style.marginTop = "0px"
     }
 
     styleHeader(root, tabContainer, marginRight, header, view) {
@@ -325,28 +332,37 @@ if (!customElements.get("compact-custom-header")) {
       } else if (!this.editMode) {
         view.style.minHeight = "100vh";
         view.style.marginTop = "-48.5px";
-        view.querySelector("hui-view").style.paddingTop = "64px";
+        view.querySelector("hui-view").style.paddingTop = "55px";
         header.style.backgroundColor = this.cchConfig.background_color;
         header.style.backgroundImage = this.cchConfig.background_image;
       }
 
       if (tabContainer) {
-        // Add margin to left side of tabs for menu buttom.
+        // Add space to either side of tab container for buttons.
         if (this.cchConfig.menu == "show") {
-          tabContainer.style.marginLeft = "45px";
+          tabContainer.style.marginLeft = "60px";
         }
-        // Add margin to right side of tabs for all buttons on the right.
         tabContainer.style.marginRight = `${marginRight}px`;
 
         // Shift the header up to hide unused portion.
         root.querySelector("app-toolbar").style.marginTop = "-64px";
 
-        // Hide tab bar scroll arrows to save space since we can still swipe.
-        let chevron = tabContainer.shadowRoot.querySelectorAll(
-          '[icon^="paper-tabs:chevron"]'
-        );
-        chevron[0].style.display = "none";
-        chevron[1].style.display = "none";
+        if (this.cchConfig.chevrons) {
+          // Remove space taken up by "not-visible" chevron.
+          let style = document.createElement("style");
+          style.innerHTML = `
+            .not-visible {
+              display:none;
+            }
+          `;
+          tabContainer.shadowRoot.appendChild(style);
+        } else {
+          let chevron = tabContainer.shadowRoot.querySelectorAll(
+            '[icon^="paper-tabs:chevron"]'
+          );
+          chevron[0].style.display = "none";
+          chevron[1].style.display = "none";
+        }
       }
     }
 
@@ -364,10 +380,6 @@ if (!customElements.get("compact-custom-header")) {
               z-index:1;
               ${topMargin}
               ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
-              ${button == "menu" && this.cchConfig[button] == "show"
-                ? "margin-left: -15px;"
-                : ""
-              }
             `;
         } else if (this.cchConfig[button] == "overflow") {
           const paperIconButton = buttons[button].shadowRoot
@@ -436,19 +448,22 @@ if (!customElements.get("compact-custom-header")) {
         tabs[tab].style.display = "none";
       }
 
-      // Check if current tab is a hidden tab.
-      const activeTab = tabContainer.querySelector("paper-tab.iron-selected");
-      const activeTabIndex = tabs.indexOf(activeTab);
-      if (
-        hidden_tabs.includes(activeTabIndex) &&
-        hidden_tabs.length != tabs.length
-      ) {
-        let i = 0;
-        // Find first not hidden view
-        while (hidden_tabs.includes(i)) {
-          i++;
+      if (this.cchConfig.redirect) {
+        // Check if current tab is a hidden tab.
+        const activeTab =
+          tabContainer.querySelector("paper-tab.iron-selected");
+        const activeTabIndex = tabs.indexOf(activeTab);
+        if (
+          hidden_tabs.includes(activeTabIndex) &&
+          hidden_tabs.length != tabs.length
+        ) {
+          let i = 0;
+          // Find first not hidden view
+          while (hidden_tabs.includes(i)) {
+            i++;
+          }
+          tabs[i].click();
         }
-        tabs[i].click();
       }
     }
 
