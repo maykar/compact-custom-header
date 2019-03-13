@@ -80,8 +80,8 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 |main_config|boolean|false||Set this to true on your first lovelace view.
 |disable|boolean|false||Disable Compact Custom Header. Useful to use default header on a certain user agent.
 |header|boolean|true||Display or hide the header.|
-|background_color|string|||Change the header's background color. Uses any CSS that can be used with the CSS background-color property. This option must be set manually in yaml code (raw editor).
-|background_image|string|||Give the header a background image. Uses any CSS that can be used with the CSS background-image property. This option must be set manually in yaml code (raw editor).
+|background_color|string|||Change the header's background color. Uses any CSS that can be used with the CSS [background-color property](https://www.w3schools.com/cssref/pr_background-color.asp). This option must be set manually in yaml code (raw editor). Examples: `background_color: "#000"` or even `background_color: "transparent"`. Enclose in quotes.
+|background_image|string|||Give the header a background image. Uses any CSS that can be used with the CSS [background-image property](https://www.w3schools.com/cssref/pr_background-image.asp). This option must be set manually in yaml code (raw editor). Examples: `background_image: "url("paper.gif")"` or even `background_image: "linear-gradient(red, yellow)"`. Enclose in quotes.
 |menu|string|show|<img src="https://github.com/google/material-design-icons/blob/master/navigation/2x_web/ic_menu_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |notifications|string|show|<img src="https://github.com/google/material-design-icons/blob/master/social/2x_web/ic_notifications_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |voice|string|show|<img src="https://github.com/google/material-design-icons/blob/master/av/2x_web/ic_mic_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
