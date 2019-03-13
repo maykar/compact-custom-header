@@ -31,6 +31,8 @@ export const defaultConfig = {
   date_locale: false,
   disable: false,
   main_config: false,
+  background_color: "",
+  background_image: "",
   hide_tabs: [],
   show_tabs: []
 };
@@ -191,8 +193,20 @@ if (!customElements.get("compact-custom-header")) {
     run() {
       const hassVersion = parseFloat(this.hass.config.version.slice(0, 4));
       const root = this.rootElement;
+      const header = root.querySelector("app-header");
+      const view = root.querySelector("ha-app-layout").querySelector(
+        '[id="view"]'
+      );
+
       this.editMode =
         root.querySelector("app-toolbar").className == "edit-mode";
+
+      if (this.editMode) {
+        header.style.backgroundColor = null;
+        header.style.backgroundImage = null;
+        view.style.marginTop = "0px"
+      }
+
       const buttons = this.getButtonElements(root);
       const tabContainer = root.querySelector("paper-tabs");
       const tabs = tabContainer
@@ -219,7 +233,7 @@ if (!customElements.get("compact-custom-header")) {
         !window.location.href.includes("disable_cch")
       ) {
         const marginRight = this.marginRight;
-        this.styleHeader(root, tabContainer, marginRight);
+        this.styleHeader(root, tabContainer, marginRight, header, view);
         this.styleButtons(buttons, tabs);
         if (this.cchConfig.hide_tabs && tabContainer) {
           this.hideTabs(tabContainer, tabs, hidden_tabs);
@@ -303,23 +317,23 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    styleHeader(root, tabContainer, marginRight) {
-      let view = root.querySelector("ha-app-layout").querySelector(
-        '[id="view"]'
-      );
-
-      if (!this.cchConfig.header) {
-        root.querySelector("app-header").style.display = "none";
+    styleHeader(root, tabContainer, marginRight, header, view) {
+      if (!this.cchConfig.header && !this.editMode) {
+        header.style.display = "none";
         view.style.minHeight = "100vh"
         return
-      } else {
-        view.style.minHeight = "calc(100vh - 49px)"
+      } else if (!this.editMode) {
+        view.style.minHeight = "100vh";
+        view.style.marginTop = "-48.5px";
+        view.querySelector("hui-view").style.paddingTop = "64px";
+        header.style.backgroundColor = this.cchConfig.background_color;
+        header.style.backgroundImage = this.cchConfig.background_image;
       }
 
       if (tabContainer) {
         // Add margin to left side of tabs for menu buttom.
         if (this.cchConfig.menu == "show") {
-          tabContainer.style.marginLeft = "60px";
+          tabContainer.style.marginLeft = "45px";
         }
         // Add margin to right side of tabs for all buttons on the right.
         tabContainer.style.marginRight = `${marginRight}px`;
@@ -350,6 +364,10 @@ if (!customElements.get("compact-custom-header")) {
               z-index:1;
               ${topMargin}
               ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
+              ${button == "menu" && this.cchConfig[button] == "show"
+                ? "margin-left: -15px;"
+                : ""
+              }
             `;
         } else if (this.cchConfig[button] == "overflow") {
           const paperIconButton = buttons[button].shadowRoot
@@ -493,18 +511,17 @@ if (!customElements.get("compact-custom-header")) {
         let fontSize = "";
         if (this.cchConfig.clock_date && this.cchConfig.menu == "clock") {
           clockAlign = "left";
-          padding = "padding-left:5px";
+          padding = "margin-right:-20px";
           fontSize = "font-size:12pt";
         } else if (this.cchConfig.clock_date) {
           clockAlign = "right";
-          padding = "padding-right:5px";
+          padding = "margin-left:-20px";
           fontSize = "font-size:12pt";
         }
         let marginTop = this.cchConfig.clock_date ? "-4px" : "2px";
         clockElement.style.cssText = `
               width: ${clockWidth}px;
               margin-top: ${marginTop};
-              margin-left: -8px;
               text-align: ${clockAlign};
               ${padding};
               ${fontSize};
