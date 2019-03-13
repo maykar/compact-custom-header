@@ -88,7 +88,6 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
-|type|string|**REQUIRED**||<code>**custom:compact-custom-header**</code>|
 |main_config|boolean|false||Set this to true on your first lovelace view.
 |disable|boolean|false||Disable Compact Custom Header. Useful to use default header on a certain user agent.
 |header|boolean|true||Display or hide the header.|
