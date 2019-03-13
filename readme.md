@@ -84,8 +84,6 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 
 ## Config:
 
-### If not using YAML mode you can configure everything by editing the card in the editor's UI.
-
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
 |main_config|boolean|false||Set this to true on your first lovelace view.
