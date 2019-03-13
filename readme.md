@@ -6,10 +6,10 @@ Inspired by [a gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5
 
 ## Features:
 * Per user/device settings using usernames, user agents, and media queries.
-* Any icon button can be hidden, made a clock, or put into options menu.
+* Any icon button can be hidden, made into a clock with optional date, or placed in the options menu.
 * Hide tabs from user's and devices.
+* Change header's background color or add a background image.
 * Compact design that removes header text.
-* 12 or 24-hour display for time.
 
 ## Installation:
 
@@ -74,6 +74,7 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 
 ## Config:
 
+### You can configure almost every option using the built in editor.
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
 |main_config|boolean|false||Set this to true on your first lovelace view.
