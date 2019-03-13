@@ -92,17 +92,20 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 |main_config|boolean|false||Set this to true on your first lovelace view.
 |disable|boolean|false||Disable Compact Custom Header. Useful to use default header on a certain user agent.
 |header|boolean|true||Display or hide the header.|
-|background_image|boolean|false||Set to true if you use a background image, otherwise the background will not fill the window.
+|background_color|string|||Change the header's background color. Uses any CSS that can be used with the CSS background-color property.
+|background_image|string|||Give the header a background image. Uses any CSS that can be used with the CSS background-image property.
 |menu|string|show|<img src="https://github.com/google/material-design-icons/blob/master/navigation/2x_web/ic_menu_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |notifications|string|show|<img src="https://github.com/google/material-design-icons/blob/master/social/2x_web/ic_notifications_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |voice|string|show|<img src="https://github.com/google/material-design-icons/blob/master/av/2x_web/ic_mic_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |options|string|show|<img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true">|Can be "show", "hide" or "clock".|
+|chevrons|boolean|false|<img src="https://github.com/google/material-design-icons/blob/master/navigation/2x_web/ic_chevron_left_black_48dp.png?raw=true">|Hide or show the tab's navigation chevrons.|
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
 |clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|clock_date:
 |clock_date|boolean|false||Adds a date below the clock.|
 |date_locale|string|||By default the date format/language is set to your HA preference, this option allows you to override that with [locale codes](http://download1.parallels.com/SiteBuilder/Windows/docs/3.2/en_US/sitebulder-3.2-win-sdk-localization-pack-creation-guide/30801.htm). This option must be set manually in yaml code (raw editor). Example `date_locale: en-gb`.
 |hide_tabs|string|||Comma-seperated list of tab numbers to hide. Do not use with show_tabs.|
 |show_tabs|string|||Comma-seperated list of tab numbers to show, all others hidden. Do not use with hide_tabs.|
+|redirect|boolean|true||Toggles auto redirecting from a hidden tab to a visible tab.|
 |exception||||Allows for different configs when exceptions are met, see "Exception Config" below.
 
 ## Button Config:
