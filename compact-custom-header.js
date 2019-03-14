@@ -208,22 +208,29 @@ if (!customElements.get("compact-custom-header")) {
         root.querySelector("app-toolbar").className == "edit-mode";
 
       // Remove default header dropshadow.
-      let style = document.createElement("style");
-      style.innerHTML = `
-        :host([shadow])::before {
-          opacity: 0;
-        }
-      `;
-      header.shadowRoot.appendChild(style);
+      if (!header.shadowRoot.querySelector('[id="cch_shadow"]')) {
+        let style = document.createElement("style");
+        style.setAttribute("id", "cch_shadow");
+        style.innerHTML = `
+          :host([shadow])::before {
+            opacity: 0;
+          }
+        `;
+        header.shadowRoot.appendChild(style);
+      }
 
       // Add top margin to unused-entities page.
-      style.innerHTML = `
-        hui-unused-entities {
-          display: inline-block;
-          padding-top:50px;
-        }
-      `;
-      view.parentNode.appendChild(style);
+      if (!view.parentNode.querySelector('[id="cch_unused"]')) {
+        let style = document.createElement("style");
+        style.setAttribute("id", "cch_unused");
+        style.innerHTML = `
+          hui-unused-entities {
+            display: inline-block;
+            padding-top:50px;
+          }
+        `;
+        view.parentNode.appendChild(style);
+      }
 
       // Get hidden/shown tab config. Invert shown tabs.
       let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
@@ -356,9 +363,12 @@ if (!customElements.get("compact-custom-header")) {
         // Shift the header up to hide unused portion.
         root.querySelector("app-toolbar").style.marginTop = "-64px";
 
-        if (this.cchConfig.chevrons) {
+        if (this.cchConfig.chevrons &&
+            !tabContainer.shadowRoot.querySelector('[id="cch_chevron"]')
+        ) {
           // Remove space taken up by "not-visible" chevron.
           let style = document.createElement("style");
+          style.setAttribute("id", "cch_chevron");
           style.innerHTML = `
             .not-visible {
               display:none;
@@ -410,7 +420,7 @@ if (!customElements.get("compact-custom-header")) {
             paperIconButton.style.pointerEvents="none";
             this.insertMenuItem(menu_items, wrapper);
             if (button == "notifications") {
-              let style = document.createElement( 'style' );
+              let style = document.createElement('style');
               style.innerHTML = `
                 .indicator {
                   top: 5px;
@@ -422,7 +432,7 @@ if (!customElements.get("compact-custom-header")) {
                   display:none;
                 }
               `;
-              paperIconButton.parentNode.appendChild( style )
+              paperIconButton.parentNode.appendChild(style)
             }
           }
         } else if (this.cchConfig[button] == "hide") {
@@ -502,8 +512,13 @@ if (!customElements.get("compact-custom-header")) {
           : 80;
 
       if (this.cchConfig.notifications == "clock" &&
-          this.cchConfig.clock_date) {
-        let style = document.createElement( 'style' );
+          this.cchConfig.clock_date &&
+          !buttons.notifications.shadowRoot.querySelector(
+            '[id="cch_indicator"]'
+          )
+        ) {
+        let style = document.createElement('style');
+        style.setAttribute("id", "cch_indicator");
         style.innerHTML = `
           .indicator {
             top: unset;
@@ -517,7 +532,7 @@ if (!customElements.get("compact-custom-header")) {
             display:none;
           }
         `;
-        buttons.notifications.shadowRoot.appendChild( style )
+        buttons.notifications.shadowRoot.appendChild(style)
       }
 
       let clockElement = clockIronIcon.parentNode.getElementById("cch_clock");
