@@ -214,7 +214,16 @@ if (!customElements.get("compact-custom-header")) {
           opacity: 0;
         }
       `;
-      header.shadowRoot.appendChild(style)
+      header.shadowRoot.appendChild(style);
+
+      // Add top margin to unused-entities page.
+      style.innerHTML = `
+        hui-unused-entities {
+          display: inline-block;
+          padding-top:50px;
+        }
+      `;
+      view.parentNode.appendChild(style);
 
       // Get hidden/shown tab config. Invert shown tabs.
       let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
