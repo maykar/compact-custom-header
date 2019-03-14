@@ -207,18 +207,6 @@ if (!customElements.get("compact-custom-header")) {
       this.editMode =
         root.querySelector("app-toolbar").className == "edit-mode";
 
-      // Remove default header dropshadow.
-      if (!header.shadowRoot.querySelector('[id="cch_shadow"]')) {
-        let style = document.createElement("style");
-        style.setAttribute("id", "cch_shadow");
-        style.innerHTML = `
-          :host([shadow])::before {
-            opacity: 0;
-          }
-        `;
-        header.shadowRoot.appendChild(style);
-      }
-
       // Add top margin to unused-entities page.
       if (!view.parentNode.querySelector('[id="cch_unused"]')) {
         let style = document.createElement("style");
@@ -351,6 +339,27 @@ if (!customElements.get("compact-custom-header")) {
         view.querySelector("hui-view").style.paddingTop = "55px";
         header.style.backgroundColor = this.cchConfig.background_color;
         header.style.backgroundImage = this.cchConfig.background_image;
+      }
+
+      // Style header icons, tab icons, and selection indicator.
+      let tab_indicator_color = this.cchConfig.tab_indicator_color;
+      let tab_color = this.cchConfig.tab_color;
+      if (tab_indicator_color || tab_color) {
+        if (!root.querySelector('[id="cch_header_color"]')) {
+          let style = document.createElement("style");
+          style.setAttribute("id", "cch_header_color");
+          style.innerHTML = `
+            paper-tabs {
+              ${tab_indicator_color 
+                  ? `--paper-tabs-selection-bar-color: ${tab_indicator_color}`
+                  : ""
+              }
+            paper-tab {
+              ${tab_color ? `color: ${tab_color}` : ""}
+            }
+          `;
+          root.appendChild(style);
+        }
       }
 
       if (tabContainer) {
