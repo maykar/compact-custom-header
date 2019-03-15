@@ -177,7 +177,7 @@ views:
   background_image: url("https://goo.gl/M3Dsf2") # header background image
   all_buttons_color: green # color of all buttons unless set in button_color
   button_color:
-    menu: pink
+    menu: rgb(255,192,203)
     notifications: yellow
     voice: white
     options: red
@@ -187,7 +187,7 @@ views:
     1: red
     2: blue
   tab_indicator_color: yellow # indicator under current tab
-  notify_indicator_color: cyan # the notifications indicator
+  notify_indicator_color: "#00FFFF" # the notifications indicator
   notify_text_color: brown # number inside notifications indicator
   chevrons: false
   options: clock
