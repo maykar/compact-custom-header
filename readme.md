@@ -173,7 +173,7 @@ views:
 ```yaml
 - type: 'custom:compact-custom-header'
   background_color: transparent # header background color
-  background_image: 'url("https://goo.gl/M3Dsf2")' # header background image
+  background_image: url("https://goo.gl/M3Dsf2") # header background image
   all_buttons_color: green # color of all buttons unless set in button_color
   button_color:
     menu: pink
@@ -192,7 +192,7 @@ views:
   options: clock
   clock_am_pm: true
   clock_date: true
-  clock_format: '12'
+  clock_format: 12
   date_locale: en-gb
   main_config: true
 ```
