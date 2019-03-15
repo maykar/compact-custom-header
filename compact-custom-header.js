@@ -233,7 +233,7 @@ if (!customElements.get("compact-custom-header")) {
 
       if (!this.editMode) this.hideCard();
       if (this.editMode && !this.cchConfig.disable) {
-        this.removeStyles(tabContainer, header, view);
+        this.removeStyles(tabContainer, header, view, root);
         if (buttons.options) {
           this.insertEditMenu(buttons.options, tabs);
         }
@@ -242,7 +242,14 @@ if (!customElements.get("compact-custom-header")) {
         !window.location.href.includes("disable_cch")
       ) {
         const marginRight = this.marginRight;
-        this.styleHeader(root, tabContainer, marginRight, header, view);
+        this.styleHeader(
+          root,
+          tabContainer,
+          marginRight,
+          header,
+          view,
+          buttons
+        );
         this.styleButtons(buttons, tabs);
         if (this.cchConfig.hide_tabs && tabContainer) {
           this.hideTabs(tabContainer, tabs, hidden_tabs);
@@ -318,7 +325,8 @@ if (!customElements.get("compact-custom-header")) {
       return buttons;
     }
 
-    removeStyles(tabContainer, header, view) {
+    removeStyles(tabContainer, header, view, root) {
+      let header_colors = root.querySelector('[id="cch_header_colors"]');
       if (tabContainer) {
         tabContainer.style.marginLeft = "";
         tabContainer.style.marginRight = "";
@@ -326,9 +334,10 @@ if (!customElements.get("compact-custom-header")) {
       header.style.backgroundColor = null;
       header.style.backgroundImage = null;
       view.style.marginTop = "0px"
+      if (header_colors) header_colors.parentNode.removeChild(header_colors);
     }
 
-    styleHeader(root, tabContainer, marginRight, header, view) {
+    styleHeader(root, tabContainer, marginRight, header, view, buttons) {
       if (!this.cchConfig.header && !this.editMode) {
         header.style.display = "none";
         view.style.minHeight = "100vh"
@@ -341,11 +350,14 @@ if (!customElements.get("compact-custom-header")) {
         header.style.backgroundImage = this.cchConfig.background_image;
       }
 
+      root.querySelector("app-toolbar").style.color =
+        this.cchConfig.buttons_color
+
       // Style header icons, tab icons, and selection indicator.
       let tab_indicator_color = this.cchConfig.tab_indicator_color;
       let tab_color = this.cchConfig.tab_color;
       if (tab_indicator_color || tab_color) {
-        if (!root.querySelector('[id="cch_header_color"]')) {
+        if (!root.querySelector('[id="cch_header_color"]') && !this.editMode) {
           let style = document.createElement("style");
           style.setAttribute("id", "cch_header_color");
           style.innerHTML = `
@@ -354,6 +366,7 @@ if (!customElements.get("compact-custom-header")) {
                   ? `--paper-tabs-selection-bar-color: ${tab_indicator_color}`
                   : ""
               }
+            }
             paper-tab {
               ${tab_color ? `color: ${tab_color}` : ""}
             }
