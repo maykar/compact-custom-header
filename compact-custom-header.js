@@ -36,7 +36,9 @@ export const defaultConfig = {
   background_color: "",
   background_image: "",
   hide_tabs: [],
-  show_tabs: []
+  show_tabs: [],
+  tab_color: {},
+  button_color: {}
 };
 
 if (!customElements.get("compact-custom-header")) {
@@ -233,7 +235,7 @@ if (!customElements.get("compact-custom-header")) {
 
       if (!this.editMode) this.hideCard();
       if (this.editMode && !this.cchConfig.disable) {
-        this.removeStyles(tabContainer, header, view, root);
+        this.removeStyles(tabContainer, header, view, root, tabs);
         if (buttons.options) {
           this.insertEditMenu(buttons.options, tabs);
         }
@@ -248,9 +250,9 @@ if (!customElements.get("compact-custom-header")) {
           marginRight,
           header,
           view,
-          buttons
+          tabs
         );
-        this.styleButtons(buttons, tabs);
+        this.styleButtons(buttons, tabs, root);
         if (this.cchConfig.hide_tabs && tabContainer) {
           this.hideTabs(tabContainer, tabs, hidden_tabs);
         }
@@ -325,7 +327,7 @@ if (!customElements.get("compact-custom-header")) {
       return buttons;
     }
 
-    removeStyles(tabContainer, header, view, root) {
+    removeStyles(tabContainer, header, view, root, tabs) {
       let header_colors = root.querySelector('[id="cch_header_colors"]');
       if (tabContainer) {
         tabContainer.style.marginLeft = "";
@@ -335,9 +337,14 @@ if (!customElements.get("compact-custom-header")) {
       header.style.backgroundImage = null;
       view.style.marginTop = "0px"
       if (header_colors) header_colors.parentNode.removeChild(header_colors);
+      if (Object.keys(this.cchConfig.tab_color).length) {
+        for (let i = 0; i < tabs.length; i++) {
+          tabs[i].style.color = "";
+        }
+      }
     }
 
-    styleHeader(root, tabContainer, marginRight, header, view, buttons) {
+    styleHeader(root, tabContainer, marginRight, header, view, tabs) {
       if (!this.cchConfig.header && !this.editMode) {
         header.style.display = "none";
         view.style.minHeight = "100vh"
@@ -350,28 +357,29 @@ if (!customElements.get("compact-custom-header")) {
         header.style.backgroundImage = this.cchConfig.background_image;
       }
 
-      root.querySelector("app-toolbar").style.color =
-        this.cchConfig.buttons_color
-
-      // Style header icons, tab icons, and selection indicator.
+      // Style header all icons, all tab icons, and selection indicator.
       let tab_indicator_color = this.cchConfig.tab_indicator_color;
-      let tab_color = this.cchConfig.tab_color;
-      if (tab_indicator_color || tab_color) {
+      let all_tabs_color = this.cchConfig.all_tabs_color;
+      if (tab_indicator_color) {
         if (!root.querySelector('[id="cch_header_color"]') && !this.editMode) {
           let style = document.createElement("style");
-          style.setAttribute("id", "cch_header_color");
+          style.setAttribute("id", "cch_header_colors");
           style.innerHTML = `
             paper-tabs {
-              ${tab_indicator_color 
+              ${tab_indicator_color
                   ? `--paper-tabs-selection-bar-color: ${tab_indicator_color}`
                   : ""
               }
             }
-            paper-tab {
-              ${tab_color ? `color: ${tab_color}` : ""}
-            }
+
           `;
           root.appendChild(style);
+        }
+      }
+      if (Object.keys(this.cchConfig.tab_color).length) {
+        let tab_color = this.cchConfig.tab_color;
+        for (let i = 0; i < tabs.length; i++) {
+          tabs[i].style.color = tab_color[i] || all_tabs_color;
         }
       }
 
@@ -407,7 +415,7 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    styleButtons(buttons, tabs) {
+    styleButtons(buttons, tabs, root) {
       let topMargin = tabs.length > 0 ? "margin-top:111px;" : ""
       for (const button in buttons) {
         if (button == "options" && this.cchConfig[button] == "overflow") {
@@ -449,6 +457,11 @@ if (!customElements.get("compact-custom-header")) {
                   right: 0px;
                   width: 10px;
                   height: 10px;
+                  ${this.cchConfig.notify_indicator_color
+                    ? `background-color:${
+                      this.cchConfig.notify_indicator_color}`
+                    : ""
+                  }
                 }
                 .indicator > div{
                   display:none;
@@ -460,6 +473,29 @@ if (!customElements.get("compact-custom-header")) {
         } else if (this.cchConfig[button] == "hide") {
           buttons[button].style.display = "none";
         }
+      }
+      if (this.cchConfig.all_buttons_color) {
+        root.querySelector("app-toolbar").style.color =
+          this.cchConfig.all_buttons_color
+      }
+      for (const button in buttons) {
+        if (this.cchConfig.button_color[button]) {
+          buttons[button].style.color = this.cchConfig.button_color[button];
+        }
+      }
+
+      if (this.cchConfig.notify_indicator_color &&
+          this.cchConfig.notifications == "show"
+        ) {
+        let style = document.createElement('style');
+        style.innerHTML = `
+          .indicator {
+            background-color:${this.cchConfig.notify_indicator_color};
+            color: ${this.cchConfig.notify_text_color ||
+                    "var(--primary-text-color)"};
+          }
+        `;
+        buttons.notifications.shadowRoot.appendChild(style);
       }
     }
 
@@ -530,7 +566,7 @@ if (!customElements.get("compact-custom-header")) {
         this.cchConfig.clock_format == 12 &&
         this.cchConfig.clock_am_pm ||
         this.cchConfig.clock_date
-          ? 110
+          ? 90
           : 80;
 
       if (this.cchConfig.notifications == "clock" &&
@@ -545,10 +581,14 @@ if (!customElements.get("compact-custom-header")) {
           .indicator {
             top: unset;
             bottom: -3px;
-            right: -10px;
+            right: 0px;
             width: 90%;
             height: 3px;
             border-radius: 0;
+            ${this.cchConfig.notify_indicator_color
+              ? `background-color:${this.cchConfig.notify_indicator_color}`
+              : ""
+            }
           }
           .indicator > div{
             display:none;
@@ -581,7 +621,6 @@ if (!customElements.get("compact-custom-header")) {
         }
         let marginTop = this.cchConfig.clock_date ? "-4px" : "2px";
         clockElement.style.cssText = `
-              width: ${clockWidth}px;
               margin-top: ${marginTop};
               text-align: ${clockAlign};
               ${padding};
