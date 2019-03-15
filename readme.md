@@ -154,7 +154,7 @@ views:
 ### All style configuration is done in yaml (or raw edit mode).
 |NAME|DESCRIPTION|
 |-|-|
-|background_color|Change the header's background color. Uses any CSS that can be used with the CSS [background-color property](https://www.w3schools.com/cssref/pr_background-color.asp). This option must be set manually in yaml code (raw editor). Examples: `background_color: "#000"` or even `background_color: "transparent"`.
+|background_color|Change the header's background color. Uses any CSS that can be used with the CSS [background-color property](https://www.w3schools.com/cssref/pr_background-color.asp). This option must be set manually in yaml code (raw editor). Examples: `background_color: "#000"` or even `background_color: transparent`.
 |background_image|Give the header a background image. Uses any CSS that can be used with the CSS [background-image property](https://www.w3schools.com/cssref/pr_background-image.asp). This option must be set manually in yaml code (raw editor). Examples: `background_image: url("paper.gif")` or even `background_image: linear-gradient(red, yellow)`.
 |all_buttons_color|Set all buttons to one color. Acts as a fallback, if set to red and a button is set to blue with button_color then all buttons will be red except for that button.
 |button_color|Set the color of a single button. See example below.
