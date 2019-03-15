@@ -9,6 +9,7 @@ Inspired by [a gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5
 * Any icon button can be hidden, made into a clock with optional date, or placed in the options menu.
 * Hide tabs from user's and devices.
 * Change header's background color or add a background image.
+* Change color of any header element.
 * Compact design that removes header text.
 
 ## Installation:
@@ -58,7 +59,7 @@ resources:
 
 * Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
 
-* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example at the end of this readme.
+* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below config section.
 
 * The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
 
@@ -75,6 +76,7 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 ## Config:
 
 ### You can configure almost every option using the built in editor.
+### Styling configuration is at the bottom of this readme.
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
 |main_config|boolean|false||Set this to true on your first lovelace view.
@@ -148,4 +150,51 @@ views:
     cards:
     - type: another-card
     - type: custom:compact-custom-header
+```
+
+## Styling Config:
+### All style configuration is done in yaml (or raw edit mode).
+|NAME|DESCRIPTION|
+|-|-|
+|background_color|Change the header's background color. Uses any CSS that can be used with the CSS [background-color property](https://www.w3schools.com/cssref/pr_background-color.asp). This option must be set manually in yaml code (raw editor). Examples: `background_color: "#000"` or even `background_color: "transparent"`.
+|background_image|Give the header a background image. Uses any CSS that can be used with the CSS [background-image property](https://www.w3schools.com/cssref/pr_background-image.asp). This option must be set manually in yaml code (raw editor). Examples: `background_image: url("paper.gif")` or even `background_image: linear-gradient(red, yellow)`.
+|all_buttons_color|Set all buttons to one color. Acts as a fallback, if set to red and a button is set to blue with button_color then all buttons will be red except for that button.
+|button_color|Set the color of a single button. See example below.
+|all_tabs_color|Set all tabs to one color. Acts as a fallback, if set to red and one tab is set to blue with tab_color then all tabs will be red except for that one tab.
+|button_color|Set the color of a single tab. See example below.
+|notify_indicator_color|Sets the color of the new notification indicator.
+|notify_text_color|Sets the color of the number of new notifications inside the indicator.
+
+### You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
+### If using hex colors (#ffffff) be sure to encase in quotes.
+
+### Ugly screenshot to illustrate. The code below the screenshot is what was used.
+![](https://i.imgur.com/t6VMKHf.png)
+
+## Styling Example:
+```yaml
+- type: 'custom:compact-custom-header'
+  background_color: transparent # header background color
+  background_image: 'url("https://goo.gl/M3Dsf2")' # header background image
+  all_buttons_color: green # color of all buttons unless set in button_color
+  button_color:
+    menu: pink
+    notifications: yellow
+    voice: white
+    options: red
+  all_tabs_color: red # color of all tabs unless set in tab_color
+  tab_color:
+    0: green
+    1: red
+    2: blue
+  tab_indicator_color: yellow # indicator under current tab
+  notify_indicator_color: cyan # the notifications indicator
+  notify_text_color: brown # number inside notifications indicator
+  chevrons: false
+  options: clock
+  clock_am_pm: true
+  clock_date: true
+  clock_format: '12'
+  date_locale: en-gb
+  main_config: true
 ```
