@@ -164,8 +164,8 @@ views:
 |notify_text_color|Sets the color of the number of new notifications inside the indicator.
 
 * <b>You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
-* If using hex colors (#ffffff) be sure to enclose in quotes ("#ffffff").</b>
-* You can use styling in your exceptions as well and have seperate themes per user/device.
+* If using hex colors (#ffffff) be sure to enclose in quotes ("#ffffff").
+* You can use styling in your exceptions as well and have seperate themes per user/device.</b>
 
 ### Ugly screenshot to illustrate. The code below the screenshot is what was used.
 ![](https://i.imgur.com/t6VMKHf.png)
