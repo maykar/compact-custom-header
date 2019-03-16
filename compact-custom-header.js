@@ -255,7 +255,6 @@ if (!customElements.get("compact-custom-header")) {
         return document
           .querySelector("home-assistant")
           .shadowRoot.querySelector("home-assistant-main")
-          .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver")
           .shadowRoot.querySelector("ha-panel-lovelace")
           .shadowRoot.querySelector("hui-root").shadowRoot;
       } catch(e) {
