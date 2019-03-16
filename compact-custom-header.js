@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.1b7";
+import "./compact-custom-header-editor.js?v=1.0.1b8";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -287,7 +287,7 @@ if (!customElements.get("compact-custom-header")) {
         let panelResolver = document
           .querySelector("home-assistant")
           .shadowRoot.querySelector("home-assistant-main")
-          .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver")
+          .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver");
         if (panelResolver.shadowRoot){
           return panelResolver
             .shadowRoot.querySelector("ha-panel-lovelace")
@@ -344,7 +344,8 @@ if (!customElements.get("compact-custom-header")) {
       }
       header.style.backgroundColor = null;
       header.style.backgroundImage = null;
-      view.style.marginTop = "0px"
+      view.style.marginTop = "0px";
+      view.querySelectorAll("*")[0].style.display = "initial";
       if (header_colors) header_colors.parentNode.removeChild(header_colors);
       if (Object.keys(this.cchConfig.tab_color).length) {
         for (let i = 0; i < tabs.length; i++) {
@@ -361,7 +362,12 @@ if (!customElements.get("compact-custom-header")) {
       } else if (!this.editMode) {
         view.style.minHeight = "100vh";
         view.style.marginTop = "-48.5px";
-        view.querySelector("hui-view").style.paddingTop = "55px";
+        if (view.querySelector("hui-view")) {
+          view.querySelector("hui-view").style.paddingTop = "55px";
+        } else {
+          view.querySelectorAll("*")[0].style.paddingTop = "55px";
+          view.querySelectorAll("*")[0].style.display = "block";
+        }
         header.style.backgroundColor = this.cchConfig.background_color;
         header.style.backgroundImage = this.cchConfig.background_image;
       }
@@ -370,7 +376,7 @@ if (!customElements.get("compact-custom-header")) {
       let tab_indicator_color = this.cchConfig.tab_indicator_color;
       let all_tabs_color = this.cchConfig.all_tabs_color;
       if (tab_indicator_color) {
-        if (!root.querySelector('[id="cch_header_color"]') && !this.editMode) {
+        if (!root.querySelector('[id="cch_header_colors"]') && !this.editMode) {
           let style = document.createElement("style");
           style.setAttribute("id", "cch_header_colors");
           style.innerHTML = `
