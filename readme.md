@@ -164,6 +164,7 @@ views:
 |button_color|Set the color of a single tab. See example below.
 |notify_indicator_color|Sets the color of the new notification indicator.
 |notify_text_color|Sets the color of the number of new notifications inside the indicator.
+|active_tab_color|Sets the color of the current tab's icon.
 
 * <b>You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
 * If using hex colors (#ffffff) be sure to enclose in quotes ("#ffffff").
