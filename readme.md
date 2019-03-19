@@ -153,7 +153,7 @@ views:
 ```
 
 ## Styling Config:
-### All style configuration is done in yaml (or raw edit mode).
+### All style configuration is done in yaml (or raw edit mode) or from your HA theme yaml file (more on this in bottom of readme).
 |NAME|DESCRIPTION|
 |-|-|
 |background_color|Change the header's background color. Uses any CSS that can be used with the CSS [background-color property](https://www.w3schools.com/cssref/pr_background-color.asp). This option must be set manually in yaml code (raw editor). Examples: `background_color: "#000"` or even `background_color: transparent`.
@@ -199,4 +199,23 @@ views:
   clock_format: 12
   date_locale: en-gb
   main_config: true
+```
+
+# Theme.yaml
+You can also theme CCH from the HA theme file to make it easier to share and make it lighter on your lovelace config.
+
+## Theme Variables Example:
+```yaml
+  cch-background-color: transparent
+  cch-background-image: url("https://goo.gl/M3Dsf2")
+  cch-all-buttons-color: blue
+  cch-button-color-menu: green
+  cch-button-color-notifications: yellow
+  cch-button-color-voice: black
+  cch-button-color-options: red
+  cch-all-tabs-color: red
+  cch-tab-indicator-color: yellow
+  cch-active-tab-color: blue
+  cch-notify-indicator-color: "#00FFFF"
+  cch-notify-text-color: brown
 ```
