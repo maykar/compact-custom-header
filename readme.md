@@ -202,9 +202,9 @@ views:
 ```
 
 # Theme.yaml
-You can also theme CCH from the HA theme file to make it easier to share and make it lighter on your lovelace config.
+You can also theme CCH from the HA theme file to make it easier to share and make it lighter on your lovelace config with the exception of single tab colors.
 
-## Theme Variables Example:
+## Theme Variables:
 ```yaml
   cch-background-color: transparent
   cch-background-image: url("https://goo.gl/M3Dsf2")
