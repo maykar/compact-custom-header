@@ -96,8 +96,9 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 
 ## Config:
 
-### You can configure almost every option using the built in editor.
-### Styling configuration is at the bottom of this readme.
+**You can configure every option using the built in editor with the exception of `date_locale` and styling.<br>
+Styling configuration is at the bottom of this readme.**
+
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
 |main_config|boolean|false||Set this to true on your first lovelace view.
