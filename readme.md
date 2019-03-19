@@ -15,11 +15,11 @@ Customize the Home Assistant header! Inspired by [the kiosk mode gist by ciotlos
 
 ## Installation:
 
-There are 2 methods of installation: Manual or with [Custom_Updater](https://github.com/custom-components/custom_updater). Follow only one of these methods.
+* There are 2 methods of installation: Manual or with [Custom_Updater](https://github.com/custom-components/custom_updater). Follow only one of these methods.
 
-[@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for issues and installation of cards in lovelace.
+* [@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for issues and installation of cards in lovelace.
 
-You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
+* You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
 
 <details>
   <summary><b>Manual installation:</b></summary>
