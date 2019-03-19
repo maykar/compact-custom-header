@@ -1,6 +1,5 @@
 # Compact Custom Header
-**Customize the Home Assistant header!**
-Inspired by [a gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
+Customize the Home Assistant header! Inspired by [the kiosk mode gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
 
 <img src="https://i.imgur.com/kz0gnZm.jpg" width="500px">
 
@@ -24,17 +23,18 @@ You may need to have `javascript_version: latest` in your `configuration.yaml` u
 
 <details>
   <summary><b>Manual installation:</b></summary>
-  <br>
-Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. Be sure you're using the raw files from github (button on top right when viewing code).
 
-This goes under "resources:" in ui-lovelace.yaml (yaml mode) or by using the "Raw Config" editor while "Configuring UI" (storage mode). When updating be sure add to the version number at the end of this code.
+1. Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. Be sure you're using the raw files from github (button on top right when viewing code).
+
+2. Add the code below in ui-lovelace.yaml (yaml mode) or by using the "Raw Config" editor while "Configuring UI" (storage mode). When updating be sure add to the version number at the end of this code.
 
 ```yaml
-- url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
-  type: module
+resources:
+  - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
+    type: module
 ```
 
-Add the following into every view under "cards:" (See important notes below for views with `panel: true`).
+3. Add the following into every view under "cards:" (See important notes below for views with `panel: true`).
 
 ```yaml
 - type: custom:compact-custom-header
@@ -42,7 +42,7 @@ Add the following into every view under "cards:" (See important notes below for 
 </details>
 <details>
   <summary><b>Installation and tracking with custom_updater:</b></summary>
-<br>
+
 1. Make sure the [custom_updater](https://github.com/custom-components/custom_updater) component is installed and working.
 2. Configure Lovelace to load the card.
 
@@ -65,11 +65,28 @@ resources:
 
 * Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
 
-* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below config section.
-
 * The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
 
 * If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.
+
+* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below.
+
+<details>
+  <summary><b>Panel View Example:</b></summary>
+
+Placing this card at the end of the vertical stack can help with some spacing issues.
+
+```yaml
+views:
+- title: Panel View Example
+  panel: true
+  cards:
+  - type: vertical-stack
+    cards:
+    - type: another-card
+    - type: custom:compact-custom-header
+```
+</details>
 
 ## Config Caching:
 
@@ -118,7 +135,7 @@ You can have different settings depending on username, user agent, and media que
 
 Under exceptions set your conditions and then set up their config below.
 <details>
-  <summary><b>Example:</b></summary>
+  <summary><b>Example Config:</b></summary>
   
 ```yaml
 - type: 'custom:compact-custom-header'
@@ -145,23 +162,6 @@ Under exceptions set your conditions and then set up their config below.
 ```
 </details>
 
-<details>
-  <summary><b>Panel View Example:</b></summary>
-  <br>
-Placing this card at the end of the vertical stack can help with some spacing issues.
-
-```yaml
-views:
-- title: Panel View Example
-  panel: true
-  cards:
-  - type: vertical-stack
-    cards:
-    - type: another-card
-    - type: custom:compact-custom-header
-```
-</details>
-
 ## Styling Config:
 ### All style configuration is done in yaml (or raw edit mode)<br>or from your HA theme yaml file (more on this in bottom of readme).
 |NAME|DESCRIPTION|
@@ -176,16 +176,16 @@ views:
 |notify_text_color|Sets the color of the number of new notifications inside the indicator.
 |active_tab_color|Sets the color of the current tab's icon.
 
+## Notes on styling config:
 * <b>You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
 * If using hex colors (#ffffff) be sure to enclose in quotes ("#ffffff").
 * You can use styling in your exceptions as well and have seperate themes per user/device.</b>
 
 ### Ugly screenshot to illustrate. The code below the screenshot is what was used.
-<img src="https://i.imgur.com/t6VMKHf.png" width="500px">
+<img src="https://i.imgur.com/t6VMKHf.png" width="400px">
 
 <details>
-  <summary><b>Styling Example:</b></summary>
-  <br>
+  <summary><b>Styling Example YAML:</b></summary>
   
 ```yaml
 - type: 'custom:compact-custom-header'
@@ -215,12 +215,11 @@ views:
 ```
 </details>
 
-# Theme.yaml
-You can also theme CCH from the HA theme file to make it easier to share and make it lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the config of the card will override these options.
+# Theme YAML
+You can also style CCH from your HA theme's YAML to make it easier to share and make it lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the config of the card will override these options.
 
 <details>
   <summary><b>Theme Variables:</b></summary>
-<br>
 The color and image variables are just examples. All options default to HA's default values.
 
 ```yaml
