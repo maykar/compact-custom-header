@@ -1,5 +1,5 @@
 # Compact Custom Header
-**Customize the Home Assistant header!**<br/><br/>
+**Customize the Home Assistant header!**
 Inspired by [a gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5ea87b59f33609cc931).
 
 <img src="https://i.imgur.com/kz0gnZm.jpg" width="500px">
@@ -181,7 +181,7 @@ views:
 * You can use styling in your exceptions as well and have seperate themes per user/device.</b>
 
 ### Ugly screenshot to illustrate. The code below the screenshot is what was used.
-![](https://i.imgur.com/t6VMKHf.png)
+<img src="https://i.imgur.com/t6VMKHf.png" width="500px">
 
 <details>
   <summary><b>Styling Example:</b></summary>
