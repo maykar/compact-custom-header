@@ -4,7 +4,7 @@ Inspired by [a gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5
 
 <img src="https://i.imgur.com/kz0gnZm.jpg" width="500px">
 
-<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee to keep me going.</span>
+<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee to keep me going.</span></a>
 
 ## Features:
 * Per user/device settings using usernames, user agents, and media queries.
