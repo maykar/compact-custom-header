@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.1b9";
+import "./compact-custom-header-editor.js?v=1.0.2b0";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -346,7 +346,9 @@ if (!customElements.get("compact-custom-header")) {
       header.style.backgroundImage = null;
       view.style.marginTop = "0px";
       view.querySelectorAll("*")[0].style.display = "initial";
-      root.querySelector('[id="cch_iron_selected"]').outerHTML = "";
+      if (root.querySelector('[id="cch_iron_selected"]')) {
+        root.querySelector('[id="cch_iron_selected"]').outerHTML = "";
+      }
       if (header_colors) header_colors.parentNode.removeChild(header_colors);
       if (Object.keys(this.cchConfig.tab_color).length) {
         for (let i = 0; i < tabs.length; i++) {
@@ -369,13 +371,16 @@ if (!customElements.get("compact-custom-header")) {
           view.querySelectorAll("*")[0].style.paddingTop = "55px";
           view.querySelectorAll("*")[0].style.display = "block";
         }
-        header.style.backgroundColor = this.cchConfig.background_color;
-        header.style.backgroundImage = this.cchConfig.background_image;
+        header.style.backgroundColor = this.cchConfig.background_color ||
+          "var(--cch-background-color)";;
+        header.style.backgroundImage = this.cchConfig.background_image ||
+          "var(--cch-background-image)";
       }
 
       // Style header all icons, all tab icons, and selection indicator.
       let tab_indicator_color = this.cchConfig.tab_indicator_color;
-      let all_tabs_color = this.cchConfig.all_tabs_color;
+      let all_tabs_color = this.cchConfig.all_tabs_color ||
+        "var(--cch-all-tabs-color)";
       if (tab_indicator_color) {
         if (!root.querySelector('[id="cch_header_colors"]') && !this.editMode) {
           let style = document.createElement("style");
@@ -384,7 +389,7 @@ if (!customElements.get("compact-custom-header")) {
             paper-tabs {
               ${tab_indicator_color
                   ? `--paper-tabs-selection-bar-color: ${tab_indicator_color}`
-                  : ""
+                  : "var(--cch-tab-indicator-color)"
               }
             }
 
@@ -400,7 +405,7 @@ if (!customElements.get("compact-custom-header")) {
           .iron-selected {
             ${this.cchConfig.active_tab_color
                 ? `color: ${this.cchConfig.active_tab_color + " !important"}`
-                : ""
+                : "var(--cch-active-tab-color)"
             }
           }
   
@@ -506,10 +511,20 @@ if (!customElements.get("compact-custom-header")) {
           buttons[button].style.display = "none";
         }
       }
+
+      // Use button colors vars set in HA theme.
+      buttons.menu.style.color = "var(--cch-button-color-menu)"
+      buttons.notifications.style.color =
+        "var(--cch-button-color-notifications)"
+      buttons.voice.style.color = "var(--cch-button-color-voice)"
+      buttons.options.style.color = "var(--cch-button-color-options)"
+
       if (this.cchConfig.all_buttons_color) {
         root.querySelector("app-toolbar").style.color =
-          this.cchConfig.all_buttons_color
+          this.cchConfig.all_buttons_color || "var(--cch-all-buttons-color)"
       }
+
+      // Use button colors set in config.
       for (const button in buttons) {
         if (this.cchConfig.button_color[button]) {
           buttons[button].style.color = this.cchConfig.button_color[button];
@@ -522,9 +537,10 @@ if (!customElements.get("compact-custom-header")) {
         let style = document.createElement('style');
         style.innerHTML = `
           .indicator {
-            background-color:${this.cchConfig.notify_indicator_color};
+            background-color:${this.cchConfig.notify_indicator_color ||
+              "var(--cch-notify-indicator-color)"};
             color: ${this.cchConfig.notify_text_color ||
-                    "var(--primary-text-color)"};
+              "var(--cch-notify-text-color, var(--primary-text-color))"};
           }
         `;
         buttons.notifications.shadowRoot.appendChild(style);

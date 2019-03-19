@@ -4,7 +4,7 @@ Inspired by [a gist by ciotlosm](https://gist.github.com/ciotlosm/1f09b330aa5bd5
 
 <img src="https://i.imgur.com/kz0gnZm.jpg" width="500px">
 
-<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee to keep me going.</span>
+<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee to keep me going.</span></a>
 
 ## Features:
 * Per user/device settings using usernames, user agents, and media queries.
@@ -153,7 +153,7 @@ views:
 ```
 
 ## Styling Config:
-### All style configuration is done in yaml (or raw edit mode).
+### All style configuration is done in yaml (or raw edit mode)<br>or from your HA theme yaml file (more on this in bottom of readme).
 |NAME|DESCRIPTION|
 |-|-|
 |background_color|Change the header's background color. Uses any CSS that can be used with the CSS [background-color property](https://www.w3schools.com/cssref/pr_background-color.asp). This option must be set manually in yaml code (raw editor). Examples: `background_color: "#000"` or even `background_color: transparent`.
@@ -199,4 +199,23 @@ views:
   clock_format: 12
   date_locale: en-gb
   main_config: true
+```
+
+# Theme.yaml
+You can also theme CCH from the HA theme file to make it easier to share and make it lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the config of the card will override these options.
+
+## Theme Variables:
+```yaml
+  cch-background-color: transparent
+  cch-background-image: url("https://goo.gl/M3Dsf2")
+  cch-all-buttons-color: blue
+  cch-button-color-menu: green
+  cch-button-color-notifications: yellow
+  cch-button-color-voice: black
+  cch-button-color-options: red
+  cch-all-tabs-color: red
+  cch-tab-indicator-color: yellow
+  cch-active-tab-color: blue
+  cch-notify-indicator-color: "#00FFFF"
+  cch-notify-text-color: brown
 ```
