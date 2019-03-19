@@ -5,7 +5,7 @@ Customize the Home Assistant header! Inspired by [the kiosk mode gist by ciotlos
 
 <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/FgwNR2l"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px">If you feel I deserve it, you can buy me a coffee to keep me going.</span></a>
 
-## Features:
+### Features:
 * Per user/device settings using usernames, user agents, and media queries.
 * Any icon button can be hidden, made into a clock with optional date, or placed in the options menu.
 * Hide tabs from user's and devices.
@@ -59,7 +59,7 @@ resources:
 ```
 </details>
 
-# Important notes:
+## Important notes:
 
 * Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
 
@@ -117,7 +117,7 @@ You may clear the cache by clicking the button on the bottom of the editor or by
 |redirect|boolean|true||Toggles auto redirecting from a hidden tab to a visible tab.|
 |exception||||Allows for different configs when exceptions are met, see "Exception Config" below.
 
-## Button Config:
+### Button Config:
 
 Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". Each button except for the options button can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the option button's drop-down menu.
 
@@ -174,7 +174,7 @@ Under exceptions set your conditions and then set up their config below.
 |notify_text_color|Sets the color of the number of new notifications inside the indicator.
 |active_tab_color|Sets the color of the current tab's icon.
 
-## Notes on styling config:
+### Notes on styling config:
 * <b>You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
 * If using hex colors (#ffffff) be sure to enclose in quotes ("#ffffff").
 * You can use styling in your exceptions as well and have seperate themes per user/device.</b>
@@ -213,11 +213,11 @@ Under exceptions set your conditions and then set up their config below.
 ```
 </details>
 
-# Theme YAML
+## Theme Variables
 You can also style CCH from your HA theme's YAML to make it easier to share and make it lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the config of the card will override these options.
 
 <details>
-  <summary><b>Theme Variables:</b></summary>
+  <summary><b>Theme Variables Example:</b></summary>
 The color and image variables are just examples. All options default to HA's default values.
 
 ```yaml
