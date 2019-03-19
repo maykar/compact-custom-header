@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.2b0";
+import "./compact-custom-header-editor.js?v=1.0.2b1";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -372,7 +372,7 @@ if (!customElements.get("compact-custom-header")) {
           view.querySelectorAll("*")[0].style.display = "block";
         }
         header.style.backgroundColor = this.cchConfig.background_color ||
-          "var(--cch-background-color)";;
+          "var(--cch-background-color, var(--primary-color))";
         header.style.backgroundImage = this.cchConfig.background_image ||
           "var(--cch-background-image)";
       }
