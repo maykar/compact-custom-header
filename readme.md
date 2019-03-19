@@ -153,7 +153,7 @@ views:
 ```
 
 ## Styling Config:
-### All style configuration is done in yaml (or raw edit mode) or from your HA theme yaml file (more on this in bottom of readme).
+### All style configuration is done in yaml (or raw edit mode)<br>or from your HA theme yaml file (more on this in bottom of readme).
 |NAME|DESCRIPTION|
 |-|-|
 |background_color|Change the header's background color. Uses any CSS that can be used with the CSS [background-color property](https://www.w3schools.com/cssref/pr_background-color.asp). This option must be set manually in yaml code (raw editor). Examples: `background_color: "#000"` or even `background_color: transparent`.
