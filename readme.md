@@ -20,7 +20,11 @@ There are 2 methods of installation: Manual or with [Custom_Updater](https://git
 
 [@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for issues and installation of cards in lovelace.
 
-### Manual installation:
+You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
+
+<details>
+  <summary><b>Manual installation:</b></summary>
+  <br>
 Install this card by copying both .js files to `www/custom-lovelace/compact-custom-header/`. Be sure you're using the raw files from github (button on top right when viewing code).
 
 This goes under "resources:" in ui-lovelace.yaml (yaml mode) or by using the "Raw Config" editor while "Configuring UI" (storage mode). When updating be sure add to the version number at the end of this code.
@@ -35,11 +39,10 @@ Add the following into every view under "cards:" (See important notes below for 
 ```yaml
 - type: custom:compact-custom-header
 ```
-
-You may need to have `javascript_version: latest` in your `configuration.yaml` under `frontend:`.
-
-### Installation and tracking with custom_updater:
-
+</details>
+<details>
+  <summary><b>Installation and tracking with custom_updater:</b></summary>
+<br>
 1. Make sure the [custom_updater](https://github.com/custom-components/custom_updater) component is installed and working.
 2. Configure Lovelace to load the card.
 
@@ -56,6 +59,7 @@ resources:
 ```yaml
 - type: custom:compact-custom-header
 ```
+</details>
 
 # Important notes:
 
@@ -112,8 +116,10 @@ You can have different settings depending on username, user agent, and media que
 
 **If a config item is left out of an exceptions config the main config value is used.**
 
-Under exceptions set your conditions and then set up their config below. Example:
-
+Under exceptions set your conditions and then set up their config below.
+<details>
+  <summary><b>Example:</b></summary>
+  
 ```yaml
 - type: 'custom:compact-custom-header'
   main_config: true
@@ -137,8 +143,11 @@ Under exceptions set your conditions and then set up their config below. Example
         clock_format: 12
         hide_tabs: 4,5,9
 ```
+</details>
 
-## Panel View Example:
+<details>
+  <summary><b>Panel View Example:</b></summary>
+  <br>
 Placing this card at the end of the vertical stack can help with some spacing issues.
 
 ```yaml
@@ -151,6 +160,7 @@ views:
     - type: another-card
     - type: custom:compact-custom-header
 ```
+</details>
 
 ## Styling Config:
 ### All style configuration is done in yaml (or raw edit mode)<br>or from your HA theme yaml file (more on this in bottom of readme).
@@ -173,7 +183,10 @@ views:
 ### Ugly screenshot to illustrate. The code below the screenshot is what was used.
 ![](https://i.imgur.com/t6VMKHf.png)
 
-## Styling Example:
+<details>
+  <summary><b>Styling Example:</b></summary>
+  <br>
+  
 ```yaml
 - type: 'custom:compact-custom-header'
   background_color: transparent # header background color
@@ -200,11 +213,16 @@ views:
   date_locale: en-gb
   main_config: true
 ```
+</details>
 
 # Theme.yaml
 You can also theme CCH from the HA theme file to make it easier to share and make it lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the config of the card will override these options.
 
-## Theme Variables:
+<details>
+  <summary><b>Theme Variables:</b></summary>
+<br>
+The color and image variables are just examples. All options default to HA's default values.
+
 ```yaml
   cch-background-color: transparent
   cch-background-image: url("https://goo.gl/M3Dsf2")
@@ -219,3 +237,4 @@ You can also theme CCH from the HA theme file to make it easier to share and mak
   cch-notify-indicator-color: "#00FFFF"
   cch-notify-text-color: brown
 ```
+</details>
