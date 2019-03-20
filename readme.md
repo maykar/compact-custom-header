@@ -62,11 +62,8 @@ resources:
 ## Important notes:
 
 * Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
-
 * The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
-
 * If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.
-
 * To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below.
 
 <details>
@@ -110,7 +107,7 @@ Styling configuration is at the bottom of this readme.**
 |options|string|show|<img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true">|Can be "show", "hide" or "clock".|
 |chevrons|boolean|false|<img src="https://github.com/google/material-design-icons/blob/master/navigation/2x_web/ic_chevron_left_black_48dp.png?raw=true">|Hide or show the tab's navigation chevrons.|
 |clock_format|number|12||12 or 24 hour clock format. Choices are 12 or 24.|
-|clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.|clock_date:
+|clock_am_pm|boolean|true||Display or hide the AM/PM indicator on 12 hour clock.
 |clock_date|boolean|false||Adds a date below the clock.|
 |date_locale|string|||By default the date format/language is set to your HA preference, this option allows you to override that with [locale codes](http://download1.parallels.com/SiteBuilder/Windows/docs/3.2/en_US/sitebulder-3.2-win-sdk-localization-pack-creation-guide/30801.htm). This option must be set manually in yaml code (raw editor). Example `date_locale: en-gb`.
 |hide_tabs|string|||Comma-seperated list of tab numbers to hide. Do not use with show_tabs.|
@@ -132,7 +129,7 @@ You can have different settings depending on username, user agent, and media que
 
 **If a config item is left out of an exceptions config the main config value is used.**
 
-Under exceptions set your conditions and then set up their config below.
+Under exceptions set your conditions and then set up their config below that.
 <details>
   <summary><b>Example Config:</b></summary>
   
@@ -219,7 +216,7 @@ You can also style CCH from your HA theme's YAML to make it easier to share and 
 
 <details>
   <summary><b>Theme Variables Example:</b></summary>
-The color and image variables are just examples. All options default to HA's default values.
+The color and image values are just examples. All options default to HA's default values if not set here or in config.
 
 ```yaml
   cch-background-color: transparent
