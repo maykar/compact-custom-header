@@ -29,7 +29,7 @@ Customize the Home Assistant header!<br><br>
 <details>
   <summary><b>Panel View Example:</b></summary>
 
-To use with panel view you need to place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Placing this card at the end of the vertical stack can help with some spacing issues.
+Placing this card at the end of the vertical stack can help with some spacing issues.
 
 ```yaml
 views:
