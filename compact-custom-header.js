@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.2b1";
+import "./compact-custom-header-editor.js?v=1.0.2b2";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -263,7 +263,7 @@ if (!customElements.get("compact-custom-header")) {
           }
         }
 
-        if (this.cchConfig.conditional_styles.length) {
+        if (this.cchConfig.conditional_styles) {
           this.conditionalStyling(header, buttons, tabs);
           this.hass.connection.socket.addEventListener("message", event => {
             this.conditionalStyling(header, buttons, tabs);
@@ -400,10 +400,16 @@ if (!customElements.get("compact-custom-header")) {
         }
       }
 
+      let conditionalTabs;
+      if (this.cchConfig.conditional_styles) {
+        conditionalTabs =
+          (JSON.stringify(this.cchConfig.conditional_styles).includes("tab"));
+      }
+
       if (
         !root.querySelector("[id=\"cch_iron_selected\"]") &&
         !this.editMode &&
-        !JSON.stringify(this.cchConfig.conditional_styles).includes("tab")
+        !conditionalTabs
       ) {
         let style = document.createElement("style");
         style.setAttribute("id", "cch_iron_selected");
@@ -738,7 +744,9 @@ if (!customElements.get("compact-custom-header")) {
           elem.style.color = color;
         }
         if (onIcon && iconElem) iconElem.setAttribute("icon", onIcon);
-        if (hide && elem !== "background") elem.style.display = "none";
+        if (hide && elem !== "background" && !this.editMode) {
+          elem.style.display = "none";
+        }
       };
 
       const getElements = (key, elemArray, i, obj, styling) => {
