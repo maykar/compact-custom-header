@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.2b3";
+import "./compact-custom-header-editor.js?v=1.0.2b4";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -805,9 +805,15 @@ if (!customElements.get("compact-custom-header")) {
               color = styling[i][obj].color;
               image = styling[i][obj].image;
               iconElement = false;
-              this.prevColor[obj] = header.style.backgroundColor;
+              if (!this.prevColor[obj]) {
+                this.prevColor[obj] =
+                  window.getComputedStyle(header, null)
+                    .getPropertyValue("background-color");
+              }
               if (!this.prevImage)
-                this.prevImage = header.style.backgroundImage;
+                this.prevImage = 
+                  window.getComputedStyle(header, null)
+                    .getPropertyValue("background-image");
             } else if (obj == "button") {
               getElements(key, buttons, i, obj, styling);
               iconElement = element
