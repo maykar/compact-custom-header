@@ -1,7 +1,7 @@
 ## Compact Custom Header
 Customize the Home Assistant header!<br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
-
+### [See the Wiki for installation and configuration.](https://github.com/maykar/compact-custom-header/wiki)<br>
 ## Features:
 * Compact design that removes header text.
 * Style or hide anything in the header.
@@ -19,5 +19,3 @@ Customize the Home Assistant header!<br><br>
 * Options menu as clock.<br>
 * Notifications & voice icon moved into options menu.<br>
 * Background color black, active tab icon white, other icons grey, tab indicator transparent.<br>
-
-## [See the Wiki for installation and config instructions.](https://github.com/maykar/compact-custom-header/wiki)
