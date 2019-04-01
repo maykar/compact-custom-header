@@ -26,3 +26,19 @@ Customize the Home Assistant header!<br><br>
 * The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
 * If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.
 * To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below.
+<details>
+  <summary><b>Panel View Example:</b></summary>
+
+To use with panel view you need to place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Placing this card at the end of the vertical stack can help with some spacing issues.
+
+```yaml
+views:
+- title: Panel View Example
+  panel: true
+  cards:
+  - type: vertical-stack
+    cards:
+    - type: another-card
+    - type: custom:compact-custom-header
+```
+</details>
