@@ -15,7 +15,7 @@ Customize the Home Assistant header!<br><br>
 **After:**<br>
 <img src="https://i.imgur.com/LeKHDCh.png?1" width="400px"><br>
 
-**Conditional Styling Demo:**<br><br>
+**Conditional Styling Demo:**<br>
 <img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="400px"><br>
 
 ## Important notes:
