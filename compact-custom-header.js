@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.2b4";
+import "./compact-custom-header-editor.js?v=1.0.2b5";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -770,12 +770,15 @@ if (!customElements.get("compact-custom-header")) {
 
       for (let i = 0; i < styling.length; i++) {
         let entity = styling[i].entity;
-        if (!this.editMode && this.hass.states[entity] == undefined) {
+        if (
+          !this.editMode && this.hass.states[entity] == undefined &&
+          entity !== "notifications"
+        ) {
           throw new Error(`${entity} does not exist.`);
         }
         if (entity == "notifications") {
           window.hassConnection.then(function(result) {
-            window.cchState[i] = result.conn._ntf.state.length;
+            window.cchState[i] = !!(result.conn._ntf.state.length);
           });
         } else {
           window.hassConnection.then(function(result) {
@@ -818,9 +821,15 @@ if (!customElements.get("compact-custom-header")) {
                   .getPropertyValue("background-image");
             } else if (obj == "button") {
               getElements(key, buttons, i, obj, styling);
-              iconElement = element
-                .querySelector("paper-icon-button")
-                .shadowRoot.querySelector("iron-icon");
+              if (key == "menu") {
+                iconElement = element
+                  .querySelector("paper-icon-button")
+                  .shadowRoot.querySelector("iron-icon");
+              } else {
+                iconElement = element.shadowRoot
+                  .querySelector("paper-icon-button")
+                  .shadowRoot.querySelector("iron-icon");
+              }
             } else if (obj == "tab") {
               getElements(key, tabs, i, obj, styling);
               iconElement = element.querySelector("ha-icon");
