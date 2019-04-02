@@ -848,7 +848,10 @@ if (!customElements.get("compact-custom-header")) {
             } else if (less && window.cchState[i] < below) {
               styleElements(element, color, hide, image, onIcon, iconElement);
             } else {
-              if (hide && element.style.display == "none") {
+              if (
+                element !== "background" && hide &&
+                element.style.display == "none"
+              ) {
                 element.style.display = "";
               }
               if (color && image && element == "background") {
