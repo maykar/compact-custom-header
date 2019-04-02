@@ -18,7 +18,10 @@ Customize the Home Assistant header!<br><br>
 **Things changed in after image:**
 * Options menu as clock.<br>
 * Notifications & voice icon moved into options menu.<br>
-* Background color black, active tab icon white, other icons grey, tab indicator transparent.<br>
+* Background color black, active tab icon white, other icons grey, tab indicator transparent.<br><br>
+
+**Conditional Styling Demo:**<br><br>
+<img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="400px"><br>
 
 ## Important notes:
 
