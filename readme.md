@@ -11,9 +11,9 @@ Customize the Home Assistant header!<br><br>
 * Any icon button can be hidden, made into a clock with optional date, or placed in the options menu.<br><br>
 
 **Before:**<br>
-<img src="https://i.imgur.com/GnT85b0.png" width="400px"><br>
+<img src="https://i.imgur.com/GnT85b0.png?1" width="400px"><br>
 **After:**<br>
-<img src="https://i.imgur.com/LeKHDCh.png" width="400px"><br>
+<img src="https://i.imgur.com/LeKHDCh.png?1" width="400px"><br>
 
 **Things changed in after image:**
 * Options menu as clock.<br>
