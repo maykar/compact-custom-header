@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.2b5";
+import "./compact-custom-header-editor.js?v=1.0.2b6";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -777,6 +777,7 @@ if (!customElements.get("compact-custom-header")) {
           throw new Error(`${entity} does not exist.`);
         }
         if (entity == "notifications") {
+          this.notificationMonitor = true;
           window.hassConnection.then(function(result) {
             window.cchState[i] = !!(result.conn._ntf.state.length);
           });
@@ -864,7 +865,7 @@ if (!customElements.get("compact-custom-header")) {
               } else if (
                 obj !== "background" &&
                 obj !== "entity" &&
-                obj != "condition"
+                obj !== "condition"
               ) {
                 element.style.color = this.prevColor[key];
               }
@@ -876,6 +877,11 @@ if (!customElements.get("compact-custom-header")) {
         }
       }
       fireEvent(this, "iron-resize");
+      if (this.notificationMonitor) {
+        window.setTimeout(() => 
+          this.conditionalStyling(header, buttons, tabs)
+        , 1000);
+      }
     }
 
     // Walk the DOM to find element.
