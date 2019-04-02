@@ -205,12 +205,12 @@ if (!customElements.get("compact-custom-header")) {
         : [];
       const view = root
         .querySelector("ha-app-layout")
-        .querySelector("[id=\"view\"]");
+        .querySelector('[id="view"]');
       this.editMode =
         root.querySelector("app-toolbar").className == "edit-mode";
 
       // Add top margin to unused-entities page.
-      if (!view.parentNode.querySelector("[id=\"cch_unused\"]")) {
+      if (!view.parentNode.querySelector('[id="cch_unused"]')) {
         let style = document.createElement("style");
         style.setAttribute("id", "cch_unused");
         style.innerHTML = `
@@ -338,7 +338,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     removeStyles(tabContainer, header, view, root, tabs) {
-      let header_colors = root.querySelector("[id=\"cch_header_colors\"]");
+      let header_colors = root.querySelector('[id="cch_header_colors"]');
       if (tabContainer) {
         tabContainer.style.marginLeft = "";
         tabContainer.style.marginRight = "";
@@ -347,8 +347,8 @@ if (!customElements.get("compact-custom-header")) {
       header.style.backgroundImage = null;
       view.style.marginTop = "0px";
       view.querySelectorAll("*")[0].style.display = "initial";
-      if (root.querySelector("[id=\"cch_iron_selected\"]")) {
-        root.querySelector("[id=\"cch_iron_selected\"]").outerHTML = "";
+      if (root.querySelector('[id="cch_iron_selected"]')) {
+        root.querySelector('[id="cch_iron_selected"]').outerHTML = "";
       }
       if (header_colors) header_colors.parentNode.removeChild(header_colors);
       if (Object.keys(this.cchConfig.tab_color).length) {
@@ -384,16 +384,16 @@ if (!customElements.get("compact-custom-header")) {
       let all_tabs_color =
         this.cchConfig.all_tabs_color || "var(--cch-all-tabs-color)";
       if (tab_indicator_color) {
-        if (!root.querySelector("[id=\"cch_header_colors\"]") && !this.editMode) {
+        if (!root.querySelector('[id="cch_header_colors"]') && !this.editMode) {
           let style = document.createElement("style");
           style.setAttribute("id", "cch_header_colors");
           style.innerHTML = `
             paper-tabs {
               ${
-            tab_indicator_color
-              ? `--paper-tabs-selection-bar-color: ${tab_indicator_color} !important`
-              : "var(--cch-tab-indicator-color) !important"
-            }
+                tab_indicator_color
+                  ? `--paper-tabs-selection-bar-color: ${tab_indicator_color} !important`
+                  : "var(--cch-tab-indicator-color) !important"
+              }
             }
           `;
           root.appendChild(style);
@@ -402,12 +402,13 @@ if (!customElements.get("compact-custom-header")) {
 
       let conditionalTabs;
       if (this.cchConfig.conditional_styles) {
-        conditionalTabs =
-          (JSON.stringify(this.cchConfig.conditional_styles).includes("tab"));
+        conditionalTabs = JSON.stringify(
+          this.cchConfig.conditional_styles
+        ).includes("tab");
       }
 
       if (
-        !root.querySelector("[id=\"cch_iron_selected\"]") &&
+        !root.querySelector('[id="cch_iron_selected"]') &&
         !this.editMode &&
         !conditionalTabs
       ) {
@@ -416,10 +417,10 @@ if (!customElements.get("compact-custom-header")) {
         style.innerHTML = `
             .iron-selected {
               ${
-          this.cchConfig.active_tab_color
-            ? `color: ${this.cchConfig.active_tab_color + " !important"}`
-            : "var(--cch-active-tab-color)"
-          }
+                this.cchConfig.active_tab_color
+                  ? `color: ${this.cchConfig.active_tab_color + " !important"}`
+                  : "var(--cch-active-tab-color)"
+              }
             }
           `;
         tabContainer.appendChild(style);
@@ -444,7 +445,7 @@ if (!customElements.get("compact-custom-header")) {
 
         if (
           this.cchConfig.chevrons &&
-          !tabContainer.shadowRoot.querySelector("[id=\"cch_chevron\"]")
+          !tabContainer.shadowRoot.querySelector('[id="cch_chevron"]')
         ) {
           // Remove space taken up by "not-visible" chevron.
           let style = document.createElement("style");
@@ -457,7 +458,7 @@ if (!customElements.get("compact-custom-header")) {
           tabContainer.shadowRoot.appendChild(style);
         } else {
           let chevron = tabContainer.shadowRoot.querySelectorAll(
-            "[icon^=\"paper-tabs:chevron\"]"
+            '[icon^="paper-tabs:chevron"]'
           );
           chevron[0].style.display = "none";
           chevron[1].style.display = "none";
@@ -508,12 +509,12 @@ if (!customElements.get("compact-custom-header")) {
                   width: 10px;
                   height: 10px;
                   ${
-                this.cchConfig.notify_indicator_color
-                  ? `background-color:${
-                  this.cchConfig.notify_indicator_color
-                  }`
-                  : ""
-                }
+                    this.cchConfig.notify_indicator_color
+                      ? `background-color:${
+                          this.cchConfig.notify_indicator_color
+                        }`
+                      : ""
+                  }
                 }
                 .indicator > div{
                   display:none;
@@ -554,9 +555,9 @@ if (!customElements.get("compact-custom-header")) {
         style.innerHTML = `
           .indicator {
             background-color:${this.cchConfig.notify_indicator_color ||
-          "var(--cch-notify-indicator-color)"};
+              "var(--cch-notify-indicator-color)"};
             color: ${this.cchConfig.notify_text_color ||
-          "var(--cch-notify-text-color, var(--primary-text-color))"};
+              "var(--cch-notify-text-color, var(--primary-text-color))"};
           }
         `;
         buttons.notifications.shadowRoot.appendChild(style);
@@ -627,14 +628,14 @@ if (!customElements.get("compact-custom-header")) {
       const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
       const clockWidth =
         (this.cchConfig.clock_format == 12 && this.cchConfig.clock_am_pm) ||
-          this.cchConfig.clock_date
+        this.cchConfig.clock_date
           ? 90
           : 80;
 
       if (
         this.cchConfig.notifications == "clock" &&
         this.cchConfig.clock_date &&
-        !buttons.notifications.shadowRoot.querySelector("[id=\"cch_indicator\"]")
+        !buttons.notifications.shadowRoot.querySelector('[id="cch_indicator"]')
       ) {
         let style = document.createElement("style");
         style.setAttribute("id", "cch_indicator");
@@ -647,10 +648,10 @@ if (!customElements.get("compact-custom-header")) {
             height: 3px;
             border-radius: 0;
             ${
-          this.cchConfig.notify_indicator_color
-            ? `background-color:${this.cchConfig.notify_indicator_color}`
-            : ""
-          }
+              this.cchConfig.notify_indicator_color
+                ? `background-color:${this.cchConfig.notify_indicator_color}`
+                : ""
+            }
           }
           .indicator > div{
             display:none;
@@ -756,8 +757,9 @@ if (!customElements.get("compact-custom-header")) {
         offIcon = styling[i][obj][key].off_icon;
         hide = styling[i][obj][key].hide;
         if (!this.prevColor[key]) {
-          this.prevColor[key] =
-            window.getComputedStyle(element, null).getPropertyValue('color');
+          this.prevColor[key] = window
+            .getComputedStyle(element, null)
+            .getPropertyValue("color");
         }
       };
 
@@ -772,11 +774,11 @@ if (!customElements.get("compact-custom-header")) {
           throw new Error(`${entity} does not exist.`);
         }
         if (entity == "notifications") {
-          window.hassConnection.then(function (result) {
+          window.hassConnection.then(function(result) {
             window.cchState[i] = result.conn._ntf.state.length;
           });
         } else {
-          window.hassConnection.then(function (result) {
+          window.hassConnection.then(function(result) {
             window.cchState[i] = result.conn._ent.state[entity].state;
           });
         }
@@ -806,14 +808,14 @@ if (!customElements.get("compact-custom-header")) {
               image = styling[i][obj].image;
               iconElement = false;
               if (!this.prevColor[obj]) {
-                this.prevColor[obj] =
-                  window.getComputedStyle(header, null)
-                    .getPropertyValue("background-color");
+                this.prevColor[obj] = window
+                  .getComputedStyle(header, null)
+                  .getPropertyValue("background-color");
               }
               if (!this.prevImage)
-                this.prevImage = 
-                  window.getComputedStyle(header, null)
-                    .getPropertyValue("background-image");
+                this.prevImage = window
+                  .getComputedStyle(header, null)
+                  .getPropertyValue("background-image");
             } else if (obj == "button") {
               getElements(key, buttons, i, obj, styling);
               iconElement = element
