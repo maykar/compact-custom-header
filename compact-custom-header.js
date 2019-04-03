@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.2b6";
+import "./compact-custom-header-editor.js?v=1.0.2b7";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -380,18 +380,18 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       // Style header all icons, all tab icons, and selection indicator.
-      let tab_indicator_color = this.cchConfig.tab_indicator_color;
+      let indicator = this.cchConfig.tab_indicator_color;
       let all_tabs_color =
         this.cchConfig.all_tabs_color || "var(--cch-all-tabs-color)";
-      if (tab_indicator_color) {
+      if (indicator) {
         if (!root.querySelector('[id="cch_header_colors"]') && !this.editMode) {
           let style = document.createElement("style");
           style.setAttribute("id", "cch_header_colors");
           style.innerHTML = `
             paper-tabs {
               ${
-                tab_indicator_color
-                  ? `--paper-tabs-selection-bar-color: ${tab_indicator_color} !important`
+                indicator
+                  ? `--paper-tabs-selection-bar-color: ${indicator} !important`
                   : "var(--cch-tab-indicator-color) !important"
               }
             }
@@ -555,9 +555,9 @@ if (!customElements.get("compact-custom-header")) {
         style.innerHTML = `
           .indicator {
             background-color:${this.cchConfig.notify_indicator_color ||
-              "var(--cch-notify-indicator-color)"};
+              "var(--cch-notify-indicator-color)"} !important;
             color: ${this.cchConfig.notify_text_color ||
-              "var(--cch-notify-text-color, var(--primary-text-color))"};
+              "var(--cch-notify-text-color), var(--primary-text-color)"};
           }
         `;
         buttons.notifications.shadowRoot.appendChild(style);
@@ -771,7 +771,8 @@ if (!customElements.get("compact-custom-header")) {
       for (let i = 0; i < styling.length; i++) {
         let entity = styling[i].entity;
         if (
-          !this.editMode && this.hass.states[entity] == undefined &&
+          !this.editMode &&
+          this.hass.states[entity] == undefined &&
           entity !== "notifications"
         ) {
           throw new Error(`${entity} does not exist.`);
@@ -779,7 +780,7 @@ if (!customElements.get("compact-custom-header")) {
         if (entity == "notifications") {
           this.notificationMonitor = true;
           window.hassConnection.then(function(result) {
-            window.cchState[i] = !!(result.conn._ntf.state.length);
+            window.cchState[i] = !!result.conn._ntf.state.length;
           });
         } else {
           window.hassConnection.then(function(result) {
@@ -850,7 +851,8 @@ if (!customElements.get("compact-custom-header")) {
               styleElements(element, color, hide, image, onIcon, iconElement);
             } else {
               if (
-                element !== "background" && hide &&
+                element !== "background" &&
+                hide &&
                 element.style.display == "none"
               ) {
                 element.style.display = "";
@@ -878,9 +880,10 @@ if (!customElements.get("compact-custom-header")) {
       }
       fireEvent(this, "iron-resize");
       if (this.notificationMonitor) {
-        window.setTimeout(() => 
-          this.conditionalStyling(header, buttons, tabs)
-        , 1000);
+        window.setTimeout(
+          () => this.conditionalStyling(header, buttons, tabs),
+          1000
+        );
       }
     }
 
