@@ -33,8 +33,7 @@ export const defaultConfig = {
   main_config: false,
   chevrons: false,
   redirect: true,
-  background_color: "",
-  background_image: "",
+  background: "",
   hide_tabs: [],
   show_tabs: [],
   tab_color: {},
@@ -343,8 +342,7 @@ if (!customElements.get("compact-custom-header")) {
         tabContainer.style.marginLeft = "";
         tabContainer.style.marginRight = "";
       }
-      header.style.backgroundColor = null;
-      header.style.backgroundImage = null;
+      header.style.background = null;
       view.style.marginTop = "0px";
       view.querySelectorAll("*")[0].style.display = "initial";
       if (root.querySelector('[id="cch_iron_selected"]')) {
@@ -372,11 +370,9 @@ if (!customElements.get("compact-custom-header")) {
           view.querySelectorAll("*")[0].style.paddingTop = "55px";
           view.querySelectorAll("*")[0].style.display = "block";
         }
-        header.style.backgroundColor =
-          this.cchConfig.background_color ||
-          "var(--cch-background-color, var(--primary-color))";
-        header.style.backgroundImage =
-          this.cchConfig.background_image || "var(--cch-background-image)";
+        header.style.background =
+          this.cchConfig.background ||
+          "var(--cch-background), var(--primary-color))";
       }
 
       // Style header all icons, all tab icons, and selection indicator.
@@ -731,16 +727,11 @@ if (!customElements.get("compact-custom-header")) {
       if (this.prevColor == undefined) this.prevColor = {};
       if (this.prevState == undefined) this.prevState = [];
       const conditional_styles = this.cchConfig.conditional_styles;
-      let element, color, image, hide, onIcon, offIcon, iconElement;
+      let element, color, background, hide, onIcon, offIcon, iconElement;
 
-      const styleElements = (elem, color, hide, image, onIcon, iconElem) => {
-        if (color && image && elem == "background") {
-          header.style.backgroundColor = color;
-          header.style.backgroundImage = image;
-        } else if (color && elem == "background") {
-          header.style.backgroundColor = color;
-        } else if (image && elem == "background") {
-          header.style.backgroundImage = image;
+      const styleElements = (elem, color, hide, background, onIcon, iconElem) => {
+        if (background && elem == "background") {
+          header.style.background = background;
         } else if (color) {
           elem.style.color = color;
         }
@@ -817,17 +808,13 @@ if (!customElements.get("compact-custom-header")) {
             if (obj == "background") {
               element = "background";
               color = styling[i][obj].color;
-              image = styling[i][obj].image;
+              background = styling[i][obj];
               iconElement = false;
               if (!this.prevColor[obj]) {
                 this.prevColor[obj] = window
                   .getComputedStyle(header, null)
-                  .getPropertyValue("background-color");
+                  .getPropertyValue("background");
               }
-              if (!this.prevImage)
-                this.prevImage = window
-                  .getComputedStyle(header, null)
-                  .getPropertyValue("background-image");
             } else if (obj == "button") {
               getElements(key, buttons, i, obj, styling);
               if (key == "menu") {
@@ -845,17 +832,17 @@ if (!customElements.get("compact-custom-header")) {
             }
 
             if (window.cchState[i] == styling[i].condition.state) {
-              styleElements(element, color, hide, image, onIcon, iconElement);
+              styleElements(element, color, hide, background, onIcon, iconElement);
             } else if (
               greatless &&
               window.cchState[i] > above &&
               window.cchState[i] < below
             ) {
-              styleElements(element, color, hide, image, onIcon, iconElement);
+              styleElements(element, color, hide, background, onIcon, iconElement);
             } else if (great && window.cchState[i] > above) {
-              styleElements(element, color, hide, image, onIcon, iconElement);
+              styleElements(element, color, hide, background, onIcon, iconElement);
             } else if (less && window.cchState[i] < below) {
-              styleElements(element, color, hide, image, onIcon, iconElement);
+              styleElements(element, color, hide, background, onIcon, iconElement);
             } else {
               if (
                 element !== "background" &&
@@ -864,13 +851,8 @@ if (!customElements.get("compact-custom-header")) {
               ) {
                 element.style.display = "";
               }
-              if (color && image && element == "background") {
-                header.style.backgroundColor = this.prevColor[obj];
-                header.style.backgroundImage = this.prevImage;
-              } else if (color && element == "background") {
-                header.style.backgroundColor = this.prevColor[obj];
-              } else if (image && element == "background") {
-                header.style.backgroundImage = this.prevImage;
+              if (background && element == "background") {
+                header.style.background = this.prevColor[obj];
               } else if (
                 obj !== "background" &&
                 obj !== "entity" &&
