@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.2b7";
+import "./compact-custom-header-editor.js?v=1.0.2b8";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -264,7 +264,7 @@ if (!customElements.get("compact-custom-header")) {
         }
 
         if (this.cchConfig.conditional_styles) {
-          this.conditionalStyling(header, buttons, tabs);
+          this.notifMonitor(header, buttons, tabs);
           this.hass.connection.socket.addEventListener("message", event => {
             this.conditionalStyling(header, buttons, tabs);
           });
@@ -746,6 +746,14 @@ if (!customElements.get("compact-custom-header")) {
         }
         if (onIcon && iconElem) iconElem.setAttribute("icon", onIcon);
         if (hide && elem !== "background" && !this.editMode) {
+          let tabContainer = tabs[0].parentNode;
+          if (elem.nodeName.includes("MENU")) {
+            let marginL = parseInt(tabContainer.style.marginLeft.slice(0, -2));
+            tabContainer.style.marginLeft = `${marginL - 45}px`
+          } else if (elem.nodeName.includes("BUTTON")) {
+            let marginR = parseInt(tabContainer.style.marginRight.slice(0, -2));
+            tabContainer.style.marginRight = `${marginR - 45}px`
+          }
           elem.style.display = "none";
         }
       };
@@ -778,7 +786,6 @@ if (!customElements.get("compact-custom-header")) {
           throw new Error(`${entity} does not exist.`);
         }
         if (entity == "notifications") {
-          this.notificationMonitor = true;
           window.hassConnection.then(function(result) {
             window.cchState[i] = !!result.conn._ntf.state.length;
           });
@@ -879,12 +886,19 @@ if (!customElements.get("compact-custom-header")) {
         }
       }
       fireEvent(this, "iron-resize");
-      if (this.notificationMonitor) {
-        window.setTimeout(
-          () => this.conditionalStyling(header, buttons, tabs),
-          1000
-        );
+    }
+
+    notifMonitor(header, buttons, tabs) {
+      let notification =
+        !!buttons.notifications.shadowRoot.querySelector(".indicator")
+      if (notification !== window.cchNotification) {
+        this.conditionalStyling(header, buttons, tabs);
+        window.cchNotification = notification;
       }
+      window.setTimeout(() =>
+        this.notifMonitor(header, buttons, tabs),
+        1000
+      );
     }
 
     // Walk the DOM to find element.
