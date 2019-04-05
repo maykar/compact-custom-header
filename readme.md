@@ -2,7 +2,7 @@
 Customize the Home Assistant header!<br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
 ### See the [Wiki for installation and configuration.](https://github.com/maykar/compact-custom-header/wiki)<br>
-### Follow the [Follow the troubleshooting guide](https://github.com/maykar/compact-custom-header/wiki/Troubleshooting) before submitting issues here or on the forums.
+### Follow the [troubleshooting guide](https://github.com/maykar/compact-custom-header/wiki/Troubleshooting) before submitting issues here or on the forums.
 ## Features:
 * Compact design that removes header text.
 * Style or hide anything in the header.
