@@ -930,6 +930,7 @@ if (!customElements.get("compact-custom-header")) {
         window.cchNotification = notification;
       } else if (notification !== window.cchNotification) {
         this.conditionalStyling(header, buttons, tabs);
+        window.cchNotification = notification;
       }
       window.setTimeout(() => this.notifMonitor(header, buttons, tabs), 1000);
     }
