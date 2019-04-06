@@ -285,14 +285,14 @@ if (!customElements.get("compact-custom-header")) {
     tabMargin(buttons, tabContainer) {
       // Add width of all visible elements on right side for tabs margin.
       let marginRight = 0;
-      let marginLeft = 0;
+      let marginLeft = 15;
       for (const button in buttons) {
         if (
           this.cchConfig[button] == "show" &&
           buttons[button].style.display !== "none"
         ) {
           if (button == "menu") {
-            marginLeft += 60;
+            marginLeft += 45;
           } else {
             marginRight += 45;
           }
