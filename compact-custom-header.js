@@ -242,9 +242,8 @@ if (!customElements.get("compact-custom-header")) {
         !this.cchConfig.disable &&
         !window.location.href.includes("disable_cch")
       ) {
-        const marginRight = this.marginRight;
-        this.styleHeader(root, tabContainer, marginRight, header, view, tabs);
         this.styleButtons(buttons, tabs, root);
+        this.styleHeader(root, tabContainer, header, view, tabs);
         if (this.cchConfig.hide_tabs && tabContainer) {
           this.hideTabs(tabContainer, tabs, hidden_tabs);
         }
@@ -256,30 +255,65 @@ if (!customElements.get("compact-custom-header")) {
               button == "options" || (button == "menu" && hassVersion > 0.88)
                 ? buttons[button]
                 : buttons[button].shadowRoot,
-              tabContainer,
-              marginRight
+              tabContainer
             );
           }
         }
 
-        if (this.cchConfig.conditional_styles) {
-          this.notifMonitor(header, buttons, tabs);
+        const conditionals = this.cchConfig.conditional_styles;
+        const monitorNotifications = () => {
+          for (const key in conditionals) {
+            if (conditionals[key].entity == "notifications") return true;
+          }
+          return false;
+        };
+
+        if (conditionals) {
+          this.conditionalStyling(header, buttons, tabs);
+          if (monitorNotifications) this.notifMonitor(header, buttons, tabs);
           this.hass.connection.socket.addEventListener("message", event => {
             this.conditionalStyling(header, buttons, tabs);
           });
         }
 
+        this.tabMargin(buttons, tabContainer);
+
         fireEvent(this, "iron-resize");
       }
     }
 
-    get marginRight() {
+    tabMargin(buttons, tabContainer) {
       // Add width of all visible elements on right side for tabs margin.
       let marginRight = 0;
-      marginRight += this.cchConfig.notifications == "show" ? 45 : 0;
-      marginRight += this.cchConfig.voice == "show" ? 45 : 0;
-      marginRight += this.cchConfig.options == "show" ? 45 : 0;
-      return marginRight;
+      let marginLeft = 0;
+      for (const button in buttons) {
+        if (
+          this.cchConfig[button] == "show" &&
+          buttons[button].style.display !== "none"
+        ) {
+          if (button == "menu") {
+            marginLeft += 60;
+          } else {
+            marginRight += 45;
+          }
+        } else if (
+          this.cchConfig[button] == "clock" &&
+          buttons[button].style.display !== "none"
+        ) {
+          const clockWidth =
+            (this.cchConfig.clock_format == 12 && this.cchConfig.clock_am_pm) ||
+            this.cchConfig.clock_date
+              ? 90
+              : 80;
+          if (button == "menu") {
+            marginLeft += clockWidth + 15;
+          } else {
+            marginRight += clockWidth;
+          }
+        }
+      }
+      tabContainer.style.marginRight = marginRight + "px";
+      tabContainer.style.marginLeft = marginLeft + "px";
     }
 
     get rootElement() {
@@ -356,7 +390,7 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    styleHeader(root, tabContainer, marginRight, header, view, tabs) {
+    styleHeader(root, tabContainer, header, view, tabs) {
       if (!this.cchConfig.header && !this.editMode) {
         header.style.display = "none";
         view.style.minHeight = "100vh";
@@ -430,12 +464,6 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       if (tabContainer) {
-        // Add space to either side of tab container for buttons.
-        if (this.cchConfig.menu == "show") {
-          tabContainer.style.marginLeft = "60px";
-        }
-        tabContainer.style.marginRight = `${marginRight}px`;
-
         // Shift the header up to hide unused portion.
         root.querySelector("app-toolbar").style.marginTop = "-64px";
 
@@ -619,7 +647,7 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    insertClock(buttons, clock_button, tabContainer, marginRight) {
+    insertClock(buttons, clock_button, tabContainer) {
       const clockIcon = clock_button.querySelector("paper-icon-button");
       const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
       const clockWidth =
@@ -689,11 +717,6 @@ if (!customElements.get("compact-custom-header")) {
         clockIronIcon.style.display = "none";
       }
 
-      if (this.cchConfig.menu == "clock" && tabContainer) {
-        tabContainer.style.marginLeft = `${clockWidth + 15}px`;
-      } else if (tabContainer) {
-        tabContainer.style.marginRight = `${clockWidth + marginRight}px`;
-      }
       const clockFormat = {
         hour12: this.cchConfig.clock_format != 24,
         hour: "2-digit",
@@ -727,9 +750,17 @@ if (!customElements.get("compact-custom-header")) {
       if (this.prevColor == undefined) this.prevColor = {};
       if (this.prevState == undefined) this.prevState = [];
       const conditional_styles = this.cchConfig.conditional_styles;
+      let tabContainer = tabs[0].parentNode;
       let element, color, background, hide, onIcon, offIcon, iconElement;
 
-      const styleElements = (elem, color, hide, background, onIcon, iconElem) => {
+      const styleElements = (
+        elem,
+        color,
+        hide,
+        background,
+        onIcon,
+        iconElem
+      ) => {
         if (background && elem == "background") {
           header.style.background = background;
         } else if (color) {
@@ -737,14 +768,6 @@ if (!customElements.get("compact-custom-header")) {
         }
         if (onIcon && iconElem) iconElem.setAttribute("icon", onIcon);
         if (hide && elem !== "background" && !this.editMode) {
-          let tabContainer = tabs[0].parentNode;
-          if (elem.nodeName.includes("MENU")) {
-            let marginL = parseInt(tabContainer.style.marginLeft.slice(0, -2));
-            tabContainer.style.marginLeft = `${marginL - 45}px`
-          } else if (elem.nodeName.includes("BUTTON")) {
-            let marginR = parseInt(tabContainer.style.marginRight.slice(0, -2));
-            tabContainer.style.marginRight = `${marginR - 45}px`
-          }
           elem.style.display = "none";
         }
       };
@@ -832,17 +855,45 @@ if (!customElements.get("compact-custom-header")) {
             }
 
             if (window.cchState[i] == styling[i].condition.state) {
-              styleElements(element, color, hide, background, onIcon, iconElement);
+              styleElements(
+                element,
+                color,
+                hide,
+                background,
+                onIcon,
+                iconElement
+              );
             } else if (
               greatless &&
               window.cchState[i] > above &&
               window.cchState[i] < below
             ) {
-              styleElements(element, color, hide, background, onIcon, iconElement);
+              styleElements(
+                element,
+                color,
+                hide,
+                background,
+                onIcon,
+                iconElement
+              );
             } else if (great && window.cchState[i] > above) {
-              styleElements(element, color, hide, background, onIcon, iconElement);
+              styleElements(
+                element,
+                color,
+                hide,
+                background,
+                onIcon,
+                iconElement
+              );
             } else if (less && window.cchState[i] < below) {
-              styleElements(element, color, hide, background, onIcon, iconElement);
+              styleElements(
+                element,
+                color,
+                hide,
+                background,
+                onIcon,
+                iconElement
+              );
             } else {
               if (
                 element !== "background" &&
@@ -867,20 +918,20 @@ if (!customElements.get("compact-custom-header")) {
           }
         }
       }
+      this.tabMargin(buttons, tabContainer);
       fireEvent(this, "iron-resize");
     }
 
     notifMonitor(header, buttons, tabs) {
-      let notification =
-        !!buttons.notifications.shadowRoot.querySelector(".indicator")
-      if (notification !== window.cchNotification) {
-        this.conditionalStyling(header, buttons, tabs);
-        window.cchNotification = notification;
-      }
-      window.setTimeout(() =>
-        this.notifMonitor(header, buttons, tabs),
-        1000
+      let notification = !!buttons.notifications.shadowRoot.querySelector(
+        ".indicator"
       );
+      if (window.cchNotification == undefined) {
+        window.cchNotification = notification;
+      } else if (notification !== window.cchNotification) {
+        this.conditionalStyling(header, buttons, tabs);
+      }
+      window.setTimeout(() => this.notifMonitor(header, buttons, tabs), 1000);
     }
 
     // Walk the DOM to find element.
