@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.3b0";
+import "./compact-custom-header-editor.js?v=1.0.3b1";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -453,7 +453,7 @@ if (!customElements.get("compact-custom-header")) {
               }
             }
           `;
-        tabContainer.appendChild(style);
+        if (tabContainer) tabContainer.appendChild(style);
       }
 
       if (Object.keys(this.cchConfig.tab_color).length) {
