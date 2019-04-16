@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.2b9";
+import "./compact-custom-header-editor.js?v=1.0.3b0";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -467,20 +467,17 @@ if (!customElements.get("compact-custom-header")) {
         // Shift the header up to hide unused portion.
         root.querySelector("app-toolbar").style.marginTop = "-64px";
 
-        if (
-          this.cchConfig.chevrons &&
-          !tabContainer.shadowRoot.querySelector('[id="cch_chevron"]')
-        ) {
-          // Remove space taken up by "not-visible" chevron.
-          let style = document.createElement("style");
-          style.setAttribute("id", "cch_chevron");
-          style.innerHTML = `
-            .not-visible {
-              display:none;
-            }
-          `;
-          tabContainer.shadowRoot.appendChild(style);
-        } else {
+        // Remove space taken up by "not-visible" chevron.
+        let style = document.createElement("style");
+        style.setAttribute("id", "cch_chevron");
+        style.innerHTML = `
+          .not-visible {
+            display:none;
+          }
+        `;
+        tabContainer.shadowRoot.appendChild(style);
+
+        if (!this.cchConfig.chevrons) {
           let chevron = tabContainer.shadowRoot.querySelectorAll(
             '[icon^="paper-tabs:chevron"]'
           );
