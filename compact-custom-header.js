@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.3b1";
+import "./compact-custom-header-editor.js?v=1.0.3b2";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -198,6 +198,12 @@ if (!customElements.get("compact-custom-header")) {
       const root = this.rootElement;
       const header = root.querySelector("app-header");
       const buttons = this.getButtonElements(root);
+      let hidden_tabs = this.cchConfig.hide_tabs.length
+        ? this.cchConfig.hide_tabs.replace(/\s+/g, "").split(",")
+        : null;
+      let shown_tabs = this.cchConfig.show_tabs.length
+        ? this.cchConfig.show_tabs.replace(/\s+/g, "").split(",")
+        : null;
       const tabContainer = root.querySelector("paper-tabs");
       const tabs = tabContainer
         ? Array.from(tabContainer.querySelectorAll("paper-tab"))
@@ -221,17 +227,6 @@ if (!customElements.get("compact-custom-header")) {
         view.parentNode.appendChild(style);
       }
 
-      // Get hidden/shown tab config. Invert shown tabs.
-      let hidden_tabs = JSON.parse("[" + this.cchConfig.hide_tabs + "]");
-      const shown_tabs = JSON.parse("[" + this.cchConfig.show_tabs + "]");
-      if (!hidden_tabs.length && shown_tabs.length) {
-        let total_tabs = [];
-        for (let i = 0; i < tabs.length; i++) {
-          total_tabs.push(i);
-        }
-        hidden_tabs = total_tabs.filter(el => !shown_tabs.includes(el));
-      }
-
       if (!this.editMode) this.hideCard();
       if (this.editMode && !this.cchConfig.disable) {
         this.removeStyles(tabContainer, header, view, root, tabs);
@@ -245,9 +240,31 @@ if (!customElements.get("compact-custom-header")) {
         this.styleButtons(buttons, tabs, root);
         this.styleHeader(root, tabContainer, header, view, tabs);
         if (this.cchConfig.hide_tabs && tabContainer) {
-          this.hideTabs(tabContainer, tabs, hidden_tabs);
+          hidden_tabs = this.hideTabs(
+            tabContainer,
+            tabs,
+            hidden_tabs,
+            shown_tabs
+          );
         }
         this.restoreTabs(tabs, hidden_tabs);
+        this.swipeNavigation();
+
+        if (this.cchConfig.default_tab && !window.cchDefaultTab) {
+          let default_tab = this.cchConfig.default_tab;
+          let activeTab = tabs.indexOf(
+            tabContainer.querySelector(".iron-selected")
+          );
+          if (
+            activeTab != default_tab &&
+            activeTab == 0 &&
+            !this.cchConfig.hide_tabs.includes(default_tab)
+          ) {
+            tabs[default_tab].click();
+          }
+          window.cchDefaultTab = true;
+        }
+
         for (const button in buttons) {
           if (this.cchConfig[button] == "clock") {
             this.insertClock(
@@ -606,11 +623,46 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    hideTabs(tabContainer, tabs, hidden_tabs) {
-      for (const tab of hidden_tabs) {
-        if (!tabs[tab]) {
-          continue;
+    hideTabs(tabContainer, tabs, hidden_tabs, shown_tabs) {
+      const sortNumber = (a, b) => a - b;
+      const range = (start, end) =>
+        new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
+      let preTabs, invert;
+
+      if (!hidden_tabs && shown_tabs) {
+        preTabs = shown_tabs;
+        invert = true;
+      } else {
+        preTabs = hidden_tabs;
+      }
+
+      for (let i = 0; i < preTabs.length; i++) {
+        if (preTabs[i].length > 1 && preTabs[i].includes("to")) {
+          let split = preTabs[i].split("to");
+          preTabs.splice(i, 1);
+          preTabs = preTabs.concat(
+            range(parseInt(split[0]), parseInt(split[1]))
+          );
         }
+      }
+      for (let i = 0; i < preTabs.length; i++) {
+        if (typeof preTabs[i] == "string") {
+          preTabs[i] = parseInt(preTabs[i]);
+        }
+      }
+      hidden_tabs = preTabs.sort(sortNumber);
+
+      // Invert shown_tabs to hidden_tabs.
+      if (invert) {
+        let total_tabs = [];
+        for (let i = 0; i < tabs.length; i++) {
+          total_tabs.push(i);
+        }
+        hidden_tabs = total_tabs.filter(el => !hidden_tabs.includes(el));
+      }
+
+      for (const tab of hidden_tabs) {
+        if (!tabs[tab]) continue;
         tabs[tab].style.display = "none";
       }
 
@@ -630,6 +682,7 @@ if (!customElements.get("compact-custom-header")) {
           tabs[i].click();
         }
       }
+      return hidden_tabs;
     }
 
     hideCard() {
@@ -948,6 +1001,105 @@ if (!customElements.get("compact-custom-header")) {
         done = this.recursiveWalk(node, element, func);
         if (done) return true;
         node = node.nextSibling;
+      }
+    }
+
+    swipeNavigation() {
+      // CONFIG START //////////////////////////////////////////////////////////////
+
+      let swipe_amount = 15; // Minimum percent of screen needed to swipe, 1-100.
+      let skip_tabs = []; // List of tabs to skip over. e.g., [1,3,5].
+      let wrap = true; // Wrap around first and last tabs. Set as false to disable.
+      let prevent_default = false // Prevent browsers swipe action for back/forward.
+
+      // CONFIG END ////////////////////////////////////////////////////////////////
+
+      swipe_amount /= Math.pow(10, 2);
+      const appLayout = findAppLayout();
+      const tabContainer = appLayout.querySelector("paper-tabs");
+      let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
+      let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
+
+      appLayout.addEventListener("touchstart", handleTouchStart, {passive: true});
+      appLayout.addEventListener("touchmove", handleTouchMove, {passive: false});
+      appLayout.addEventListener("touchend", handleTouchEnd, {passive: true});
+
+      function handleTouchStart(event) {
+        for (let element of event.path) {
+          if (element.nodeName == "SWIPE-CARD") return;
+          else if (element.nodeName == "HUI-VIEW") break;
+        }
+        xDown = event.touches[0].clientX;
+        yDown = event.touches[0].clientY;
+        if (!lastTab) filterTabs();
+        activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
+      }
+
+      function handleTouchMove(event) {
+        if (xDown && yDown) {
+          xDiff = xDown - event.touches[0].clientX;
+          yDiff = yDown - event.touches[0].clientY;
+          if (Math.abs(xDiff) > Math.abs(yDiff) && prevent_default) {
+            event.preventDefault();
+          }
+        }
+      }
+
+      function handleTouchEnd() {
+        if (activeTab < 0 || Math.abs(xDiff) < Math.abs(yDiff)) {
+          xDown = yDown = xDiff = yDiff = null;
+          return;
+        }
+        if (xDiff > Math.abs(screen.width * swipe_amount)) {
+          activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
+        } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
+          activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+        }
+        xDown = yDown = xDiff = yDiff = null;
+      }
+
+      function findAppLayout() {
+        try {
+          let panelResolver = document
+            .querySelector("home-assistant")
+            .shadowRoot.querySelector("home-assistant-main")
+            .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver");
+          if (panelResolver.shadowRoot) {
+            return panelResolver.shadowRoot
+              .querySelector("ha-panel-lovelace")
+              .shadowRoot.querySelector("hui-root")
+              .shadowRoot.querySelector("ha-app-layout");
+          } else {
+            return document
+              .querySelector("home-assistant")
+              .shadowRoot.querySelector("home-assistant-main")
+              .shadowRoot.querySelector("ha-panel-lovelace")
+              .shadowRoot.querySelector("hui-root")
+              .shadowRoot.querySelector("ha-app-layout");
+          }
+        } catch (e) {
+          console.log("Can't find 'ha-app-layout'.");
+        }
+      }
+
+      function filterTabs() {
+        tabs = tabs.filter(element => {
+          return (
+            !skip_tabs.includes(tabs.indexOf(element)) &&
+            getComputedStyle(element, null).display != "none"
+          );
+        });
+        firstTab = wrap ? 0 : null;
+        lastTab = wrap ? tabs.length - 1 : null;
+      }
+
+      function simulateClick(element) {
+        const event = new MouseEvent("click", { bubbles: false, cancelable: true });
+        const canceled = !element.dispatchEvent(event);
+      }
+
+      function click(index) {
+        simulateClick(tabs[index]);
       }
     }
   }
