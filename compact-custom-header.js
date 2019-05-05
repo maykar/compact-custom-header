@@ -198,12 +198,6 @@ if (!customElements.get("compact-custom-header")) {
       const root = this.rootElement;
       const header = root.querySelector("app-header");
       const buttons = this.getButtonElements(root);
-      let hidden_tabs = this.cchConfig.hide_tabs.length
-        ? this.cchConfig.hide_tabs.replace(/\s+/g, "").split(",")
-        : null;
-      let shown_tabs = this.cchConfig.show_tabs.length
-        ? this.cchConfig.show_tabs.replace(/\s+/g, "").split(",")
-        : null;
       const tabContainer = root.querySelector("paper-tabs");
       const tabs = tabContainer
         ? Array.from(tabContainer.querySelectorAll("paper-tab"))
@@ -213,26 +207,12 @@ if (!customElements.get("compact-custom-header")) {
         .querySelector('[id="view"]');
       this.editMode =
         root.querySelector("app-toolbar").className == "edit-mode";
-
-      // Add top margin to unused-entities page.
-      if (!view.parentNode.querySelector('[id="cch_unused"]')) {
-        let style = document.createElement("style");
-        style.setAttribute("id", "cch_unused");
-        style.innerHTML = `
-          hui-unused-entities {
-            display: inline-block;
-            padding-top:50px;
-          }
-        `;
-        view.parentNode.appendChild(style);
-      }
+      let hidden_tabs;
 
       if (!this.editMode) this.hideCard();
       if (this.editMode && !this.cchConfig.disable) {
         this.removeStyles(tabContainer, header, view, root, tabs);
-        if (buttons.options) {
-          this.insertEditMenu(buttons.options, tabs);
-        }
+        if (buttons.options) this.insertEditMenu(buttons.options, tabs);
       } else if (
         !this.cchConfig.disable &&
         !window.location.href.includes("disable_cch")
@@ -240,30 +220,13 @@ if (!customElements.get("compact-custom-header")) {
         this.styleButtons(buttons, tabs, root);
         this.styleHeader(root, tabContainer, header, view, tabs);
         if (this.cchConfig.hide_tabs && tabContainer) {
-          hidden_tabs = this.hideTabs(
-            tabContainer,
-            tabs,
-            hidden_tabs,
-            shown_tabs
-          );
+          hidden_tabs = this.hideTabs(tabContainer, tabs);
         }
         this.restoreTabs(tabs, hidden_tabs);
-        this.swipeNavigation();
-
-        if (this.cchConfig.default_tab && !window.cchDefaultTab) {
-          let default_tab = this.cchConfig.default_tab;
-          let activeTab = tabs.indexOf(
-            tabContainer.querySelector(".iron-selected")
-          );
-          if (
-            activeTab != default_tab &&
-            activeTab == 0 &&
-            !this.cchConfig.hide_tabs.includes(default_tab)
-          ) {
-            tabs[default_tab].click();
-          }
-          window.cchDefaultTab = true;
+        if (this.cchConfig.swipe) {
+          this.swipeNavigation(root, tabs, tabContainer);
         }
+        this.defaultTab(tabs, tabContainer);
 
         for (const button in buttons) {
           if (this.cchConfig[button] == "clock") {
@@ -284,7 +247,6 @@ if (!customElements.get("compact-custom-header")) {
           }
           return false;
         };
-
         if (conditionals) {
           this.conditionalStyling(header, buttons, tabs);
           if (monitorNotifications) this.notifMonitor(header, buttons, tabs);
@@ -293,14 +255,12 @@ if (!customElements.get("compact-custom-header")) {
           });
         }
 
-        this.tabMargin(buttons, tabContainer);
-
+        this.tabContainerMargin(buttons, tabContainer);
         fireEvent(this, "iron-resize");
       }
     }
 
-    tabMargin(buttons, tabContainer) {
-      // Add width of all visible elements on right side for tabs margin.
+    tabContainerMargin(buttons, tabContainer) {
       let marginRight = 0;
       let marginLeft = 15;
       for (const button in buttons) {
@@ -412,10 +372,8 @@ if (!customElements.get("compact-custom-header")) {
     styleHeader(root, tabContainer, header, view, tabs) {
       if (!this.cchConfig.header && !this.editMode) {
         header.style.display = "none";
-        view.style.minHeight = "100vh";
         return;
       } else if (!this.editMode) {
-        view.style.minHeight = "100vh";
         view.style.marginTop = "-48.5px";
         if (view.querySelector("hui-view")) {
           view.querySelector("hui-view").style.paddingTop = "55px";
@@ -427,8 +385,22 @@ if (!customElements.get("compact-custom-header")) {
           this.cchConfig.background ||
           "var(--cch-background), var(--primary-color))";
       }
+      view.style.minHeight = "100vh";
 
-      // Style header all icons, all tab icons, and selection indicator.
+      // Add top margin to unused-entities page.
+      if (!view.parentNode.querySelector('[id="cch_unused"]')) {
+        let style = document.createElement("style");
+        style.setAttribute("id", "cch_unused");
+        style.innerHTML = `
+          hui-unused-entities {
+            display: inline-block;
+            padding-top:50px;
+          }
+        `;
+        view.parentNode.appendChild(style);
+      }
+
+      // Style all icons, all tab icons, and selection indicator.
       let indicator = this.cchConfig.tab_indicator_color;
       let all_tabs_color =
         this.cchConfig.all_tabs_color || "var(--cch-all-tabs-color)";
@@ -449,13 +421,10 @@ if (!customElements.get("compact-custom-header")) {
         }
       }
 
-      let conditionalTabs;
-      if (this.cchConfig.conditional_styles) {
-        conditionalTabs = JSON.stringify(
-          this.cchConfig.conditional_styles
-        ).includes("tab");
-      }
-
+      // Style active tab icon color.
+      let conditionalTabs = this.cchConfig.conditional_styles
+        ? JSON.stringify(this.cchConfig.conditional_styles).includes("tab")
+        : false;
       if (
         !root.querySelector('[id="cch_iron_selected"]') &&
         !this.editMode &&
@@ -476,6 +445,7 @@ if (!customElements.get("compact-custom-header")) {
         tabContainer.appendChild(style);
       }
 
+      // Style tab icon color.
       if (Object.keys(this.cchConfig.tab_color).length) {
         let tab_color = this.cchConfig.tab_color;
         for (let i = 0; i < tabs.length; i++) {
@@ -487,22 +457,23 @@ if (!customElements.get("compact-custom-header")) {
         // Shift the header up to hide unused portion.
         root.querySelector("app-toolbar").style.marginTop = "-64px";
 
-        // Remove space taken up by "not-visible" chevron.
-        let style = document.createElement("style");
-        style.setAttribute("id", "cch_chevron");
-        style.innerHTML = `
-          .not-visible {
-            display:none;
-          }
-        `;
-        tabContainer.shadowRoot.appendChild(style);
-
         if (!this.cchConfig.chevrons) {
+          // Hide chevrons.
           let chevron = tabContainer.shadowRoot.querySelectorAll(
             '[icon^="paper-tabs:chevron"]'
           );
           chevron[0].style.display = "none";
           chevron[1].style.display = "none";
+        } else {
+          // Remove space taken up by "not-visible" chevron.
+          let style = document.createElement("style");
+          style.setAttribute("id", "cch_chevron");
+          style.innerHTML = `
+            .not-visible {
+              display:none;
+            }
+          `;
+          tabContainer.shadowRoot.appendChild(style);
         }
       }
     }
@@ -575,7 +546,6 @@ if (!customElements.get("compact-custom-header")) {
         "var(--cch-button-color-notifications)";
       buttons.voice.style.color = "var(--cch-button-color-voice)";
       buttons.options.style.color = "var(--cch-button-color-options)";
-
       if (this.cchConfig.all_buttons_color) {
         root.querySelector("app-toolbar").style.color =
           this.cchConfig.all_buttons_color || "var(--cch-all-buttons-color)";
@@ -614,6 +584,24 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
+    defaultTab(tabs, tabContainer) {
+      if (this.cchConfig.default_tab && !window.cchDefaultTab) {
+        let default_tab = this.cchConfig.default_tab;
+        let activeTab = tabs.indexOf(
+          tabContainer.querySelector(".iron-selected")
+        );
+        if (
+          activeTab != default_tab &&
+          activeTab == 0 &&
+          !this.cchConfig.hide_tabs.includes(default_tab)
+        ) {
+          tabs[default_tab].click();
+        }
+        window.cchDefaultTab = true;
+      }
+    }
+
+    // Restore hidden tabs if config has changed.
     restoreTabs(tabs, hidden_tabs) {
       for (let i = 0; i < tabs.length; i++) {
         let hidden = hidden_tabs.includes(i);
@@ -623,34 +611,42 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    hideTabs(tabContainer, tabs, hidden_tabs, shown_tabs) {
+    hideTabs(tabContainer, tabs) {
+      let hidden_tabs = this.cchConfig.hide_tabs.length
+        ? this.cchConfig.hide_tabs.replace(/\s+/g, "").split(",")
+        : null;
+      let shown_tabs = this.cchConfig.show_tabs.length
+        ? this.cchConfig.show_tabs.replace(/\s+/g, "").split(",")
+        : null;
       const sortNumber = (a, b) => a - b;
       const range = (start, end) =>
         new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
-      let preTabs, invert;
+      let tabSource, invert;
 
+      // Set the tab config source.
       if (!hidden_tabs && shown_tabs) {
-        preTabs = shown_tabs;
+        tabSource = shown_tabs;
         invert = true;
       } else {
-        preTabs = hidden_tabs;
+        tabSource = hidden_tabs;
       }
 
-      for (let i = 0; i < preTabs.length; i++) {
-        if (preTabs[i].length > 1 && preTabs[i].includes("to")) {
-          let split = preTabs[i].split("to");
-          preTabs.splice(i, 1);
-          preTabs = preTabs.concat(
+      // Parse ranges and build full array.
+      for (let i = 0; i < tabSource.length; i++) {
+        if (tabSource[i].length > 1 && tabSource[i].includes("to")) {
+          let split = tabSource[i].split("to");
+          tabSource.splice(i, 1);
+          tabSource = tabSource.concat(
             range(parseInt(split[0]), parseInt(split[1]))
           );
         }
       }
-      for (let i = 0; i < preTabs.length; i++) {
-        if (typeof preTabs[i] == "string") {
-          preTabs[i] = parseInt(preTabs[i]);
+      for (let i = 0; i < tabSource.length; i++) {
+        if (typeof tabSource[i] == "string") {
+          tabSource[i] = parseInt(tabSource[i]);
         }
       }
-      hidden_tabs = preTabs.sort(sortNumber);
+      hidden_tabs = tabSource.sort(sortNumber);
 
       // Invert shown_tabs to hidden_tabs.
       if (invert) {
@@ -661,6 +657,7 @@ if (!customElements.get("compact-custom-header")) {
         hidden_tabs = total_tabs.filter(el => !hidden_tabs.includes(el));
       }
 
+      // Hide tabs.
       for (const tab of hidden_tabs) {
         if (!tabs[tab]) continue;
         tabs[tab].style.display = "none";
@@ -675,7 +672,7 @@ if (!customElements.get("compact-custom-header")) {
           hidden_tabs.length != tabs.length
         ) {
           let i = 0;
-          // Find first not hidden view
+          // Find the next visible tab and navigate.
           while (hidden_tabs.includes(i)) {
             i++;
           }
@@ -685,14 +682,15 @@ if (!customElements.get("compact-custom-header")) {
       return hidden_tabs;
     }
 
+    // If this card is the only one in a column hide column outside edit mode.
     hideCard() {
-      // If this card is the only one in a column hide column outside edit mode.
       if (this.parentNode.children.length == 1) {
         this.parentNode.style.display = "none";
       }
       this.style.display = "none";
     }
 
+    // Insert items into overflow menu.
     insertMenuItem(menu_items, element) {
       let first_item = menu_items.querySelector("paper-item");
       if (!menu_items.querySelector(`[id="${element.id}"]`)) {
@@ -971,7 +969,7 @@ if (!customElements.get("compact-custom-header")) {
           }
         }
       }
-      this.tabMargin(buttons, tabContainer);
+      this.tabContainerMargin(buttons, tabContainer);
       fireEvent(this, "iron-resize");
     }
 
@@ -1004,35 +1002,47 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    swipeNavigation() {
-      // CONFIG START //////////////////////////////////////////////////////////////
-
-      let swipe_amount = 15; // Minimum percent of screen needed to swipe, 1-100.
-      let skip_tabs = []; // List of tabs to skip over. e.g., [1,3,5].
-      let wrap = true; // Wrap around first and last tabs. Set as false to disable.
-      let prevent_default = false // Prevent browsers swipe action for back/forward.
-
-      // CONFIG END ////////////////////////////////////////////////////////////////
+    swipeNavigation(root, tabs, tabContainer) {
+      let swipe_amount = this.cchConfig.swipe_amount || 15;
+      let skip_tabs = this.cchConfig.swipe_skip
+        ? JSON.parse("[" + this.cchConfig.swipe_skip + "]")
+        : [];
+      let wrap =
+        this.cchConfig.swipe_wrap != undefined
+          ? this.cchConfig.swipe_wrap
+          : true;
+      let prevent_default =
+        this.cchConfig.swipe_prevent_default != undefined
+          ? this.cchConfig.swipe_prevent_default
+          : false;
 
       swipe_amount /= Math.pow(10, 2);
-      const appLayout = findAppLayout();
-      const tabContainer = appLayout.querySelector("paper-tabs");
+      const appLayout = root.querySelector("ha-app-layout");
       let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
-      let tabs = Array.from(tabContainer.querySelectorAll("paper-tab"));
 
-      appLayout.addEventListener("touchstart", handleTouchStart, {passive: true});
-      appLayout.addEventListener("touchmove", handleTouchMove, {passive: false});
-      appLayout.addEventListener("touchend", handleTouchEnd, {passive: true});
+      appLayout.addEventListener("touchstart", handleTouchStart, {
+        passive: true
+      });
+      appLayout.addEventListener("touchmove", handleTouchMove, {
+        passive: false
+      });
+      appLayout.addEventListener("touchend", handleTouchEnd, {
+        passive: true
+      });
 
       function handleTouchStart(event) {
-        for (let element of event.path) {
-          if (element.nodeName == "SWIPE-CARD") return;
-          else if (element.nodeName == "HUI-VIEW") break;
+        if (typeof event.path == "object") {
+          for (let element of event.path) {
+            if (element.nodeName == "SWIPE-CARD") return;
+            else if (element.nodeName == "HUI-VIEW") break;
+          }
+          xDown = event.touches[0].clientX;
+          yDown = event.touches[0].clientY;
+          if (!lastTab) filterTabs();
+          activeTab = tabs.indexOf(
+            tabContainer.querySelector(".iron-selected")
+          );
         }
-        xDown = event.touches[0].clientX;
-        yDown = event.touches[0].clientY;
-        if (!lastTab) filterTabs();
-        activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
       }
 
       function handleTouchMove(event) {
@@ -1058,30 +1068,6 @@ if (!customElements.get("compact-custom-header")) {
         xDown = yDown = xDiff = yDiff = null;
       }
 
-      function findAppLayout() {
-        try {
-          let panelResolver = document
-            .querySelector("home-assistant")
-            .shadowRoot.querySelector("home-assistant-main")
-            .shadowRoot.querySelector("app-drawer-layout partial-panel-resolver");
-          if (panelResolver.shadowRoot) {
-            return panelResolver.shadowRoot
-              .querySelector("ha-panel-lovelace")
-              .shadowRoot.querySelector("hui-root")
-              .shadowRoot.querySelector("ha-app-layout");
-          } else {
-            return document
-              .querySelector("home-assistant")
-              .shadowRoot.querySelector("home-assistant-main")
-              .shadowRoot.querySelector("ha-panel-lovelace")
-              .shadowRoot.querySelector("hui-root")
-              .shadowRoot.querySelector("ha-app-layout");
-          }
-        } catch (e) {
-          console.log("Can't find 'ha-app-layout'.");
-        }
-      }
-
       function filterTabs() {
         tabs = tabs.filter(element => {
           return (
@@ -1094,7 +1080,10 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       function simulateClick(element) {
-        const event = new MouseEvent("click", { bubbles: false, cancelable: true });
+        const event = new MouseEvent("click", {
+          bubbles: false,
+          cancelable: true
+        });
         const canceled = !element.dispatchEvent(event);
       }
 
