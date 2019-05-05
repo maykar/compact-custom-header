@@ -9,7 +9,9 @@ Customize the Home Assistant header!<br><br>
 * Conditionally style the header based on the state of entities.
 * Per user/device settings using usernames, user agents, and media queries.
 * Hide tabs/buttons from user's and devices.
-* Any icon button can be hidden, made into a clock with optional date, or placed in the options menu.<br><br>
+* Any icon button can be hidden, made into a clock with optional date, or placed in the options menu.
+* Set a default view.
+* Add swipe navigation between views.<br><br>
 
 **Before:**<br>
 <img src="https://i.imgur.com/GnT85b0.png?2" width="400px"><br>
