@@ -617,43 +617,16 @@ if (!customElements.get("compact-custom-header")) {
       let shown_tabs = this.cchConfig.show_tabs.length
         ? this.cchConfig.show_tabs.replace(/\s+/g, "").split(",")
         : null;
-      const sortNumber = (a, b) => a - b;
-      const range = (start, end) =>
-        new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
-      let tabSource, invert;
 
       // Set the tab config source.
       if (!hidden_tabs && shown_tabs) {
-        tabSource = shown_tabs;
-        invert = true;
-      } else {
-        tabSource = hidden_tabs;
-      }
-
-      // Parse ranges and build full array.
-      for (let i = 0; i < tabSource.length; i++) {
-        if (tabSource[i].length > 1 && tabSource[i].includes("to")) {
-          let split = tabSource[i].split("to");
-          tabSource.splice(i, 1);
-          tabSource = tabSource.concat(
-            range(parseInt(split[0]), parseInt(split[1]))
-          );
-        }
-      }
-      for (let i = 0; i < tabSource.length; i++) {
-        if (typeof tabSource[i] == "string") {
-          tabSource[i] = parseInt(tabSource[i]);
-        }
-      }
-      hidden_tabs = tabSource.sort(sortNumber);
-
-      // Invert shown_tabs to hidden_tabs.
-      if (invert) {
         let total_tabs = [];
-        for (let i = 0; i < tabs.length; i++) {
-          total_tabs.push(i);
-        }
-        hidden_tabs = total_tabs.filter(el => !hidden_tabs.includes(el));
+        shown_tabs = this.buildRanges(shown_tabs);
+        for (let i = 0; i < tabs.length; i++) total_tabs.push(i);
+        // Invert shown_tabs to hidden_tabs.
+        hidden_tabs = total_tabs.filter(el => !shown_tabs.includes(el));
+      } else {
+        hidden_tabs = this.buildRanges(hidden_tabs);
       }
 
       // Hide tabs.
@@ -1002,11 +975,29 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
+    // Get range (e.g., "5 to 9") and build (5,6,7,8,9).
+    buildRanges = array => {
+      const sortNumber = (a, b) => a - b;
+      const range = (start, end) =>
+        new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
+
+      for (let i = 0; i < array.length; i++) {
+        if (array[i].length > 1 && array[i].includes("to")) {
+          let split = array[i].split("to");
+          array.splice(i, 1);
+          array = array.concat(range(parseInt(split[0]), parseInt(split[1])));
+        }
+      }
+      for (let i = 0; i < array.length; i++) array[i] = parseInt(array[i]);
+      return array.sort(sortNumber);
+    };
+
     swipeNavigation(root, tabs, tabContainer) {
       let swipe_amount = this.cchConfig.swipe_amount || 15;
       let skip_tabs = this.cchConfig.swipe_skip
         ? JSON.parse("[" + this.cchConfig.swipe_skip + "]")
         : [];
+      skip_tabs = this.buildRanges(skip_tabs);
       let wrap =
         this.cchConfig.swipe_wrap != undefined
           ? this.cchConfig.swipe_wrap
@@ -1078,6 +1069,7 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       function simulateClick(element) {
+        if (!element) return;
         const event = new MouseEvent("click", {
           bubbles: false,
           cancelable: true
