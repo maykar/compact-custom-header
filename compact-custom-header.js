@@ -234,8 +234,7 @@ if (!customElements.get("compact-custom-header")) {
               buttons,
               button == "options" || (button == "menu" && hassVersion > 0.88)
                 ? buttons[button]
-                : buttons[button].shadowRoot,
-              tabContainer
+                : buttons[button].shadowRoot
             );
           }
         }
@@ -698,7 +697,7 @@ if (!customElements.get("compact-custom-header")) {
       }
     }
 
-    insertClock(buttons, clock_button, tabContainer) {
+    insertClock(buttons, clock_button) {
       const clockIcon = clock_button.querySelector("paper-icon-button");
       const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
       const clockWidth =
@@ -973,6 +972,7 @@ if (!customElements.get("compact-custom-header")) {
       fireEvent(this, "iron-resize");
     }
 
+    // Use notification indicator element to monitor notification status.
     notifMonitor(header, buttons, tabs) {
       let notification = !!buttons.notifications.shadowRoot.querySelector(
         ".indicator"
@@ -1036,13 +1036,11 @@ if (!customElements.get("compact-custom-header")) {
             if (element.nodeName == "SWIPE-CARD") return;
             else if (element.nodeName == "HUI-VIEW") break;
           }
-          xDown = event.touches[0].clientX;
-          yDown = event.touches[0].clientY;
-          if (!lastTab) filterTabs();
-          activeTab = tabs.indexOf(
-            tabContainer.querySelector(".iron-selected")
-          );
         }
+        xDown = event.touches[0].clientX;
+        yDown = event.touches[0].clientY;
+        if (!lastTab) filterTabs();
+        activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
       }
 
       function handleTouchMove(event) {
