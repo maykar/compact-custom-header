@@ -620,11 +620,11 @@ if (!customElements.get("compact-custom-header")) {
 
       // Set the tab config source.
       if (!hidden_tabs && shown_tabs) {
-        let total_tabs = [];
+        let all_tabs = [];
         shown_tabs = this.buildRanges(shown_tabs);
-        for (let i = 0; i < tabs.length; i++) total_tabs.push(i);
+        for (let i = 0; i < tabs.length; i++) all_tabs.push(i);
         // Invert shown_tabs to hidden_tabs.
-        hidden_tabs = total_tabs.filter(el => !shown_tabs.includes(el));
+        hidden_tabs = all_tabs.filter(el => !shown_tabs.includes(el));
       } else {
         hidden_tabs = this.buildRanges(hidden_tabs);
       }
@@ -995,9 +995,8 @@ if (!customElements.get("compact-custom-header")) {
     swipeNavigation(root, tabs, tabContainer) {
       let swipe_amount = this.cchConfig.swipe_amount || 15;
       let skip_tabs = this.cchConfig.swipe_skip
-        ? JSON.parse("[" + this.cchConfig.swipe_skip + "]")
+        ? this.buildRanges(this.cchConfig.swipe_skip.split(","))
         : [];
-      skip_tabs = this.buildRanges(skip_tabs);
       let wrap =
         this.cchConfig.swipe_wrap != undefined
           ? this.cchConfig.swipe_wrap
