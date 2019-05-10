@@ -223,9 +223,6 @@ if (!customElements.get("compact-custom-header")) {
           hidden_tabs = this.hideTabs(tabContainer, tabs);
         }
         this.restoreTabs(tabs, hidden_tabs);
-        if (this.cchConfig.swipe) {
-          this.swipeNavigation(root, tabs, tabContainer);
-        }
         this.defaultTab(tabs, tabContainer);
 
         for (const button in buttons) {
@@ -255,6 +252,9 @@ if (!customElements.get("compact-custom-header")) {
         }
 
         this.tabContainerMargin(buttons, tabContainer);
+        if (this.cchConfig.swipe) {
+          this.swipeNavigation(root, tabs, tabContainer, view);
+        }
         fireEvent(this, "iron-resize");
       }
     }
@@ -380,9 +380,11 @@ if (!customElements.get("compact-custom-header")) {
           view.querySelectorAll("*")[0].style.paddingTop = "55px";
           view.querySelectorAll("*")[0].style.display = "block";
         }
+        let cchThemeBg = getComputedStyle(document.body).getPropertyValue(
+          "--cch-background"
+        );
         header.style.background =
-          this.cchConfig.background ||
-          "var(--cch-background), var(--primary-color))";
+          this.cchConfig.background || cchThemeBg || "var(--primary-color)";
       }
       view.style.minHeight = "100vh";
 
@@ -992,8 +994,9 @@ if (!customElements.get("compact-custom-header")) {
       return array.sort(sortNumber);
     };
 
-    swipeNavigation(root, tabs, tabContainer) {
+    swipeNavigation(root, tabs, tabContainer, view) {
       let swipe_amount = this.cchConfig.swipe_amount || 15;
+      let animate = this.cchConfig.swipe_animate || none;
       let skip_tabs = this.cchConfig.swipe_skip
         ? this.buildRanges(this.cchConfig.swipe_skip.split(","))
         : [];
@@ -1008,7 +1011,7 @@ if (!customElements.get("compact-custom-header")) {
 
       swipe_amount /= Math.pow(10, 2);
       const appLayout = root.querySelector("ha-app-layout");
-      let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab;
+      let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
 
       appLayout.addEventListener("touchstart", handleTouchStart, {
         passive: true
@@ -1049,8 +1052,10 @@ if (!customElements.get("compact-custom-header")) {
           return;
         }
         if (xDiff > Math.abs(screen.width * swipe_amount)) {
+          left = false;
           activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
         } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
+          left = true;
           activeTab == 0 ? click(lastTab) : click(activeTab - 1);
         }
         xDown = yDown = xDiff = yDiff = null;
@@ -1067,17 +1072,66 @@ if (!customElements.get("compact-custom-header")) {
         lastTab = wrap ? tabs.length - 1 : null;
       }
 
-      function simulateClick(element) {
-        if (!element) return;
-        const event = new MouseEvent("click", {
-          bubbles: false,
-          cancelable: true
-        });
-        const canceled = !element.dispatchEvent(event);
-      }
-
       function click(index) {
-        simulateClick(tabs[index]);
+        if (animate == "swipe") {
+          let _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
+          let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
+          view.style.transitionDuration = "200ms";
+          view.style.opacity = 0;
+          view.style.transform = `translate3d(${_in}, 0px, 0px)`;
+          view.style.transition = "transform 0.20s, opacity 0.18s";
+          setTimeout(function() {
+            tabs[index].dispatchEvent(
+              new MouseEvent("click", { bubbles: false, cancelable: true })
+            );
+            view.style.transitionDuration = "0ms";
+            view.style.transform = `translate3d(${_out}, 0px, 0px)`;
+            view.style.transition = "transform 0s";
+          }, 210);
+          setTimeout(function() {
+            view.style.transitionDuration = "200ms";
+            view.style.opacity = 1;
+            view.style.transform = `translate3d(0px, 0px, 0px)`;
+            view.style.transition = "transform 0.20s, opacity 0.18s";
+          }, 250);
+        } else if (animate == "fade") {
+          view.style.transitionDuration = "200ms";
+          view.style.transition = "opacity 0.20s";
+          view.style.opacity = 0;
+          setTimeout(function() {
+            tabs[index].dispatchEvent(
+              new MouseEvent("click", { bubbles: false, cancelable: true })
+            );
+            view.style.transitionDuration = "0ms";
+            view.style.opacity = 0;
+            view.style.transition = "opacity 0s";
+          }, 210);
+          setTimeout(function() {
+            view.style.transitionDuration = "200ms";
+            view.style.transition = "opacity 0.20s";
+            view.style.opacity = 1;
+          }, 250);
+        } else if (animate == "flip") {
+          view.style.transitionDuration = "200ms";
+          view.style.transform = "rotatey(90deg)";
+          view.style.transition = "transform 0.20s, opacity 0.20s";
+          view.style.opacity = 0.25;
+          setTimeout(function() {
+            tabs[index].dispatchEvent(
+              new MouseEvent("click", { bubbles: false, cancelable: true })
+            );
+          }, 210);
+          setTimeout(function() {
+            view.style.transitionDuration = "200ms";
+            view.style.transform = "rotatey(0deg)";
+            view.style.transition = "transform 0.20s, opacity 0.20s";
+            view.style.opacity = 1;
+          }, 250);
+        } else {
+          tabs[index].dispatchEvent(
+            new MouseEvent("click", { bubbles: false, cancelable: true })
+          );
+        }
       }
     }
   }
