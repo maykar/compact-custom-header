@@ -243,7 +243,9 @@ if (!customElements.get("compact-custom-header")) {
           }
           return false;
         };
-        if (conditionals) {
+        if (conditionals && !window.cchConditionals) {
+          window.cchConditionals = true;
+          console.log("event");
           this.conditionalStyling(header, buttons, tabs);
           if (monitorNotifications) this.notifMonitor(header, buttons, tabs);
           this.hass.connection.socket.addEventListener("message", event => {
@@ -816,6 +818,11 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       for (let i = 0; i < styling.length; i++) {
+        let complex = styling[i].complex;
+        if (complex) {
+          this.complexStyling(complex, header, buttons, tabs, tabContainer);
+          continue;
+        }
         let entity = styling[i].entity;
         if (
           !this.editMode &&
@@ -947,6 +954,33 @@ if (!customElements.get("compact-custom-header")) {
       fireEvent(this, "iron-resize");
     }
 
+    complexStyling(complex, header, buttons, tabs, tabContainer) {
+      let entity = this.hass.states;
+      for (const condition in complex) {
+        if (condition == "tab") {
+          for (const tab in complex[condition]) {
+            for (let i = 0; i < complex[condition][tab].length; i++) {
+              let tabIndex = parseInt(Object.keys(complex[condition]));
+              let elemType = Object.keys(complex[condition][tab][i]);
+              if (elemType == "icon") {
+                tabs[tabIndex]
+                  .querySelector("ha-icon")
+                  .setAttribute(
+                    "icon",
+                    eval(complex[condition][tab][i][elemType])
+                  );
+              }
+              if (elemType == "color") {
+                tabs[tabIndex].style.color = eval(
+                  complex[condition][tab][i][elemType]
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Use notification indicator element to monitor notification status.
     notifMonitor(header, buttons, tabs) {
       let notification = !!buttons.notifications.shadowRoot.querySelector(
@@ -1074,8 +1108,12 @@ if (!customElements.get("compact-custom-header")) {
 
       function click(index) {
         if (animate == "swipe") {
-          let _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
-          let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
+          let _in = left
+            ? `${screen.width / 1.5}px`
+            : `-${screen.width / 1.5}px`;
+          let _out = left
+            ? `-${screen.width / 1.5}px`
+            : `${screen.width / 1.5}px`;
           view.style.transitionDuration = "200ms";
           view.style.opacity = 0;
           view.style.transform = `translate3d(${_in}, 0px, 0px)`;
