@@ -1054,7 +1054,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     // Get range (e.g., "5 to 9") and build (5,6,7,8,9).
-    buildRanges = array => {
+    buildRanges(array) {
       const sortNumber = (a, b) => a - b;
       const range = (start, end) =>
         new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
