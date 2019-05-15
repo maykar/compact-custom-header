@@ -243,9 +243,7 @@ if (!customElements.get("compact-custom-header")) {
           }
           return false;
         };
-        if (conditionals && !window.cchConditionals) {
-          window.cchConditionals = true;
-          console.log("event");
+        if (conditionals) {
           this.conditionalStyling(header, buttons, tabs);
           if (monitorNotifications) this.notifMonitor(header, buttons, tabs);
           this.hass.connection.socket.addEventListener("message", event => {
@@ -818,9 +816,11 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       for (let i = 0; i < styling.length; i++) {
-        let complex = styling[i].complex;
-        if (complex) {
-          this.complexStyling(complex, header, buttons, tabs, tabContainer);
+        let template = styling[i].template;
+        if (template) {
+          for (let x = 0; x < template.length; x++) {
+            this.templateConditional(template[x], header, buttons, tabs);
+          }
           continue;
         }
         let entity = styling[i].entity;
@@ -843,7 +843,7 @@ if (!customElements.get("compact-custom-header")) {
         if (window.cchState[i] == undefined) {
           window.setTimeout(() => {
             this.conditionalStyling(header, buttons, tabs);
-          }, 1);
+          }, 100);
           return;
         }
 
@@ -954,31 +954,79 @@ if (!customElements.get("compact-custom-header")) {
       fireEvent(this, "iron-resize");
     }
 
-    complexStyling(complex, header, buttons, tabs, tabContainer) {
-      let entity = this.hass.states;
-      for (const condition in complex) {
+    templateConditional(template, header, buttons, tabs) {
+      window.hassConnection.then(function(result) {
+        window.cchEntity = result.conn._ent.state;
+      });
+      if (window.cchEntity == undefined) {
+        window.setTimeout(() => {
+          this.conditionalStyling(header, buttons, tabs);
+        }, 1);
+        return;
+      }
+      let entity = window.cchEntity
+      if (!entity) {
+        window.setTimeout(() => {
+          this.templateConditional(template, header, buttons, tabs);
+        }, 100);
+        return;
+      }
+      for (const condition in template) {
         if (condition == "tab") {
-          for (const tab in complex[condition]) {
-            for (let i = 0; i < complex[condition][tab].length; i++) {
-              let tabIndex = parseInt(Object.keys(complex[condition]));
-              let elemType = Object.keys(complex[condition][tab][i]);
-              if (elemType == "icon") {
+          for (const tab in template[condition]) {
+            for (let i = 0; i < template[condition][tab].length; i++) {
+              let tabIndex = parseInt(Object.keys(template[condition]));
+              let styleTarget = Object.keys(template[condition][tab][i]);
+              if (styleTarget == "icon") {
                 tabs[tabIndex]
                   .querySelector("ha-icon")
                   .setAttribute(
                     "icon",
-                    eval(complex[condition][tab][i][elemType])
+                    eval(template[condition][tab][i][styleTarget])
                   );
-              }
-              if (elemType == "color") {
+              } else if (styleTarget == "color") {
                 tabs[tabIndex].style.color = eval(
-                  complex[condition][tab][i][elemType]
+                  template[condition][tab][i][styleTarget]
+                );
+              } else if (styleTarget == "display") {
+                tabs[tabIndex].style.display = eval(
+                  template[condition][tab][i][styleTarget]
                 );
               }
             }
           }
+        } else if (condition == "button") {
+          for (const button in template[condition]) {
+            for (let i = 0; i < template[condition][button].length; i++) {
+              let buttonName = Object.keys(template[condition]);
+              let styleTarget = Object.keys(template[condition][button][i]);
+              let buttonElem = buttons[buttonName]
+              let iconTarget = buttonElem.shadowRoot
+                ? buttonElem.shadowRoot.querySelector("paper-icon-button")
+                : buttonElem.querySelector("paper-icon-button")
+              let target = iconTarget.shadowRoot.querySelector("iron-icon")
+              if (styleTarget == "icon") {
+                iconTarget
+                  .setAttribute(
+                    "icon",
+                    eval(template[condition][button][i][styleTarget])
+                  );
+              } else if (styleTarget == "color") {
+                target.style.color = eval(
+                  template[condition][button][i][styleTarget]
+                );
+              } else if (styleTarget == "display") {
+                buttons[buttonName].style.display = eval(
+                  template[condition][button][i][styleTarget]
+                );
+              }
+            }
+          }
+        } else if (condition == "background") {
+          header.style.background = eval(template[condition]["background"]);
         }
       }
+      entity = null;
     }
 
     // Use notification indicator element to monitor notification status.
