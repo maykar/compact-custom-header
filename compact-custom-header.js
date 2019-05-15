@@ -1072,7 +1072,7 @@ if (!customElements.get("compact-custom-header")) {
 
     swipeNavigation(root, tabs, tabContainer, view) {
       let swipe_amount = this.cchConfig.swipe_amount || 15;
-      let animate = this.cchConfig.swipe_animate || none;
+      let animate = this.cchConfig.swipe_animate || "none";
       let skip_tabs = this.cchConfig.swipe_skip
         ? this.buildRanges(this.cchConfig.swipe_skip.split(","))
         : [];
