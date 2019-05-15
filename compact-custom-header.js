@@ -251,10 +251,10 @@ if (!customElements.get("compact-custom-header")) {
           });
         }
 
-        this.tabContainerMargin(buttons, tabContainer);
         if (this.cchConfig.swipe) {
           this.swipeNavigation(root, tabs, tabContainer, view);
         }
+        this.tabContainerMargin(buttons, tabContainer);
         fireEvent(this, "iron-resize");
       }
     }
@@ -818,6 +818,10 @@ if (!customElements.get("compact-custom-header")) {
       for (let i = 0; i < styling.length; i++) {
         let template = styling[i].template;
         if (template) {
+          if (!template.length) {
+            template = [];
+            template.push(styling[i].template)
+          }
           for (let x = 0; x < template.length; x++) {
             this.templateConditional(template[x], header, buttons, tabs);
           }
@@ -1055,6 +1059,7 @@ if (!customElements.get("compact-custom-header")) {
 
     // Get range (e.g., "5 to 9") and build (5,6,7,8,9).
     buildRanges(array) {
+      if (!array) array = [];
       const sortNumber = (a, b) => a - b;
       const range = (start, end) =>
         new Array(end - start + 1).fill(undefined).map((_, i) => i + start);
