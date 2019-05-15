@@ -958,12 +958,6 @@ if (!customElements.get("compact-custom-header")) {
       window.hassConnection.then(function(result) {
         window.cchEntity = result.conn._ent.state;
       });
-      if (window.cchEntity == undefined) {
-        window.setTimeout(() => {
-          this.conditionalStyling(header, buttons, tabs);
-        }, 1);
-        return;
-      }
       let entity = window.cchEntity
       if (!entity) {
         window.setTimeout(() => {
@@ -989,9 +983,9 @@ if (!customElements.get("compact-custom-header")) {
                   template[condition][tab][i][styleTarget]
                 );
               } else if (styleTarget == "display") {
-                tabs[tabIndex].style.display = eval(
-                  template[condition][tab][i][styleTarget]
-                );
+                eval(template[condition][tab][i][styleTarget]) == "show"
+                  ? tabs[tabIndex].style.display = ""
+                  : tabs[tabIndex].style.display = "none"
               }
             }
           }
@@ -1016,14 +1010,14 @@ if (!customElements.get("compact-custom-header")) {
                   template[condition][button][i][styleTarget]
                 );
               } else if (styleTarget == "display") {
-                buttons[buttonName].style.display = eval(
-                  template[condition][button][i][styleTarget]
-                );
+                eval(template[condition][button][i][styleTarget]) == "show"
+                  ? buttons[buttonName].style.display = ""
+                  : buttons[buttonName].style.display = "none"
               }
             }
           }
         } else if (condition == "background") {
-          header.style.background = eval(template[condition]["background"]);
+          header.style.background = eval(template[condition]);
         }
       }
       entity = null;
