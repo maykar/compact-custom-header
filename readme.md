@@ -26,6 +26,7 @@ Customize the Home Assistant header!<br><br>
 * Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
 * The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
 * If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.
+* If conditionally styling a tab's icon, make sure that the tab is already an icon and not just a title.
 * To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below.
 <details>
   <summary><b>Panel View Example:</b></summary>
