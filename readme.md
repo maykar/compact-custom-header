@@ -12,7 +12,7 @@ Customize the Home Assistant header and much more!<br><br>
 * Add swipe navigation to Lovelace for mobile devices.
 * Any button can be hidden, turned into clock with optional date, or placed in the options menu.
 * Hide tabs/buttons from user's and devices.
-* Set a default view.
+* Set a default view to start on.
 
 **Before:**<br>
 <img src="https://i.imgur.com/GnT85b0.png?2" width="400px"><br>
