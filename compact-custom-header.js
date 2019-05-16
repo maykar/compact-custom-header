@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.3b6";
+import "./compact-custom-header-editor.js?v=1.0.3b7";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -811,17 +811,18 @@ if (!customElements.get("compact-custom-header")) {
       };
 
       let styling = [];
-      for (let i = 0; i < conditional_styles.length; i++) {
-        styling.push(Object.assign({}, conditional_styles[i]));
+      if (conditional_styles.length) {
+        for (let i = 0; i < conditional_styles.length; i++) {
+          styling.push(Object.assign({}, conditional_styles[i]));
+        }
+      } else {
+        styling.push(Object.assign({}, conditional_styles));
       }
 
       for (let i = 0; i < styling.length; i++) {
         let template = styling[i].template;
         if (template) {
-          if (!template.length) {
-            template = [];
-            template.push(styling[i].template)
-          }
+          if (!template.length) template = [template];
           for (let x = 0; x < template.length; x++) {
             this.templateConditional(template[x], header, buttons, tabs);
           }
@@ -962,16 +963,20 @@ if (!customElements.get("compact-custom-header")) {
       window.hassConnection.then(function(result) {
         window.cchEntity = result.conn._ent.state;
       });
-      let entity = window.cchEntity
+      let entity = window.cchEntity;
       if (!entity) {
         window.setTimeout(() => {
           this.templateConditional(template, header, buttons, tabs);
         }, 100);
         return;
       }
+
       for (const condition in template) {
         if (condition == "tab") {
           for (const tab in template[condition]) {
+            if (!template[condition][tab].length) {
+              template[condition][tab] = [template[condition][tab]];
+            }
             for (let i = 0; i < template[condition][tab].length; i++) {
               let tabIndex = parseInt(Object.keys(template[condition]));
               let styleTarget = Object.keys(template[condition][tab][i]);
@@ -988,35 +993,37 @@ if (!customElements.get("compact-custom-header")) {
                 );
               } else if (styleTarget == "display") {
                 eval(template[condition][tab][i][styleTarget]) == "show"
-                  ? tabs[tabIndex].style.display = ""
-                  : tabs[tabIndex].style.display = "none"
+                  ? (tabs[tabIndex].style.display = "")
+                  : (tabs[tabIndex].style.display = "none");
               }
             }
           }
         } else if (condition == "button") {
           for (const button in template[condition]) {
+            if (!template[condition][button].length) {
+              template[condition][button] = [template[condition][button]];
+            }
             for (let i = 0; i < template[condition][button].length; i++) {
               let buttonName = Object.keys(template[condition]);
               let styleTarget = Object.keys(template[condition][button][i]);
-              let buttonElem = buttons[buttonName]
+              let buttonElem = buttons[buttonName];
               let iconTarget = buttonElem.shadowRoot
                 ? buttonElem.shadowRoot.querySelector("paper-icon-button")
-                : buttonElem.querySelector("paper-icon-button")
-              let target = iconTarget.shadowRoot.querySelector("iron-icon")
+                : buttonElem.querySelector("paper-icon-button");
+              let target = iconTarget.shadowRoot.querySelector("iron-icon");
               if (styleTarget == "icon") {
-                iconTarget
-                  .setAttribute(
-                    "icon",
-                    eval(template[condition][button][i][styleTarget])
-                  );
+                iconTarget.setAttribute(
+                  "icon",
+                  eval(template[condition][button][i][styleTarget])
+                );
               } else if (styleTarget == "color") {
                 target.style.color = eval(
                   template[condition][button][i][styleTarget]
                 );
               } else if (styleTarget == "display") {
                 eval(template[condition][button][i][styleTarget]) == "show"
-                  ? buttons[buttonName].style.display = ""
-                  : buttons[buttonName].style.display = "none"
+                  ? (buttons[buttonName].style.display = "")
+                  : (buttons[buttonName].style.display = "none");
               }
             }
           }
@@ -1073,7 +1080,7 @@ if (!customElements.get("compact-custom-header")) {
       }
       for (let i = 0; i < array.length; i++) array[i] = parseInt(array[i]);
       return array.sort(sortNumber);
-    };
+    }
 
     swipeNavigation(root, tabs, tabContainer, view) {
       let swipe_amount = this.cchConfig.swipe_amount || 15;
