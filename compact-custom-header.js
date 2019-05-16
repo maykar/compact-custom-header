@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.3b8";
+import "./compact-custom-header-editor.js?v=1.0.4";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
