@@ -1,4 +1,5 @@
 # Compact Custom Header
+Customize the Home Assistant header and much more!<br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
 ### See the [Wiki for installation and configuration.](https://github.com/maykar/compact-custom-header/wiki)<br>
 ### Follow the [troubleshooting guide](https://github.com/maykar/compact-custom-header/wiki/Troubleshooting) before submitting issues here or on the forums.
@@ -9,7 +10,7 @@
 * Style & hide anything in the header & the header itself.
 * Conditionally style the header based on entity states.
 * Add swipe navigation to Lovelace for mobile devices.
-* Any icon button can be hidden, turned into clock with optional date, or placed in the options menu.
+* Any button can be hidden, turned into clock with optional date, or placed in the options menu.
 * Hide tabs/buttons from user's and devices.
 * Set a default view.
 
