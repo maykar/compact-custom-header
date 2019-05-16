@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.3b7";
+import "./compact-custom-header-editor.js?v=1.0.3b8";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -980,19 +980,15 @@ if (!customElements.get("compact-custom-header")) {
             for (let i = 0; i < template[condition][tab].length; i++) {
               let tabIndex = parseInt(Object.keys(template[condition]));
               let styleTarget = Object.keys(template[condition][tab][i]);
+              let tempCond = template[condition][tab][i][styleTarget];
               if (styleTarget == "icon") {
                 tabs[tabIndex]
                   .querySelector("ha-icon")
-                  .setAttribute(
-                    "icon",
-                    eval(template[condition][tab][i][styleTarget])
-                  );
+                  .setAttribute("icon", this.tempEval(tempCond, entity));
               } else if (styleTarget == "color") {
-                tabs[tabIndex].style.color = eval(
-                  template[condition][tab][i][styleTarget]
-                );
+                tabs[tabIndex].style.color = this.tempEval(tempCond, entity);
               } else if (styleTarget == "display") {
-                eval(template[condition][tab][i][styleTarget]) == "show"
+                this.tempEval(tempCond, entity) == "show"
                   ? (tabs[tabIndex].style.display = "")
                   : (tabs[tabIndex].style.display = "none");
               }
@@ -1011,27 +1007,34 @@ if (!customElements.get("compact-custom-header")) {
                 ? buttonElem.shadowRoot.querySelector("paper-icon-button")
                 : buttonElem.querySelector("paper-icon-button");
               let target = iconTarget.shadowRoot.querySelector("iron-icon");
+              let tempCond = template[condition][button][i][styleTarget];
               if (styleTarget == "icon") {
                 iconTarget.setAttribute(
                   "icon",
-                  eval(template[condition][button][i][styleTarget])
+                  this.tempEval(tempCond, entity)
                 );
               } else if (styleTarget == "color") {
-                target.style.color = eval(
-                  template[condition][button][i][styleTarget]
-                );
+                target.style.color = this.tempEval(tempCond, entity);
               } else if (styleTarget == "display") {
-                eval(template[condition][button][i][styleTarget]) == "show"
+                this.tempEval(tempCond, entity) == "show"
                   ? (buttons[buttonName].style.display = "")
                   : (buttons[buttonName].style.display = "none");
               }
             }
           }
         } else if (condition == "background") {
-          header.style.background = eval(template[condition]);
+          header.style.background = this.tempEval(template[condition], entity);
         }
       }
       entity = null;
+    }
+
+    tempEval(template, entity) {
+      try {
+        return eval(template);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     // Use notification indicator element to monitor notification status.
