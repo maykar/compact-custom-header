@@ -5,11 +5,11 @@
 ## Features:
 
 * Compact design that removes header text.
+* Per user/device settings.
 * Style & hide anything in the header & the header itself.
 * Conditionally style the header based on entity states.
 * Add swipe navigation to Lovelace for mobile devices.
-* Any icon button can be hidden, made a clock with optional date, or placed in the options menu.
-* Per user/device settings
+* Any icon button can be hidden, turned into clock with optional date, or placed in the options menu.
 * Hide tabs/buttons from user's and devices.
 * Set a default view.
 
