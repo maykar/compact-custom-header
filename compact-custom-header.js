@@ -243,18 +243,20 @@ if (!customElements.get("compact-custom-header")) {
           }
           return false;
         };
-        if (conditionals) {
-          this.conditionalStyling(header, buttons, tabs);
+        if (conditionals && !this.editMode) {
+          this.conditionalStyling(header, buttons, tabs, root);
           if (monitorNotifications) this.notifMonitor(header, buttons, tabs);
           this.hass.connection.socket.addEventListener("message", event => {
-            this.conditionalStyling(header, buttons, tabs);
+            if (root.querySelector("app-toolbar").className != "edit-mode") {
+              this.conditionalStyling(header, buttons, tabs, root);
+            }
           });
         }
 
         if (this.cchConfig.swipe) {
           this.swipeNavigation(root, tabs, tabContainer, view);
         }
-        this.tabContainerMargin(buttons, tabContainer);
+        if (!this.editMode) this.tabContainerMargin(buttons, tabContainer);
         fireEvent(this, "iron-resize");
       }
     }
@@ -361,10 +363,8 @@ if (!customElements.get("compact-custom-header")) {
         root.querySelector('[id="cch_iron_selected"]').outerHTML = "";
       }
       if (header_colors) header_colors.parentNode.removeChild(header_colors);
-      if (Object.keys(this.cchConfig.tab_color).length) {
-        for (let i = 0; i < tabs.length; i++) {
-          tabs[i].style.color = "";
-        }
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].style.color = "";
       }
     }
 
@@ -770,7 +770,7 @@ if (!customElements.get("compact-custom-header")) {
       window.setTimeout(() => this.updateClock(clock, clockFormat), 60000);
     }
 
-    conditionalStyling(header, buttons, tabs) {
+    conditionalStyling(header, buttons, tabs, root) {
       if (window.cchState == undefined) window.cchState = [];
       if (this.prevColor == undefined) this.prevColor = {};
       if (this.prevState == undefined) this.prevState = [];
@@ -830,7 +830,6 @@ if (!customElements.get("compact-custom-header")) {
         }
         let entity = styling[i].entity;
         if (
-          !this.editMode &&
           this.hass.states[entity] == undefined &&
           entity !== "notifications"
         ) {
@@ -847,7 +846,9 @@ if (!customElements.get("compact-custom-header")) {
         }
         if (window.cchState[i] == undefined) {
           window.setTimeout(() => {
-            this.conditionalStyling(header, buttons, tabs);
+            if (root.querySelector("app-toolbar").className != "edit-mode") {
+              this.conditionalStyling(header, buttons, tabs, root);
+            }
           }, 100);
           return;
         }
@@ -1045,7 +1046,9 @@ if (!customElements.get("compact-custom-header")) {
       if (window.cchNotification == undefined) {
         window.cchNotification = notification;
       } else if (notification !== window.cchNotification) {
-        this.conditionalStyling(header, buttons, tabs);
+        if (root.querySelector("app-toolbar").className != "edit-mode") {
+          this.conditionalStyling(header, buttons, tabs, root);
+        }
         window.cchNotification = notification;
       }
       window.setTimeout(() => this.notifMonitor(header, buttons, tabs), 1000);
