@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.3b7";
+import "./compact-custom-header-editor.js?v=1.0.4";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -243,18 +243,20 @@ if (!customElements.get("compact-custom-header")) {
           }
           return false;
         };
-        if (conditionals) {
-          this.conditionalStyling(header, buttons, tabs);
+        if (conditionals && !this.editMode) {
+          this.conditionalStyling(header, buttons, tabs, root);
           if (monitorNotifications) this.notifMonitor(header, buttons, tabs);
           this.hass.connection.socket.addEventListener("message", event => {
-            this.conditionalStyling(header, buttons, tabs);
+            if (root.querySelector("app-toolbar").className != "edit-mode") {
+              this.conditionalStyling(header, buttons, tabs, root);
+            }
           });
         }
 
         if (this.cchConfig.swipe) {
           this.swipeNavigation(root, tabs, tabContainer, view);
         }
-        this.tabContainerMargin(buttons, tabContainer);
+        if (!this.editMode) this.tabContainerMargin(buttons, tabContainer);
         fireEvent(this, "iron-resize");
       }
     }
@@ -361,10 +363,8 @@ if (!customElements.get("compact-custom-header")) {
         root.querySelector('[id="cch_iron_selected"]').outerHTML = "";
       }
       if (header_colors) header_colors.parentNode.removeChild(header_colors);
-      if (Object.keys(this.cchConfig.tab_color).length) {
-        for (let i = 0; i < tabs.length; i++) {
-          tabs[i].style.color = "";
-        }
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].style.color = "";
       }
     }
 
@@ -770,7 +770,7 @@ if (!customElements.get("compact-custom-header")) {
       window.setTimeout(() => this.updateClock(clock, clockFormat), 60000);
     }
 
-    conditionalStyling(header, buttons, tabs) {
+    conditionalStyling(header, buttons, tabs, root) {
       if (window.cchState == undefined) window.cchState = [];
       if (this.prevColor == undefined) this.prevColor = {};
       if (this.prevState == undefined) this.prevState = [];
@@ -830,7 +830,6 @@ if (!customElements.get("compact-custom-header")) {
         }
         let entity = styling[i].entity;
         if (
-          !this.editMode &&
           this.hass.states[entity] == undefined &&
           entity !== "notifications"
         ) {
@@ -847,7 +846,9 @@ if (!customElements.get("compact-custom-header")) {
         }
         if (window.cchState[i] == undefined) {
           window.setTimeout(() => {
-            this.conditionalStyling(header, buttons, tabs);
+            if (root.querySelector("app-toolbar").className != "edit-mode") {
+              this.conditionalStyling(header, buttons, tabs, root);
+            }
           }, 100);
           return;
         }
@@ -980,19 +981,15 @@ if (!customElements.get("compact-custom-header")) {
             for (let i = 0; i < template[condition][tab].length; i++) {
               let tabIndex = parseInt(Object.keys(template[condition]));
               let styleTarget = Object.keys(template[condition][tab][i]);
+              let tempCond = template[condition][tab][i][styleTarget];
               if (styleTarget == "icon") {
                 tabs[tabIndex]
                   .querySelector("ha-icon")
-                  .setAttribute(
-                    "icon",
-                    eval(template[condition][tab][i][styleTarget])
-                  );
+                  .setAttribute("icon", this.tempEval(tempCond, entity));
               } else if (styleTarget == "color") {
-                tabs[tabIndex].style.color = eval(
-                  template[condition][tab][i][styleTarget]
-                );
+                tabs[tabIndex].style.color = this.tempEval(tempCond, entity);
               } else if (styleTarget == "display") {
-                eval(template[condition][tab][i][styleTarget]) == "show"
+                this.tempEval(tempCond, entity) == "show"
                   ? (tabs[tabIndex].style.display = "")
                   : (tabs[tabIndex].style.display = "none");
               }
@@ -1011,27 +1008,34 @@ if (!customElements.get("compact-custom-header")) {
                 ? buttonElem.shadowRoot.querySelector("paper-icon-button")
                 : buttonElem.querySelector("paper-icon-button");
               let target = iconTarget.shadowRoot.querySelector("iron-icon");
+              let tempCond = template[condition][button][i][styleTarget];
               if (styleTarget == "icon") {
                 iconTarget.setAttribute(
                   "icon",
-                  eval(template[condition][button][i][styleTarget])
+                  this.tempEval(tempCond, entity)
                 );
               } else if (styleTarget == "color") {
-                target.style.color = eval(
-                  template[condition][button][i][styleTarget]
-                );
+                target.style.color = this.tempEval(tempCond, entity);
               } else if (styleTarget == "display") {
-                eval(template[condition][button][i][styleTarget]) == "show"
+                this.tempEval(tempCond, entity) == "show"
                   ? (buttons[buttonName].style.display = "")
                   : (buttons[buttonName].style.display = "none");
               }
             }
           }
         } else if (condition == "background") {
-          header.style.background = eval(template[condition]);
+          header.style.background = this.tempEval(template[condition], entity);
         }
       }
       entity = null;
+    }
+
+    tempEval(template, entity) {
+      try {
+        return eval(template);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     // Use notification indicator element to monitor notification status.
@@ -1042,7 +1046,9 @@ if (!customElements.get("compact-custom-header")) {
       if (window.cchNotification == undefined) {
         window.cchNotification = notification;
       } else if (notification !== window.cchNotification) {
-        this.conditionalStyling(header, buttons, tabs);
+        if (root.querySelector("app-toolbar").className != "edit-mode") {
+          this.conditionalStyling(header, buttons, tabs, root);
+        }
         window.cchNotification = notification;
       }
       window.setTimeout(() => this.notifMonitor(header, buttons, tabs), 1000);
@@ -1115,6 +1121,7 @@ if (!customElements.get("compact-custom-header")) {
         if (typeof event.path == "object") {
           for (let element of event.path) {
             if (element.nodeName == "SWIPE-CARD") return;
+            else if (element.nodeName == "APP-HEADER") return;
             else if (element.nodeName == "HUI-VIEW") break;
           }
         }
