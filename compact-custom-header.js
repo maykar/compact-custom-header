@@ -783,18 +783,11 @@ if (!customElements.get("compact-custom-header")) {
       if (this.prevState == undefined) this.prevState = [];
       const conditional_styles = this.cchConfig.conditional_styles;
       let tabContainer = tabs[0] ? tabs[0].parentNode : "";
-      let element, color, background, hide, onIcon, offIcon, iconElement;
+      let elem, color, bg, hide, onIcon, offIcon, iconElem;
 
-      const styleElements = (
-        elem,
-        color,
-        hide,
-        background,
-        onIcon,
-        iconElem
-      ) => {
-        if (background && elem == "background") {
-          header.style.background = background;
+      const styleElements = (elem, color, hide, bg, onIcon, iconElem) => {
+        if (bg && elem == "background") {
+          header.style.background = bg;
         } else if (color) {
           elem.style.color = color;
         }
@@ -805,14 +798,14 @@ if (!customElements.get("compact-custom-header")) {
       };
 
       const getElements = (key, elemArray, i, obj, styling) => {
-        element = elemArray[key];
+        elem = elemArray[key];
         color = styling[i][obj][key].color;
         onIcon = styling[i][obj][key].on_icon;
         offIcon = styling[i][obj][key].off_icon;
         hide = styling[i][obj][key].hide;
         if (!this.prevColor[key]) {
           this.prevColor[key] = window
-            .getComputedStyle(element, null)
+            .getComputedStyle(elem, null)
             .getPropertyValue("color");
         }
       };
@@ -874,10 +867,10 @@ if (!customElements.get("compact-custom-header")) {
               key = Object.keys(styling[i][obj])[0];
             }
             if (obj == "background") {
-              element = "background";
+              elem = "background";
               color = styling[i][obj].color;
-              background = styling[i][obj];
-              iconElement = false;
+              bg = styling[i][obj];
+              iconElem = false;
               if (!this.prevColor[obj]) {
                 this.prevColor[obj] = window
                   .getComputedStyle(header, null)
@@ -886,87 +879,59 @@ if (!customElements.get("compact-custom-header")) {
             } else if (obj == "button") {
               getElements(key, buttons, i, obj, styling);
               if (key == "menu") {
-                iconElement = element
+                iconElem = elem
                   .querySelector("paper-icon-button")
                   .shadowRoot.querySelector("iron-icon");
               } else {
-                iconElement = element.shadowRoot
+                iconElem = elem.shadowRoot
                   .querySelector("paper-icon-button")
                   .shadowRoot.querySelector("iron-icon");
               }
             } else if (obj == "tab") {
               getElements(key, tabs, i, obj, styling);
-              iconElement = element.querySelector("ha-icon");
+              iconElem = elem.querySelector("ha-icon");
             }
 
             if (window.cchState[i] == styling[i].condition.state) {
-              styleElements(
-                element,
-                color,
-                hide,
-                background,
-                onIcon,
-                iconElement
-              );
+              styleElements(elem, color, hide, bg, onIcon, iconElem);
             } else if (
               above !== undefined &&
               below !== undefined &&
               window.cchState[i] > above &&
               window.cchState[i] < below
             ) {
-              styleElements(
-                element,
-                color,
-                hide,
-                background,
-                onIcon,
-                iconElement
-              );
+              styleElements(elem, color, hide, bg, onIcon, iconElem);
             } else if (
               above !== undefined &&
               below == undefined &&
               window.cchState[i] > above
             ) {
-              styleElements(
-                element,
-                color,
-                hide,
-                background,
-                onIcon,
-                iconElement
-              );
+              styleElements(elem, color, hide, bg, onIcon, iconElem);
             } else if (
               above == undefined &&
               below !== undefined &&
               window.cchState[i] < below
             ) {
-              styleElements(
-                element,
-                color,
-                hide,
-                background,
-                onIcon,
-                iconElement
-              );
+              styleElements(elem, color, hide, bg, onIcon, iconElem);
             } else {
               if (
-                element !== "background" &&
+                elem !== "background" &&
                 hide &&
-                element.style.display == "none"
+                elem.style.display == "none"
               ) {
-                element.style.display = "";
+                elem.style.display = "";
               }
-              if (background && element == "background") {
+              if (bg && elem == "background") {
                 header.style.background = this.prevColor[obj];
               } else if (
                 obj !== "background" &&
                 obj !== "entity" &&
                 obj !== "condition"
               ) {
-                element.style.color = this.prevColor[key];
+                elem.style.color = this.prevColor[key];
               }
               if (onIcon && offIcon) {
-                iconElement.setAttribute("icon", offIcon);
+                iconElem.setAttribute("icon", offIcon);
               }
             }
           }
