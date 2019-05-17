@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.4b1";
+import "./compact-custom-header-editor.js?v=1.0.4b2";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -245,7 +245,8 @@ if (!customElements.get("compact-custom-header")) {
         };
         if (conditionals && !this.editMode) {
           this.conditionalStyling(header, buttons, tabs, root);
-          if (monitorNotifications) this.notifMonitor(header, buttons, tabs);
+          if (monitorNotifications)
+            this.notifMonitor(header, buttons, tabs, root);
           this.hass.connection.socket.addEventListener("message", event => {
             if (root.querySelector("app-toolbar").className != "edit-mode") {
               this.conditionalStyling(header, buttons, tabs, root);
@@ -447,7 +448,10 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       // Style tab icon color.
-      if (this.cchConfig.tab_color && Object.keys(this.cchConfig.tab_color).length) {
+      if (
+        this.cchConfig.tab_color &&
+        Object.keys(this.cchConfig.tab_color).length
+      ) {
         let tab_color = this.cchConfig.tab_color;
         for (let i = 0; i < tabs.length; i++) {
           tabs[i].style.color = tab_color[i] || all_tabs_color;
@@ -1042,7 +1046,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     // Use notification indicator element to monitor notification status.
-    notifMonitor(header, buttons, tabs) {
+    notifMonitor(header, buttons, tabs, root) {
       let notification = !!buttons.notifications.shadowRoot.querySelector(
         ".indicator"
       );
@@ -1054,7 +1058,10 @@ if (!customElements.get("compact-custom-header")) {
         }
         window.cchNotification = notification;
       }
-      window.setTimeout(() => this.notifMonitor(header, buttons, tabs), 1000);
+      window.setTimeout(
+        () => this.notifMonitor(header, buttons, tabs, root),
+        1000
+      );
     }
 
     // Walk the DOM to find element.
