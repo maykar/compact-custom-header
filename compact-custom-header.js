@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.4";
+import "./compact-custom-header-editor.js?v=1.0.4b1";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -143,7 +143,7 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       if (this.config.main_config) {
-        let cache = Object.assign({}, this.config);
+        let cache = this.config ? Object.assign({}, this.config) : null;
         delete cache.main_config;
         localStorage.setItem("cchCache", JSON.stringify(cache));
       } else if (localStorage.getItem("cchCache")) {
@@ -447,7 +447,7 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       // Style tab icon color.
-      if (Object.keys(this.cchConfig.tab_color).length) {
+      if (this.cchConfig.tab_color && Object.keys(this.cchConfig.tab_color).length) {
         let tab_color = this.cchConfig.tab_color;
         for (let i = 0; i < tabs.length; i++) {
           tabs[i].style.color = tab_color[i] || all_tabs_color;
@@ -815,7 +815,7 @@ if (!customElements.get("compact-custom-header")) {
         for (let i = 0; i < conditional_styles.length; i++) {
           styling.push(Object.assign({}, conditional_styles[i]));
         }
-      } else {
+      } else if (conditional_styles) {
         styling.push(Object.assign({}, conditional_styles));
       }
 
@@ -865,7 +865,10 @@ if (!customElements.get("compact-custom-header")) {
           let greatless = above !== undefined && below !== undefined;
 
           for (const obj in styling[i]) {
-            let key = Object.keys(styling[i][obj])[0];
+            let key;
+            if (styling[i][obj]) {
+              key = Object.keys(styling[i][obj])[0];
+            }
             if (obj == "background") {
               element = "background";
               color = styling[i][obj].color;
