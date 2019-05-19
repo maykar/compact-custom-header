@@ -620,11 +620,11 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     hideTabs(tabContainer, tabs) {
-      let hidden_tabs = this.cchConfig.hide_tabs.length
-        ? this.cchConfig.hide_tabs.replace(/\s+/g, "").split(",")
+      let hidden_tabs = String(this.cchConfig.hide_tabs).length
+        ? String(this.cchConfig.hide_tabs).replace(/\s+/g, "").split(",")
         : null;
-      let shown_tabs = this.cchConfig.show_tabs.length
-        ? this.cchConfig.show_tabs.replace(/\s+/g, "").split(",")
+      let shown_tabs = String(this.cchConfig.show_tabs).length
+        ? String(this.cchConfig.show_tabs).replace(/\s+/g, "").split(",")
         : null;
 
       // Set the tab config source.
@@ -942,6 +942,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     templateConditional(template, header, buttons, tabs) {
+      // Get entity states.
       window.hassConnection.then(function(result) {
         window.cchEntity = result.conn._ent.state;
       });
@@ -951,9 +952,10 @@ if (!customElements.get("compact-custom-header")) {
         }, 100);
         return;
       }
-
+      // Variables for templates.
       let states = window.cchEntity;
       let entity = window.cchEntity;
+
       const templateEval = (template, entity) => {
         try {
           if (template.includes("return")) {
