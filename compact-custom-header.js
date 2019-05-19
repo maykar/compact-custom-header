@@ -653,7 +653,7 @@ if (!customElements.get("compact-custom-header")) {
           hidden_tabs.length != tabs.length
         ) {
           let i = 0;
-          // Find the next visible tab and navigate.
+          // Find the first visible tab and navigate.
           while (hidden_tabs.includes(i)) {
             i++;
           }
@@ -811,11 +811,11 @@ if (!customElements.get("compact-custom-header")) {
       };
 
       let styling = [];
-      if (conditional_styles.length) {
+      if (Array.isArray(conditional_styles)) {
         for (let i = 0; i < conditional_styles.length; i++) {
           styling.push(Object.assign({}, conditional_styles[i]));
         }
-      } else if (conditional_styles) {
+      } else {
         styling.push(Object.assign({}, conditional_styles));
       }
 
@@ -945,17 +945,22 @@ if (!customElements.get("compact-custom-header")) {
       window.hassConnection.then(function(result) {
         window.cchEntity = result.conn._ent.state;
       });
-      let entity = window.cchEntity;
-      if (!entity) {
+      if (!window.cchEntity) {
         window.setTimeout(() => {
           this.templateConditional(template, header, buttons, tabs);
         }, 100);
         return;
       }
 
+      let states = window.cchEntity;
+      let entity = window.cchEntity;
       const templateEval = (template, entity) => {
         try {
-          return eval(template);
+          if (template.includes("return")) {
+            return eval(`(function() {${template}}())`);
+          } else {
+            return eval(template);
+          }
         } catch (e) {
           console.log(e);
         }
