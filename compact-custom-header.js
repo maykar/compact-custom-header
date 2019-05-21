@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.4b5";
+import "./compact-custom-header-editor.js?v=1.0.4b6";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -1109,11 +1109,11 @@ if (!customElements.get("compact-custom-header")) {
       });
 
       function handleTouchStart(event) {
+        let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD"];
         if (typeof event.path == "object") {
           for (let element of event.path) {
-            if (element.nodeName == "SWIPE-CARD") return;
-            else if (element.nodeName == "APP-HEADER") return;
-            else if (element.nodeName == "HUI-VIEW") break;
+            if (element.nodeName == "HUI-VIEW") break;
+            else if (ignored.indexOf(element.nodeName) > -1) return;
           }
         }
         xDown = event.touches[0].clientX;
