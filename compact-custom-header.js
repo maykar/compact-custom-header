@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.4b4";
+import "./compact-custom-header-editor.js?v=1.0.4b5";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -372,7 +372,6 @@ if (!customElements.get("compact-custom-header")) {
     styleHeader(root, tabContainer, header, view, tabs) {
       if (!this.cchConfig.header && !this.editMode) {
         header.style.display = "none";
-        return;
       } else if (!this.editMode) {
         view.style.marginTop = "-48.5px";
         if (view.querySelector("hui-view")) {
@@ -621,10 +620,14 @@ if (!customElements.get("compact-custom-header")) {
 
     hideTabs(tabContainer, tabs) {
       let hidden_tabs = String(this.cchConfig.hide_tabs).length
-        ? String(this.cchConfig.hide_tabs).replace(/\s+/g, "").split(",")
+        ? String(this.cchConfig.hide_tabs)
+            .replace(/\s+/g, "")
+            .split(",")
         : null;
       let shown_tabs = String(this.cchConfig.show_tabs).length
-        ? String(this.cchConfig.show_tabs).replace(/\s+/g, "").split(",")
+        ? String(this.cchConfig.show_tabs)
+            .replace(/\s+/g, "")
+            .split(",")
         : null;
 
       // Set the tab config source.
@@ -1156,6 +1159,12 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       function click(index) {
+        if (
+          (activeTab == 0 && !wrap && left) ||
+          (activeTab == tabs.length - 1 && !wrap && !left)
+        ) {
+          return;
+        }
         if (animate == "swipe") {
           let _in = left
             ? `${screen.width / 1.5}px`
