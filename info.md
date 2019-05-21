@@ -12,5 +12,4 @@
 ### Before and After:
 <img src="https://github.com/maykar/compact-custom-header/blob/master/example.gif?raw=true" width="400px">
 
-### See the [Wiki for installation and configuration.](https://github.com/maykar/compact-custom-header/wiki)<br>
-### Follow the [troubleshooting guide](https://github.com/maykar/compact-custom-header/wiki/Troubleshooting) before submitting issues here or on the forums.
+### See the [Wiki for installation and configuration.](https://github.com/maykar/compact-custom-header/wiki)<br>Follow the [troubleshooting guide](https://github.com/maykar/compact-custom-header/wiki/Troubleshooting) before submitting issues to github or on the forums.
