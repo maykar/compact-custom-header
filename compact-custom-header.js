@@ -372,7 +372,6 @@ if (!customElements.get("compact-custom-header")) {
     styleHeader(root, tabContainer, header, view, tabs) {
       if (!this.cchConfig.header && !this.editMode) {
         header.style.display = "none";
-        return;
       } else if (!this.editMode) {
         view.style.marginTop = "-48.5px";
         if (view.querySelector("hui-view")) {
