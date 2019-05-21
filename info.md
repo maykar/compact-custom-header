@@ -9,6 +9,8 @@
 * Hide tabs/buttons from user's and devices.
 * Set a default/starting view.
 
-|||
-|-|-|
-|**Before:**<br><img src="https://i.imgur.com/GnT85b0.png?2" width="400px"><br>**After:**<br><img src="https://i.imgur.com/LeKHDCh.png?1" width="400px"><br>|**Conditional Styling Demo:**<br><img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="400px">|
+### Before and After:
+<img src="https://github.com/maykar/compact-custom-header/blob/master/example.gif?raw=true" width="400px">
+
+### See the [Wiki for installation and configuration.](https://github.com/maykar/compact-custom-header/wiki)<br>
+### Follow the [troubleshooting guide](https://github.com/maykar/compact-custom-header/wiki/Troubleshooting) before submitting issues here or on the forums.
