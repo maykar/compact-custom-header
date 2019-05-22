@@ -12,5 +12,5 @@
 ### Before and After:
 <img src="https://github.com/maykar/compact-custom-header/blob/master/example.gif?raw=true" width="400px">
 
-### See the [Wiki for installation and configuration.](https://github.com/maykar/compact-custom-header/wiki)<br>Follow the [troubleshooting guide](https://github.com/maykar/compact-custom-header/wiki/Troubleshooting) before submitting issues to github or on the forums.<br><br>
+### See the <a href="https://github.com/maykar/compact-custom-header/wiki" target="_blank">Wiki for installation and configuration</a>.<br>Follow the <a href="https://github.com/maykar/compact-custom-header/wiki/Troubleshooting" target="_blank">troubleshooting guide</a> before submitting issues to github or on the forums.<br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
