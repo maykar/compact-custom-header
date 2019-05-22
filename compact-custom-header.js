@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.4b6";
+import "./compact-custom-header-editor.js?v=1.0.4b7";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -1123,6 +1123,7 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       function handleTouchMove(event) {
+        console.log(event);
         if (xDown && yDown) {
           xDiff = xDown - event.touches[0].clientX;
           yDiff = yDown - event.touches[0].clientY;
@@ -1174,22 +1175,22 @@ if (!customElements.get("compact-custom-header")) {
             : `${screen.width / 1.5}px`;
           view.style.transitionDuration = "200ms";
           view.style.opacity = 0;
-          view.style.transform = `translate3d(${_in}, 0px, 0px)`;
-          view.style.transition = "transform 0.20s, opacity 0.18s";
+          view.style.transform = `translate(${_in}, 0)`;
+          view.style.transition = "transform 0.20s, opacity 0.20s";
           setTimeout(function() {
             tabs[index].dispatchEvent(
               new MouseEvent("click", { bubbles: false, cancelable: true })
             );
             view.style.transitionDuration = "0ms";
-            view.style.transform = `translate3d(${_out}, 0px, 0px)`;
+            view.style.transform = `translate(${_out}, 0)`;
             view.style.transition = "transform 0s";
           }, 210);
           setTimeout(function() {
             view.style.transitionDuration = "200ms";
             view.style.opacity = 1;
-            view.style.transform = `translate3d(0px, 0px, 0px)`;
-            view.style.transition = "transform 0.20s, opacity 0.18s";
-          }, 250);
+            view.style.transform = `translate(0px, 0)`;
+            view.style.transition = "transform 0.20s, opacity 0.20s";
+          }, 215);
         } else if (animate == "fade") {
           view.style.transitionDuration = "200ms";
           view.style.transition = "opacity 0.20s";
