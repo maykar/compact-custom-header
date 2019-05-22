@@ -1123,7 +1123,6 @@ if (!customElements.get("compact-custom-header")) {
       }
 
       function handleTouchMove(event) {
-        console.log(event);
         if (xDown && yDown) {
           xDiff = xDown - event.touches[0].clientX;
           yDiff = yDown - event.touches[0].clientY;
