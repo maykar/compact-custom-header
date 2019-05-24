@@ -1,4 +1,4 @@
-import "./compact-custom-header-editor.js?v=1.0.4b7";
+import "./compact-custom-header-editor.js?v=1.0.4b8";
 
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
@@ -36,6 +36,9 @@ export const defaultConfig = {
   background: "",
   hide_tabs: [],
   show_tabs: [],
+  kiosk_mode: false,
+  sidebar_swipe: true,
+  sidebar_closed: false,
   tab_color: {},
   button_color: {}
 };
@@ -257,6 +260,7 @@ if (!customElements.get("compact-custom-header")) {
         if (this.cchConfig.swipe) {
           this.swipeNavigation(root, tabs, tabContainer, view);
         }
+        this.sidebarMod(buttons);
         if (!this.editMode) this.tabContainerMargin(buttons, tabContainer);
         fireEvent(this, "iron-resize");
       }
@@ -370,7 +374,10 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     styleHeader(root, tabContainer, header, view, tabs) {
-      if (!this.cchConfig.header && !this.editMode) {
+      if (
+        (!this.cchConfig.header && !this.editMode) ||
+        this.cchConfig.kiosk_mode
+      ) {
         header.style.display = "none";
       } else if (!this.editMode) {
         view.style.marginTop = "-48.5px";
@@ -605,6 +612,20 @@ if (!customElements.get("compact-custom-header")) {
           tabs[default_tab].click();
         }
         window.cchDefaultTab = true;
+      }
+    }
+
+    sidebarMod(buttons) {
+      let menu = buttons.menu.querySelector("paper-icon-button");
+      let sidebar = document
+        .querySelector("home-assistant")
+        .shadowRoot.querySelector("home-assistant-main")
+        .shadowRoot.querySelector("app-drawer");
+      if (!this.cchConfig.sidebar_swipe || this.cchConfig.kiosk_mode) {
+        sidebar.removeAttribute("swipe-open");
+      }
+      if (this.cchConfig.sidebar_closed || this.cchConfig.kiosk_mode) {
+        if (sidebar.hasAttribute("opened")) menu.click();
       }
     }
 
@@ -1110,8 +1131,9 @@ if (!customElements.get("compact-custom-header")) {
 
       function handleTouchStart(event) {
         let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD"];
-        if (typeof event.path == "object") {
-          for (let element of event.path) {
+        let path = (event.composedPath && event.composedPath()) || event.path;
+        if (path) {
+          for (let element of path) {
             if (element.nodeName == "HUI-VIEW") break;
             else if (ignored.indexOf(element.nodeName) > -1) return;
           }
@@ -1174,20 +1196,20 @@ if (!customElements.get("compact-custom-header")) {
             : `${screen.width / 1.5}px`;
           view.style.transitionDuration = "200ms";
           view.style.opacity = 0;
-          view.style.transform = `translate(${_in}, 0)`;
+          view.style.transform = `translateX(${_in})`;
           view.style.transition = "transform 0.20s, opacity 0.20s";
           setTimeout(function() {
             tabs[index].dispatchEvent(
               new MouseEvent("click", { bubbles: false, cancelable: true })
             );
             view.style.transitionDuration = "0ms";
-            view.style.transform = `translate(${_out}, 0)`;
+            view.style.transform = `translateX(${_out})`;
             view.style.transition = "transform 0s";
           }, 210);
           setTimeout(function() {
             view.style.transitionDuration = "200ms";
             view.style.opacity = 1;
-            view.style.transform = `translate(0px, 0)`;
+            view.style.transform = `translateX(0px)`;
             view.style.transition = "transform 0.20s, opacity 0.20s";
           }, 215);
         } else if (animate == "fade") {
