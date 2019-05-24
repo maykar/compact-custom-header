@@ -45,3 +45,11 @@ views:
     - type: custom:compact-custom-header
 ```
 </details>
+
+
+This card requires `type: module`. More info in the [installation instructions](https://github.com/maykar/compact-custom-header/wiki/Installation)
+```yaml
+resources:
+  - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js
+    type: module
+```
