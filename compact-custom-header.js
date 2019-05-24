@@ -1,5 +1,3 @@
-import "./compact-custom-header-editor.js?v=1.0.4b9";
-
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
 );
@@ -61,6 +59,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     static async getConfigElement() {
+      await import("./compact-custom-header-editor.js?v=1.0.4b8.00012");
       return document.createElement("compact-custom-header-editor");
     }
 
