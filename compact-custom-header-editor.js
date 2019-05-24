@@ -30,7 +30,10 @@ const defaultConfig = {
   chevrons: false,
   redirect: true,
   hide_tabs: [],
-  show_tabs: []
+  show_tabs: [],
+  kiosk_mode: false,
+  sidebar_swipe: true,
+  sidebar_closed: false
 };
 
 export class CompactCustomHeaderEditor extends LitElement {
@@ -307,6 +310,24 @@ export class CchConfigEditor extends LitElement {
       : this.defaultConfig.redirect;
   }
 
+  get _kiosk_mode() {
+    return this.config.kiosk_mode !== undefined
+      ? this.config.kiosk_mode
+      : this.defaultConfig.kiosk_mode;
+  }
+
+  get _sidebar_closed() {
+    return this.config.sidebar_closed !== undefined
+      ? this.config.sidebar_closed
+      : this.defaultConfig.sidebar_closed;
+  }
+
+  get _sidebar_swipe() {
+    return this.config.sidebar_swipe !== undefined
+      ? this.config.sidebar_swipe
+      : this.defaultConfig.sidebar_swipe;
+  }
+
   get _menu() {
     return this.config.menu || this.defaultConfig.menu;
   }
@@ -359,6 +380,7 @@ export class CchConfigEditor extends LitElement {
                 ?checked="${this._main_config !== false}"
                 .configValue="${"main_config"}"
                 @change="${this._valueChanged}"
+                title="Enable this on your first Lovelace view."
               >
                 Main Config
               </paper-toggle-button>
@@ -371,6 +393,7 @@ export class CchConfigEditor extends LitElement {
           ?checked="${this._disable !== false}"
           .configValue="${"disable"}"
           @change="${this._valueChanged}"
+          title="Completely disable CCH. Useful for exceptions."
         >
           Disable CCH
         </paper-toggle-button>
@@ -381,6 +404,7 @@ export class CchConfigEditor extends LitElement {
           ?checked="${this._header !== false}"
           .configValue="${"header"}"
           @change="${this._valueChanged}"
+          title="Hides the header completely."
         >
           Display Header
         </paper-toggle-button>
@@ -391,6 +415,7 @@ export class CchConfigEditor extends LitElement {
           ?checked="${this._chevrons !== false}"
           .configValue="${"chevrons"}"
           @change="${this._valueChanged}"
+          title="Toggles visibility of view scrolling arrows in header."
         >
           Display Tab Chevrons
         </paper-toggle-button>
@@ -401,8 +426,42 @@ export class CchConfigEditor extends LitElement {
           ?checked="${this._redirect !== false}"
           .configValue="${"redirect"}"
           @change="${this._valueChanged}"
+          title="Toggles the automatic redirect away from hidden tabs."
         >
           Hidden Tab Redirect
+        </paper-toggle-button>
+        <paper-toggle-button
+          class="${this.exception && this.config.kiosk_mode === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this._kiosk_mode !== false}"
+          .configValue="${"kiosk_mode"}"
+          @change="${this._valueChanged}"
+          title="Hide the header, close the sidebar, and disable sidebar swipe."
+        >
+          Kiosk Mode
+        </paper-toggle-button>
+        <paper-toggle-button
+          class="${this.exception && this.config.sidebar_closed === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this._sidebar_closed !== false || this._kiosk_mode !== false}"
+          .configValue="${"sidebar_closed"}"
+          @change="${this._valueChanged}"
+          title="Closes the sidebar if open on load."
+        >
+          Close Sidebar
+        </paper-toggle-button>
+        <paper-toggle-button
+          class="${this.exception && this.config.sidebar_swipe === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this._sidebar_swipe !== false && this._kiosk_mode == false}"
+          .configValue="${"sidebar_swipe"}"
+          @change="${this._valueChanged}"
+          title="Toggles swipe to open sidebar on mobile devices."
+        >
+          Swipe Open Sidebar
         </paper-toggle-button>
       </div>
 
