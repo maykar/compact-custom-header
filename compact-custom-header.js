@@ -36,6 +36,9 @@ export const defaultConfig = {
   background: "",
   hide_tabs: [],
   show_tabs: [],
+  kiosk_mode: false,
+  sidebar_swipe: true,
+  sidebar_closed: false,
   tab_color: {},
   button_color: {}
 };
@@ -618,7 +621,7 @@ if (!customElements.get("compact-custom-header")) {
         .querySelector("home-assistant")
         .shadowRoot.querySelector("home-assistant-main")
         .shadowRoot.querySelector("app-drawer");
-      if (!this.cchConfig.sidebar_swipe_open || this.cchConfig.kiosk_mode) {
+      if (!this.cchConfig.sidebar_swipe || this.cchConfig.kiosk_mode) {
         sidebar.removeAttribute("swipe-open");
       }
       if (this.cchConfig.sidebar_closed || this.cchConfig.kiosk_mode) {
