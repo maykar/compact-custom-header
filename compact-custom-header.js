@@ -257,6 +257,7 @@ if (!customElements.get("compact-custom-header")) {
         if (this.cchConfig.swipe) {
           this.swipeNavigation(root, tabs, tabContainer, view);
         }
+        this.sidebarMod(buttons);
         if (!this.editMode) this.tabContainerMargin(buttons, tabContainer);
         fireEvent(this, "iron-resize");
       }
@@ -370,7 +371,10 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     styleHeader(root, tabContainer, header, view, tabs) {
-      if (!this.cchConfig.header && !this.editMode) {
+      if (
+        (!this.cchConfig.header && !this.editMode) ||
+        this.cchConfig.kiosk_mode
+      ) {
         header.style.display = "none";
       } else if (!this.editMode) {
         view.style.marginTop = "-48.5px";
@@ -605,6 +609,20 @@ if (!customElements.get("compact-custom-header")) {
           tabs[default_tab].click();
         }
         window.cchDefaultTab = true;
+      }
+    }
+
+    sidebarMod(buttons) {
+      let menu = buttons.menu.querySelector("paper-icon-button");
+      let sidebar = document
+        .querySelector("home-assistant")
+        .shadowRoot.querySelector("home-assistant-main")
+        .shadowRoot.querySelector("app-drawer");
+      if (!this.cchConfig.sidebar_swipe_open || this.cchConfig.kiosk_mode) {
+        sidebar.removeAttribute("swipe-open");
+      }
+      if (this.cchConfig.sidebar_closed || this.cchConfig.kiosk_mode) {
+        if (sidebar.hasAttribute("opened")) menu.click();
       }
     }
 
@@ -1110,7 +1128,7 @@ if (!customElements.get("compact-custom-header")) {
 
       function handleTouchStart(event) {
         let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD"];
-        let path = event.path || (event.composedPath && event.composedPath());
+        let path = (event.composedPath && event.composedPath()) || event.path;
         if (path) {
           for (let element of path) {
             if (element.nodeName == "HUI-VIEW") break;
