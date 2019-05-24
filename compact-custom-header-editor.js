@@ -1,40 +1,12 @@
-const LitElement = Object.getPrototypeOf(
-  customElements.get("ha-panel-lovelace")
-);
-const html = LitElement.prototype.html;
-const fireEvent = (node, type, detail, options) => {
-  options = options || {};
-  detail = detail === null || detail === undefined ? {} : detail;
-  const event = new Event(type, {
-    bubbles: options.bubbles === undefined ? true : options.bubbles,
-    cancelable: Boolean(options.cancelable),
-    composed: options.composed === undefined ? true : options.composed
-  });
-  event.detail = detail;
-  node.dispatchEvent(event);
-  return event;
-};
+import {
+  LitElement,
+  html,
+  fireEvent,
+  defaultConfig
+} from "./compact-custom-header.js";
+
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
-const defaultConfig = {
-  header: true,
-  menu: "show",
-  notifications: "show",
-  voice: "show",
-  options: "show",
-  clock_format: 12,
-  clock_am_pm: true,
-  clock_date: false,
-  disable: false,
-  main_config: false,
-  chevrons: false,
-  redirect: true,
-  hide_tabs: [],
-  show_tabs: [],
-  kiosk_mode: false,
-  sidebar_swipe: true,
-  sidebar_closed: false
-};
 
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
