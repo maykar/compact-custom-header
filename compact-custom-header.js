@@ -1133,7 +1133,7 @@ if (!customElements.get("compact-custom-header")) {
       });
 
       function handleTouchStart(event) {
-        let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD"];
+        let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD", "HUI-MAP-CARD"];
         let path = (event.composedPath && event.composedPath()) || event.path;
         if (path) {
           for (let element of path) {
