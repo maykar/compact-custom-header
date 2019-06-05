@@ -1,5 +1,3 @@
-import "./compact-custom-header-editor.js?v=1.0.4b8";
-
 export const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
 );
@@ -61,6 +59,7 @@ if (!customElements.get("compact-custom-header")) {
     }
 
     static async getConfigElement() {
+      await import("./compact-custom-header-editor.js?v=1.0.4b9");
       return document.createElement("compact-custom-header-editor");
     }
 
@@ -624,8 +623,12 @@ if (!customElements.get("compact-custom-header")) {
       if (!this.cchConfig.sidebar_swipe || this.cchConfig.kiosk_mode) {
         sidebar.removeAttribute("swipe-open");
       }
-      if (this.cchConfig.sidebar_closed || this.cchConfig.kiosk_mode) {
+      if (
+        (this.cchConfig.sidebar_closed || this.cchConfig.kiosk_mode) &&
+        !window.cchSidebarClosed
+      ) {
         if (sidebar.hasAttribute("opened")) menu.click();
+        window.cchSidebarClosed = true;
       }
     }
 
@@ -1130,7 +1133,7 @@ if (!customElements.get("compact-custom-header")) {
       });
 
       function handleTouchStart(event) {
-        let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD"];
+        let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD", "HUI-MAP-CARD"];
         let path = (event.composedPath && event.composedPath()) || event.path;
         if (path) {
           for (let element of path) {

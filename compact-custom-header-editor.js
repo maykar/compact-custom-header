@@ -1,40 +1,12 @@
-const LitElement = Object.getPrototypeOf(
-  customElements.get("ha-panel-lovelace")
-);
-const html = LitElement.prototype.html;
-const fireEvent = (node, type, detail, options) => {
-  options = options || {};
-  detail = detail === null || detail === undefined ? {} : detail;
-  const event = new Event(type, {
-    bubbles: options.bubbles === undefined ? true : options.bubbles,
-    cancelable: Boolean(options.cancelable),
-    composed: options.composed === undefined ? true : options.composed
-  });
-  event.detail = detail;
-  node.dispatchEvent(event);
-  return event;
-};
+import {
+  LitElement,
+  html,
+  fireEvent,
+  defaultConfig
+} from "./compact-custom-header.js";
+
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
-const defaultConfig = {
-  header: true,
-  menu: "show",
-  notifications: "show",
-  voice: "show",
-  options: "show",
-  clock_format: 12,
-  clock_am_pm: true,
-  clock_date: false,
-  disable: false,
-  main_config: false,
-  chevrons: false,
-  redirect: true,
-  hide_tabs: [],
-  show_tabs: [],
-  kiosk_mode: false,
-  sidebar_swipe: true,
-  sidebar_closed: false
-};
 
 export class CompactCustomHeaderEditor extends LitElement {
   setConfig(config) {
@@ -52,8 +24,8 @@ export class CompactCustomHeaderEditor extends LitElement {
     this.parentElement.parentElement.querySelector(
       "hui-card-preview"
     ).style.display = "none";
-    this.parentElement.parentElement.parentElement
-      .parentElement.style.maxWidth = "650px";
+    this.parentElement.parentElement.parentElement.parentElement.style.maxWidth =
+      "650px";
   }
 
   render() {
@@ -362,8 +334,7 @@ export class CchConfigEditor extends LitElement {
             </div>
           `
         : ""}
-      ${!this.exception &&
-      !this._main_config
+      ${!this.exception && !this._main_config
         ? html`
             <div class="alert">
               <iron-icon icon="hass:alert"></iron-icon>
@@ -401,10 +372,10 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.header === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._header !== false}"
+          ?checked="${this._header !== false && this._kiosk_mode == false}"
           .configValue="${"header"}"
           @change="${this._valueChanged}"
-          title="Hides the header completely."
+          title="Turn off to hide the header completely."
         >
           Display Header
         </paper-toggle-button>
@@ -415,7 +386,7 @@ export class CchConfigEditor extends LitElement {
           ?checked="${this._chevrons !== false}"
           .configValue="${"chevrons"}"
           @change="${this._valueChanged}"
-          title="Toggles visibility of view scrolling arrows in header."
+          title="Tab/view scrolling controls in header."
         >
           Display Tab Chevrons
         </paper-toggle-button>
@@ -426,7 +397,7 @@ export class CchConfigEditor extends LitElement {
           ?checked="${this._redirect !== false}"
           .configValue="${"redirect"}"
           @change="${this._valueChanged}"
-          title="Toggles the automatic redirect away from hidden tabs."
+          title="Auto-redirect away from hidden tabs."
         >
           Hidden Tab Redirect
         </paper-toggle-button>
@@ -445,10 +416,11 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.sidebar_closed === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._sidebar_closed !== false || this._kiosk_mode !== false}"
+          ?checked="${this._sidebar_closed !== false ||
+            this._kiosk_mode !== false}"
           .configValue="${"sidebar_closed"}"
           @change="${this._valueChanged}"
-          title="Closes the sidebar if open on load."
+          title="Closes the sidebar on opening Lovelace."
         >
           Close Sidebar
         </paper-toggle-button>
@@ -456,10 +428,11 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.sidebar_swipe === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._sidebar_swipe !== false && this._kiosk_mode == false}"
+          ?checked="${this._sidebar_swipe !== false &&
+            this._kiosk_mode == false}"
           .configValue="${"sidebar_swipe"}"
           @change="${this._valueChanged}"
-          title="Toggles swipe to open sidebar on mobile devices."
+          title="Swipe to open sidebar on mobile devices."
         >
           Swipe Open Sidebar
         </paper-toggle-button>
@@ -582,26 +555,28 @@ export class CchConfigEditor extends LitElement {
                 </paper-listbox>
               </paper-dropdown-menu>
               <div class="side-by-side">
-              <paper-toggle-button
-                class="${this.exception && this.config.clock_am_pm === undefined
-                  ? "inherited"
-                  : ""}"
-                ?checked="${this._clock_am_pm !== false}"
-                .configValue="${"clock_am_pm"}"
-                @change="${this._valueChanged}"
-              >
-                AM / PM</paper-toggle-button
-              >
-              <paper-toggle-button
-                class="${this.exception && this.config.clock_date === undefined
-                  ? "inherited"
-                  : ""}"
-                ?checked="${this._clock_date !== false}"
-                .configValue="${"clock_date"}"
-                @change="${this._valueChanged}"
-              >
-                Date</paper-toggle-button
-              >
+                <paper-toggle-button
+                  class="${this.exception &&
+                  this.config.clock_am_pm === undefined
+                    ? "inherited"
+                    : ""}"
+                  ?checked="${this._clock_am_pm !== false}"
+                  .configValue="${"clock_am_pm"}"
+                  @change="${this._valueChanged}"
+                >
+                  AM / PM</paper-toggle-button
+                >
+                <paper-toggle-button
+                  class="${this.exception &&
+                  this.config.clock_date === undefined
+                    ? "inherited"
+                    : ""}"
+                  ?checked="${this._clock_date !== false}"
+                  .configValue="${"clock_date"}"
+                  @change="${this._valueChanged}"
+                >
+                  Date</paper-toggle-button
+                >
               </div>
             </div>
           `
