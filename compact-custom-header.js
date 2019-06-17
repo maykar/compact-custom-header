@@ -44,21 +44,61 @@ let cchConfig;
 
 buildConfig();
 
-const callback = function(mutationsList, observer) {
+const callback = function(mutationsList) {
   editMode = header.className == "edit-mode";
   mutationsList.forEach(mutation => {
-    if (mutation.addedNodes.length) {
-      run();
-    }
+    if (mutation.addedNodes.length) run();
   });
 };
+new MutationObserver(callback).observe(view, { childList: true });
 new MutationObserver(callback).observe(header, {
   attributes: true,
   attributeFilter: ["class"]
 });
-new MutationObserver(callback).observe(view, {
-  childList: true
-});
+
+function run() {
+  const disable = cchConfig.disable;
+  const buttons = getButtonElements();
+  const tabContainer = root.querySelector("paper-tabs");
+  const tabs = tabContainer
+    ? Array.from(tabContainer.querySelectorAll("paper-tab"))
+    : [];
+
+  if (editMode && !disable) {
+    removeStyles(tabContainer, tabs);
+    insertEditMenu(buttons, tabs);
+  } else if (!disable && !window.location.href.includes("disable_cch")) {
+    styleButtons(buttons, tabs);
+    styleHeader(tabContainer, tabs);
+    restoreTabs(tabs, hideTabs(tabContainer, tabs));
+    defaultTab(tabs, tabContainer);
+    sidebarMod(buttons);
+    if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
+    if (!editMode) tabContainerMargin(buttons, tabContainer);
+
+    for (const button in buttons) {
+      if (cchConfig[button] == "clock") {
+        insertClock(
+          buttons,
+          buttons[button].querySelector("paper-icon-button")
+            ? buttons[button]
+            : buttons[button].shadowRoot
+        );
+      }
+    }
+
+    if (cchConfig.conditional_styles) {
+      conditionalStyling(buttons, tabs);
+      notifMonitor(buttons, tabs);
+      window.hassConnection.then(({ conn }) => {
+        conn.socket.onmessage = () => {
+          conditionalStyling(buttons, tabs);
+        };
+      });
+    }
+  }
+  window.dispatchEvent(new Event("resize"));
+}
 
 function buildConfig() {
   let exceptionConfig = {};
@@ -92,99 +132,22 @@ function buildConfig() {
   }
 }
 
-function run() {
-  const buttons = getButtonElements(root);
-  const tabContainer = root.querySelector("paper-tabs");
-  const tabs = tabContainer
-    ? Array.from(tabContainer.querySelectorAll("paper-tab"))
-    : [];
-  let hidden_tabs;
-
-  if (editMode && !cchConfig.disable) {
-    removeStyles(tabContainer, header, view, root, tabs);
-    if (buttons.options) insertEditMenu(buttons.options, tabs);
-  } else if (
-    !cchConfig.disable &&
-    !window.location.href.includes("disable_cch")
-  ) {
-    styleButtons(buttons, tabs, root);
-    styleHeader(root, tabContainer, header, view, tabs);
-    if (cchConfig.hide_tabs && tabContainer) {
-      hidden_tabs = hideTabs(tabContainer, tabs);
-    }
-    restoreTabs(tabs, hidden_tabs);
-    defaultTab(tabs, tabContainer);
-
-    for (const button in buttons) {
-      if (cchConfig[button] == "clock") {
-        insertClock(
-          buttons,
-          buttons[button].querySelector("paper-icon-button")
-            ? buttons[button]
-            : buttons[button].shadowRoot
-        );
-      }
-    }
-
-    const conditionals = cchConfig.conditional_styles;
-    const monitorNotifications = () => {
-      for (const key in conditionals) {
-        if (conditionals[key].entity == "notifications") return true;
-      }
-      return false;
-    };
-
-    if (conditionals) {
-      conditionalStyling(header, buttons, tabs, root);
-      if (monitorNotifications) {
-        notifMonitor(header, buttons, tabs, root);
-      }
-      window.hassConnection.then(({ conn }) => {
-        conn.socket.addEventListener("message", event => {
-          conditionalStyling(header, buttons, tabs, root);
-          setTimeout(function() {
-            conditionalStyling(header, buttons, tabs, root);
-          }, 100);
-        });
-      });
-    }
-
-    if (cchConfig.swipe) {
-      swipeNavigation(root, tabs, tabContainer, view);
-    }
-    sidebarMod(buttons);
-    if (!editMode) tabContainerMargin(buttons, tabContainer);
-  }
-  window.dispatchEvent(new Event("resize"));
-}
-
 function tabContainerMargin(buttons, tabContainer) {
   let marginRight = 0;
   let marginLeft = 15;
   for (const button in buttons) {
-    if (
-      cchConfig[button] == "show" &&
-      buttons[button].style.display !== "none"
-    ) {
-      if (button == "menu") {
-        marginLeft += 45;
-      } else {
-        marginRight += 45;
-      }
-    } else if (
-      cchConfig[button] == "clock" &&
-      buttons[button].style.display !== "none"
-    ) {
+    let visible = buttons[button].style.display !== "none";
+    if (cchConfig[button] == "show" && visible) {
+      if (button == "menu") marginLeft += 45;
+      else marginRight += 45;
+    } else if (cchConfig[button] == "clock" && visible) {
       const clockWidth =
         (cchConfig.clock_format == 12 && cchConfig.clock_am_pm) ||
         cchConfig.clock_date
           ? 90
           : 80;
-      if (button == "menu") {
-        marginLeft += clockWidth + 15;
-      } else {
-        marginRight += clockWidth;
-      }
+      if (button == "menu") marginLeft += clockWidth + 15;
+      else marginRight += clockWidth;
     }
   }
   if (tabContainer) {
@@ -193,8 +156,8 @@ function tabContainerMargin(buttons, tabContainer) {
   }
 }
 
-function insertEditMenu(optionsBtn, tabs) {
-  if (cchConfig.hide_tabs) {
+function insertEditMenu(buttons, tabs) {
+  if (cchConfig.hide_tabs && buttons.options) {
     let show_tabs = document.createElement("paper-item");
     show_tabs.setAttribute("id", "show_tabs");
     show_tabs.addEventListener("click", () => {
@@ -203,11 +166,11 @@ function insertEditMenu(optionsBtn, tabs) {
       }
     });
     show_tabs.innerHTML = "Show all tabs";
-    insertMenuItem(optionsBtn.querySelector("paper-listbox"), show_tabs);
+    insertMenuItem(buttons.options.querySelector("paper-listbox"), show_tabs);
   }
 }
 
-function getButtonElements(root) {
+function getButtonElements() {
   const buttons = {};
   buttons.options = root.querySelector("paper-menu-button");
 
@@ -219,7 +182,7 @@ function getButtonElements(root) {
   return buttons;
 }
 
-function removeStyles(tabContainer, header, view, root, tabs) {
+function removeStyles(tabContainer, tabs) {
   let header_colors = root.querySelector('[id="cch_header_colors"]');
   if (tabContainer) {
     tabContainer.style.marginLeft = "";
@@ -238,7 +201,7 @@ function removeStyles(tabContainer, header, view, root, tabs) {
   }
 }
 
-function styleHeader(root, tabContainer, header, view, tabs) {
+function styleHeader(tabContainer, tabs) {
   if ((!cchConfig.header && !editMode) || cchConfig.kiosk_mode) {
     header.style.display = "none";
   } else if (!editMode) {
@@ -328,7 +291,7 @@ function styleHeader(root, tabContainer, header, view, tabs) {
   }
 }
 
-function styleButtons(buttons, tabs, root) {
+function styleButtons(buttons, tabs) {
   let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
   for (const button in buttons) {
     if (button == "options" && cchConfig[button] == "overflow") {
@@ -621,7 +584,7 @@ function updateClock(clock, clockFormat) {
   window.setTimeout(() => updateClock(clock, clockFormat), 60000);
 }
 
-function conditionalStyling(header, buttons, tabs, root) {
+function conditionalStyling(buttons, tabs) {
   let styling = [];
   const conditional_styles = cchConfig.conditional_styles;
   if (Array.isArray(conditional_styles)) {
@@ -651,6 +614,7 @@ function templateConditional(template, header, buttons, tabs) {
     window.cchNotif = conn._ntf.state.length;
     window.cchEntity = conn._ent.state;
   });
+
   if (!window.cchEntity || window.cchNotif == undefined) {
     window.setTimeout(() => {
       templateConditional(template, header, buttons, tabs);
@@ -731,17 +695,17 @@ function templateConditional(template, header, buttons, tabs) {
 }
 
 // Use notification indicator element to monitor notification status.
-function notifMonitor(header, buttons, tabs, root) {
+function notifMonitor(buttons, tabs) {
   let notification = !!buttons.notifications.shadowRoot.querySelector(
     ".indicator"
   );
   if (window.cchNotification == undefined) {
     window.cchNotification = notification;
   } else if (notification !== window.cchNotification) {
-    conditionalStyling(header, buttons, tabs, root);
+    conditionalStyling(buttons, tabs);
     window.cchNotification = notification;
   }
-  window.setTimeout(() => notifMonitor(header, buttons, tabs, root), 1000);
+  window.setTimeout(() => notifMonitor(buttons, tabs), 1000);
 }
 
 // Walk the DOM to find element.
@@ -778,7 +742,7 @@ function buildRanges(array) {
   return array.sort(sortNumber);
 }
 
-function swipeNavigation(root, tabs, tabContainer, view) {
+function swipeNavigation(tabs, tabContainer) {
   let swipe_amount = cchConfig.swipe_amount || 15;
   let animate = cchConfig.swipe_animate || "none";
   let skip_tabs = cchConfig.swipe_skip
