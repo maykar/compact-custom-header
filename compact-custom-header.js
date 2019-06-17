@@ -22,7 +22,6 @@ const defaultConfig = {
   button_color: {}
 };
 
-let currentView;
 let ll = document.querySelector("home-assistant");
 const hass = ll.hass;
 
@@ -596,11 +595,10 @@ function conditionalStyling(buttons, tabs) {
   }
 
   for (let i = 0; i < styling.length; i++) {
-    let template = styling[i].template;
-    if (template) {
-      if (!template.length) template = [template];
-      for (let x = 0; x < template.length; x++) {
-        templateConditional(template[x], header, buttons, tabs);
+    if (styling[i]) {
+      if (!styling[i].length) styling[i] = [styling[i]];
+      for (let x = 0; x < styling[i].length; x++) {
+        template(styling[i][x], buttons, tabs);
       }
       continue;
     }
@@ -608,7 +606,7 @@ function conditionalStyling(buttons, tabs) {
   }
 }
 
-function templateConditional(template, header, buttons, tabs) {
+function template(temp, buttons, tabs) {
   // Get entity states.
   window.hassConnection.then(({ conn }) => {
     window.cchNotif = conn._ntf.state.length;
@@ -617,7 +615,7 @@ function templateConditional(template, header, buttons, tabs) {
 
   if (!window.cchEntity || window.cchNotif == undefined) {
     window.setTimeout(() => {
-      templateConditional(template, header, buttons, tabs);
+      template(temp, buttons, tabs);
     }, 100);
     return;
   }
@@ -627,7 +625,7 @@ function templateConditional(template, header, buttons, tabs) {
   let entity = window.cchEntity;
   let notification = window.cchNotif;
 
-  const templateEval = (template, entity) => {
+  const templateEval = (template) => {
     try {
       if (template.includes("return")) {
         return eval(`(function() {${template}}())`);
@@ -639,16 +637,16 @@ function templateConditional(template, header, buttons, tabs) {
     }
   };
 
-  for (const condition in template) {
+  for (const condition in temp) {
     if (condition == "tab") {
-      for (const tab in template[condition]) {
-        if (!template[condition][tab].length) {
-          template[condition][tab] = [template[condition][tab]];
+      for (const tab in temp[condition]) {
+        if (!temp[condition][tab].length) {
+          temp[condition][tab] = [temp[condition][tab]];
         }
-        for (let i = 0; i < template[condition][tab].length; i++) {
-          let tabIndex = parseInt(Object.keys(template[condition]));
-          let styleTarget = Object.keys(template[condition][tab][i]);
-          let tempCond = template[condition][tab][i][styleTarget];
+        for (let i = 0; i < temp[condition][tab].length; i++) {
+          let tabIndex = parseInt(Object.keys(temp[condition]));
+          let styleTarget = Object.keys(temp[condition][tab][i]);
+          let tempCond = temp[condition][tab][i][styleTarget];
           if (styleTarget == "icon") {
             tabs[tabIndex]
               .querySelector("ha-icon")
@@ -663,19 +661,19 @@ function templateConditional(template, header, buttons, tabs) {
         }
       }
     } else if (condition == "button") {
-      for (const button in template[condition]) {
-        if (!template[condition][button].length) {
-          template[condition][button] = [template[condition][button]];
+      for (const button in temp[condition]) {
+        if (!temp[condition][button].length) {
+          temp[condition][button] = [temp[condition][button]];
         }
-        for (let i = 0; i < template[condition][button].length; i++) {
-          let buttonName = Object.keys(template[condition]);
-          let styleTarget = Object.keys(template[condition][button][i]);
+        for (let i = 0; i < temp[condition][button].length; i++) {
+          let buttonName = Object.keys(temp[condition]);
+          let styleTarget = Object.keys(temp[condition][button][i]);
           let buttonElem = buttons[buttonName];
           let iconTarget = buttonElem.shadowRoot
             ? buttonElem.shadowRoot.querySelector("paper-icon-button")
             : buttonElem.querySelector("paper-icon-button");
           let target = iconTarget.shadowRoot.querySelector("iron-icon");
-          let tempCond = template[condition][button][i][styleTarget];
+          let tempCond = temp[condition][button][i][styleTarget];
           if (styleTarget == "icon") {
             iconTarget.setAttribute("icon", templateEval(tempCond, entity));
           } else if (styleTarget == "color") {
@@ -688,7 +686,7 @@ function templateConditional(template, header, buttons, tabs) {
         }
       }
     } else if (condition == "background") {
-      header.style.background = templateEval(template[condition], entity);
+      header.style.background = templateEval(temp[condition], entity);
     }
   }
   entity = null;
@@ -706,22 +704,6 @@ function notifMonitor(buttons, tabs) {
     window.cchNotification = notification;
   }
   window.setTimeout(() => notifMonitor(buttons, tabs), 1000);
-}
-
-// Walk the DOM to find element.
-function recursiveWalk(node, element, func) {
-  let done = func(node) || node.nodeName == element;
-  if (done) return true;
-  if ("shadowRoot" in node && node.shadowRoot) {
-    done = recursiveWalk(node.shadowRoot, element, func);
-    if (done) return true;
-  }
-  node = node.firstChild;
-  while (node) {
-    done = recursiveWalk(node, element, func);
-    if (done) return true;
-    node = node.nextSibling;
-  }
 }
 
 // Get range (e.g., "5 to 9") and build (5,6,7,8,9).
@@ -758,15 +740,9 @@ function swipeNavigation(tabs, tabContainer) {
   const appLayout = root.querySelector("ha-app-layout");
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
 
-  appLayout.addEventListener("touchstart", handleTouchStart, {
-    passive: true
-  });
-  appLayout.addEventListener("touchmove", handleTouchMove, {
-    passive: false
-  });
-  appLayout.addEventListener("touchend", handleTouchEnd, {
-    passive: true
-  });
+  appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
+  appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
+  appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
 
   function handleTouchStart(event) {
     let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD", "HUI-MAP-CARD"];
