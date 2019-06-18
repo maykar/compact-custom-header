@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://maykar.github.io/compact-custom-header/Styling-Config/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Styling Config - Compact Custom Header</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">Compact Custom Header</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Home</a>
+                            </li>
+                            <li >
+                                <a href="../Installation/">Installation</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Main Config <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../Main-Config-Options/">Main Config Options</a>
+</li>
+                                    
+<li >
+    <a href="../Swipe-Navigation/">Swipe Nav Config</a>
+</li>
+                                    
+<li >
+    <a href="../Exception-Config/">Exception Config</a>
+</li>
+                                    
+<li class="active">
+    <a href="./">Styling Config</a>
+</li>
+                                    
+<li >
+    <a href="../Conditional-Styling-Config/">Conditional Styling Config</a>
+</li>
+                                    
+<li >
+    <a href="../Conditional-Styling-Templates/">Conditional Styling Templates</a>
+</li>
+                                </ul>
+                            </li>
+                            <li >
+                                <a href="../Troubleshooting/">Troubleshooting</a>
+                            </li>
+                            <li >
+                                <a href="https://github.com/maykar/compact-custom-header/issues">Issues</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                            <li >
+                                <a rel="next" href="../Exception-Config/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../Conditional-Styling-Config/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/maykar/compact-custom-header/edit/master/docs/Styling-Config.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#styling-config">Styling Config</a></li>
+            <li><a href="#all-style-configuration-is-done-in-yamlraw-edit-mode-or-from-your-ha-theme">All style configuration is done in yaml/raw edit mode or from your HA theme.</a></li>
+            <li><a href="#theme-variables">Theme Variables</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="styling-config">Styling Config<a class="headerlink" href="#styling-config" title="Permanent link">&para;</a></h1>
+<h2 id="all-style-configuration-is-done-in-yamlraw-edit-mode-or-from-your-ha-theme">All style configuration is done in yaml/raw edit mode or from your <a href="https://github.com/maykar/compact-custom-header/wiki/Theme-Styling-Config#theme-variables">HA theme</a>.<a class="headerlink" href="#all-style-configuration-is-done-in-yamlraw-edit-mode-or-from-your-ha-theme" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>background</td>
+<td>Change the header's background color or image. Uses any CSS that can be used with the CSS <a href="https://www.w3schools.com/cssref/pr_background-color.asp">background-color property</a>, <a href="https://www.w3schools.com/cssref/pr_background-image.asp">background-image property</a>, or <a href="https://www.w3schools.com/cssref/css3_pr_background.asp">background property</a>. Examples: <code>background: "#000"</code> or even <code>background: url("paper.gif")</code>.</td>
+</tr>
+<tr>
+<td>all_buttons_color</td>
+<td>Set all buttons to one color. Acts as a fallback, if set to red and a button is set to blue with button_color then all buttons will be red except for that button.</td>
+</tr>
+<tr>
+<td>button_color</td>
+<td>Set the color of a single button. See example below.</td>
+</tr>
+<tr>
+<td>all_tabs_color</td>
+<td>Set all tabs to one color. Acts as a fallback, if set to red and one tab is set to blue with tab_color then all tabs will be red except for that one tab.</td>
+</tr>
+<tr>
+<td>tab_color</td>
+<td>Set the color of a single tab. See example below.</td>
+</tr>
+<tr>
+<td>notify_indicator_color</td>
+<td>Sets the color of the new notification indicator.</td>
+</tr>
+<tr>
+<td>notify_text_color</td>
+<td>Sets the color of the number of new notifications inside the indicator.</td>
+</tr>
+<tr>
+<td>active_tab_color</td>
+<td>Sets the color of the current tab's icon.</td>
+</tr>
+<tr>
+<td>conditional_styles</td>
+<td>Dynamically change styles depending on an entity's state, see <a href="https://github.com/maykar/compact-custom-header/wiki/Conditional-Styling-Config">Conditional Styling</a>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="notes-on-styling-config">Notes on styling config:<a class="headerlink" href="#notes-on-styling-config" title="Permanent link">&para;</a></h3>
+<ul>
+<li>You can use styling in your exceptions as well and have separate themes per user/device.</li>
+<li>You may use any <a href="https://www.w3schools.com/cssref/pr_text_color.asp">valid CSS for colors</a>.</li>
+<li>If using hex colors <code>#ffffff</code> be sure to enclose in quotes <code>"#ffffff"</code>.</li>
+</ul>
+<p><img src="https://i.imgur.com/t6VMKHf.png" width="400px"><br>
+Ugly example to illustrate.<br>The example below is the code that was used to make it.</p>
+<p><strong>Styling Example:</strong></p>
+<pre><code class="yaml">- type: 'custom:compact-custom-header'
+  background: transparent url(&quot;https://goo.gl/M3Dsf2&quot;) # header with background image &amp; transparent as color
+  all_buttons_color: green # color of all buttons unless set in button_color
+  button_color:
+    menu: rgb(255,192,203)
+    notifications: yellow
+    voice: white
+    options: red
+  all_tabs_color: red # color of all tabs unless set in tab_color
+  tab_color:
+    0: green
+    1: red
+    2: blue
+  tab_indicator_color: yellow # indicator under current tab
+  notify_indicator_color: &quot;#00FFFF&quot; # the notifications indicator
+  notify_text_color: brown # number inside notifications indicator
+  chevrons: false
+  options: clock
+  clock_am_pm: true
+  clock_date: true
+  clock_format: 12
+  date_locale: en-gb
+  main_config: true
+</code></pre>
+
+<h2 id="theme-variables">Theme Variables<a class="headerlink" href="#theme-variables" title="Permanent link">&para;</a></h2>
+<p>You can also style CCH from your HA theme's YAML to make it easier to share and lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the config of the card will override these options.</p>
+<p><strong>Theme Variables Example:</strong><br>
+The color and image values are just examples.<br>
+All options default to HA's default values if not set here or in config.</p>
+<pre><code class="yaml">  cch-background: url(&quot;https://goo.gl/M3Dsf2&quot;)
+  cch-all-buttons-color: blue
+  cch-button-color-menu: green
+  cch-button-color-notifications: yellow
+  cch-button-color-voice: black
+  cch-button-color-options: red
+  cch-all-tabs-color: red
+  cch-tab-indicator-color: yellow
+  cch-active-tab-color: blue
+  cch-notify-indicator-color: &quot;#00FFFF&quot;
+  cch-notify-text-color: brown
+</code></pre></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
