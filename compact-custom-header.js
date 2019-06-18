@@ -1,4 +1,23 @@
-const defaultConfig = {
+export const LitElement = Object.getPrototypeOf(
+  customElements.get("ha-panel-lovelace")
+);
+
+export const html = LitElement.prototype.html;
+
+export const fireEvent = (node, type, detail, options) => {
+  options = options || {};
+  detail = detail === null || detail === undefined ? {} : detail;
+  const event = new Event(type, {
+    bubbles: options.bubbles === undefined ? true : options.bubbles,
+    cancelable: Boolean(options.cancelable),
+    composed: options.composed === undefined ? true : options.composed
+  });
+  event.detail = detail;
+  node.dispatchEvent(event);
+  return event;
+};
+
+export const defaultConfig = {
   header: true,
   menu: "show",
   notifications: "show",
@@ -22,26 +41,36 @@ const defaultConfig = {
   button_color: {}
 };
 
-let ll = document.querySelector("home-assistant");
-const hass = ll.hass;
+export const huiRoot = () => {
+  let ll = document.querySelector("home-assistant");
+  ll = ll && ll.shadowRoot;
+  ll = ll && ll.querySelector("home-assistant-main");
+  ll = ll && ll.shadowRoot;
+  ll = ll && ll.querySelector("app-drawer-layout partial-panel-resolver");
+  ll = (ll && ll.shadowRoot) || ll;
+  ll = ll && ll.querySelector("ha-panel-lovelace");
+  ll = ll && ll.shadowRoot;
+  return ll && ll.querySelector("hui-root");
+}
 
-ll = ll && ll.shadowRoot;
-ll = ll && ll.querySelector("home-assistant-main");
-ll = ll && ll.shadowRoot;
-ll = ll && ll.querySelector("app-drawer-layout partial-panel-resolver");
-ll = (ll && ll.shadowRoot) || ll;
-ll = ll && ll.querySelector("ha-panel-lovelace");
-ll = ll && ll.shadowRoot;
-ll = ll && ll.querySelector("hui-root");
+const lovelace = huiRoot().lovelace;
+const hass = document.querySelector("home-assistant").hass;
 
-const root = ll.shadowRoot;
-const config = ll.lovelace.config.cch;
+const root = huiRoot().shadowRoot;
+const config = lovelace.config.cch || {};
 const header = root.querySelector("app-header");
 const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
 let editMode;
 let cchConfig;
 
+if (lovelace.mode == "storage") {
+  import("./compact-custom-header-editor.js?v=1.1.0").then(() => {
+    document.createElement("compact-custom-header-editor");
+  });
+}
+
 buildConfig();
+run();
 
 const callback = function(mutationsList) {
   editMode = header.className == "edit-mode";
@@ -157,6 +186,14 @@ function tabContainerMargin(buttons, tabContainer) {
 
 function insertEditMenu(buttons, tabs) {
   if (cchConfig.hide_tabs && buttons.options) {
+    let editor = document.createElement("paper-item");
+    editor.setAttribute("id", "cch_settings");
+    editor.addEventListener("click", () => {
+      showEditor();
+    });
+    editor.innerHTML = "CCH Settings";
+    insertMenuItem(buttons.options.querySelector("paper-listbox"), editor);
+
     let show_tabs = document.createElement("paper-item");
     show_tabs.setAttribute("id", "show_tabs");
     show_tabs.addEventListener("click", () => {
@@ -598,7 +635,7 @@ function conditionalStyling(buttons, tabs) {
     if (styling[i]) {
       if (!styling[i].length) styling[i] = [styling[i]];
       for (let x = 0; x < styling[i].length; x++) {
-        template(styling[i][x], buttons, tabs);
+        templates(styling[i][x], buttons, tabs);
       }
       continue;
     }
@@ -606,7 +643,7 @@ function conditionalStyling(buttons, tabs) {
   }
 }
 
-function template(temp, buttons, tabs) {
+function templates(template, buttons, tabs) {
   // Get entity states.
   window.hassConnection.then(({ conn }) => {
     window.cchNotif = conn._ntf.state.length;
@@ -615,7 +652,7 @@ function template(temp, buttons, tabs) {
 
   if (!window.cchEntity || window.cchNotif == undefined) {
     window.setTimeout(() => {
-      template(temp, buttons, tabs);
+      templates(template, buttons, tabs);
     }, 100);
     return;
   }
@@ -625,7 +662,7 @@ function template(temp, buttons, tabs) {
   let entity = window.cchEntity;
   let notification = window.cchNotif;
 
-  const templateEval = (template) => {
+  const templateEval = template => {
     try {
       if (template.includes("return")) {
         return eval(`(function() {${template}}())`);
@@ -637,16 +674,16 @@ function template(temp, buttons, tabs) {
     }
   };
 
-  for (const condition in temp) {
+  for (const condition in template) {
     if (condition == "tab") {
-      for (const tab in temp[condition]) {
-        if (!temp[condition][tab].length) {
-          temp[condition][tab] = [temp[condition][tab]];
+      for (const tab in template[condition]) {
+        if (!template[condition][tab].length) {
+          template[condition][tab] = [template[condition][tab]];
         }
-        for (let i = 0; i < temp[condition][tab].length; i++) {
-          let tabIndex = parseInt(Object.keys(temp[condition]));
-          let styleTarget = Object.keys(temp[condition][tab][i]);
-          let tempCond = temp[condition][tab][i][styleTarget];
+        for (let i = 0; i < template[condition][tab].length; i++) {
+          let tabIndex = parseInt(Object.keys(template[condition]));
+          let styleTarget = Object.keys(template[condition][tab][i]);
+          let tempCond = template[condition][tab][i][styleTarget];
           if (styleTarget == "icon") {
             tabs[tabIndex]
               .querySelector("ha-icon")
@@ -661,19 +698,19 @@ function template(temp, buttons, tabs) {
         }
       }
     } else if (condition == "button") {
-      for (const button in temp[condition]) {
-        if (!temp[condition][button].length) {
-          temp[condition][button] = [temp[condition][button]];
+      for (const button in template[condition]) {
+        if (!template[condition][button].length) {
+          template[condition][button] = [template[condition][button]];
         }
-        for (let i = 0; i < temp[condition][button].length; i++) {
-          let buttonName = Object.keys(temp[condition]);
-          let styleTarget = Object.keys(temp[condition][button][i]);
+        for (let i = 0; i < template[condition][button].length; i++) {
+          let buttonName = Object.keys(template[condition]);
+          let styleTarget = Object.keys(template[condition][button][i]);
           let buttonElem = buttons[buttonName];
           let iconTarget = buttonElem.shadowRoot
             ? buttonElem.shadowRoot.querySelector("paper-icon-button")
             : buttonElem.querySelector("paper-icon-button");
           let target = iconTarget.shadowRoot.querySelector("iron-icon");
-          let tempCond = temp[condition][button][i][styleTarget];
+          let tempCond = template[condition][button][i][styleTarget];
           if (styleTarget == "icon") {
             iconTarget.setAttribute("icon", templateEval(tempCond, entity));
           } else if (styleTarget == "color") {
@@ -686,7 +723,7 @@ function template(temp, buttons, tabs) {
         }
       }
     } else if (condition == "background") {
-      header.style.background = templateEval(temp[condition], entity);
+      header.style.background = templateEval(template[condition], entity);
     }
   }
   entity = null;
@@ -862,4 +899,23 @@ function swipeNavigation(tabs, tabContainer) {
       );
     }
   }
+}
+
+function showEditor() {
+  const container = document.createElement("div");
+  const nest = document.createElement("div");
+  const editor = document.createElement("compact-custom-header-editor");
+  nest.style.cssText = "max-width: 900px; margin: auto;";
+  container.style.cssText = `
+    width: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+    position: absolute;
+    background: var(--background-color);
+    z-index: 1;
+    padding: 15px;
+  `;
+  root.querySelector("ha-app-layout").insertBefore(container, view);
+  container.appendChild(nest);
+  nest.appendChild(editor);
 }
