@@ -2,49 +2,52 @@ import {
   LitElement,
   html,
   fireEvent,
-  defaultConfig
+  defaultConfig,
+  huiRoot
 } from "./compact-custom-header.js";
 
+const lovelace = huiRoot().lovelace;
+const hass = document.querySelector("home-assistant").hass;
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
+const previousConfig = JSON.parse(JSON.stringify(lovelace.config));
+const cchConfig = lovelace.config.cch
+  ? JSON.parse(JSON.stringify(lovelace.config.cch))
+  : {};
 
 export class CompactCustomHeaderEditor extends LitElement {
-  setConfig(config) {
-    this._config = config;
-    this.requestUpdate();
-  }
-
   static get properties() {
     return {
       _config: {}
     };
   }
 
-  firstUpdated() {
-    this.parentElement.parentElement.querySelector(
-      "hui-card-preview"
-    ).style.display = "none";
-    this.parentElement.parentElement.parentElement.parentElement.style.maxWidth =
-      "650px";
-  }
-
   render() {
+    if (this._config == undefined) this._config = cchConfig;
+    this.hass = hass;
     const mwc_button = customElements.get("mwc-button") ? true : false;
+
+    const save = () => {
+      let newConfig = {
+        ...huiRoot().lovelace.config,
+        ...{ cch: this._config }
+      };
+      lovelace.saveConfig(newConfig).then(() => {
+        if (huiRoot().lovelace.config != newConfig) {
+          console.log("Save failed, reverting.");
+          huiRoot().lovelace.config = previousConfig;
+        } else {
+          console.log("Saved");
+        }
+      });
+    };
+
     const clear_cache_button = mwc_button
       ? html`
-          <mwc-button
-            style="margin-left:-15px"
-            class="toggle-button"
-            @click="${localStorage.removeItem("cchCache")}"
-            >Clear CCH Cache</mwc-button
-          >
+          <mwc-button raised @click="${save}">Save</mwc-button>
         `
       : html`
-          <paper-button
-            class="toggle-button"
-            @click="${localStorage.removeItem("cchCache")}"
-            >Clear CCH Cache</paper-button
-          >
+          <paper-button raised @click="${save}">Save</paper-button>
         `;
     return html`
       ${this.renderStyle()}
@@ -252,12 +255,6 @@ export class CchConfigEditor extends LitElement {
       : this.defaultConfig.clock_date;
   }
 
-  get _main_config() {
-    return this.config.main_config !== undefined
-      ? this.config.main_config
-      : this.defaultConfig.main_config;
-  }
-
   get _disable() {
     return this.config.disable !== undefined
       ? this.config.disable
@@ -334,29 +331,8 @@ export class CchConfigEditor extends LitElement {
             </div>
           `
         : ""}
-      ${!this.exception && !this._main_config
-        ? html`
-            <div class="alert">
-              <iron-icon icon="hass:alert"></iron-icon>
-              This card is not the main configuration card. Edits made here will
-              not have an effect.
-            </div>
-          `
-        : ""}
       ${this.renderStyle()}
       <div class="side-by-side">
-        ${!this.exception
-          ? html`
-              <paper-toggle-button
-                ?checked="${this._main_config !== false}"
-                .configValue="${"main_config"}"
-                @change="${this._valueChanged}"
-                title="Enable this on your first Lovelace view."
-              >
-                Main Config
-              </paper-toggle-button>
-            `
-          : ""}
         <paper-toggle-button
           class="${this.exception && this.config.disable === undefined
             ? "inherited"
