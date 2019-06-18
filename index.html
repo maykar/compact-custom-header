@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Customize the header and add enhancements to Lovelace. Features: kiosk mode, conditional header styling, per user/device views, swiping between views on mobile, and more.">
+        
+        <link rel="canonical" href="https://maykar.github.io/compact-custom-header/">
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>Compact Custom Header</title>
+        <link href="css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body class="homepage">
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href=".">Compact Custom Header</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="active">
+                                <a href=".">Home</a>
+                            </li>
+                            <li >
+                                <a href="Installation/">Installation</a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Main Config <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="Main-Config-Options/">Main Config Options</a>
+</li>
+                                    
+<li >
+    <a href="Swipe-Navigation/">Swipe Nav Config</a>
+</li>
+                                    
+<li >
+    <a href="Exception-Config/">Exception Config</a>
+</li>
+                                    
+<li >
+    <a href="Styling-Config/">Styling Config</a>
+</li>
+                                    
+<li >
+    <a href="Conditional-Styling-Config/">Conditional Styling Config</a>
+</li>
+                                    
+<li >
+    <a href="Conditional-Styling-Templates/">Conditional Styling Templates</a>
+</li>
+                                </ul>
+                            </li>
+                            <li >
+                                <a href="Troubleshooting/">Troubleshooting</a>
+                            </li>
+                            <li >
+                                <a href="https://github.com/maykar/compact-custom-header/issues">Issues</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                            <li class="disabled">
+                                <a rel="next" >
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="Installation/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/maykar/compact-custom-header/edit/master/docs/index.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#compact-custom-header">Compact Custom Header</a></li>
+            <li><a href="#important-notes">Important notes:</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="compact-custom-header">Compact Custom Header<a class="headerlink" href="#compact-custom-header" title="Permanent link">&para;</a></h1>
+<ul>
+<li><a href="../Installation"><strong>Installation</strong></a></li>
+<li><a href="../Troubleshooting"><strong>Troubleshooting</strong></a></li>
+<li><a href="../Main-Config-Options"><strong>Main Config</strong></a></li>
+<li><a href="../Swipe-Navigation"><strong>Swipe Nav Config</strong></a>: Enable and configure swipe navigation.</li>
+<li><a href="../Exception-Config"><strong>Exception Config</strong></a>: Per user/device config.</li>
+<li><a href="../Styling-Config"><strong>Styling Config</strong></a>: Style the header.</li>
+<li><a href="../Conditional-Styling-Config"><strong>Conditional Styling Config</strong></a>: Conditionally Style the header.</li>
+<li><a href="../Conditional-Styling-Templates"><strong>Conditional Styling Templates</strong></a>: Complex Conditional styling.</li>
+</ul>
+<h2 id="important-notes">Important notes:<a class="headerlink" href="#important-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: <code>http://192.168.1.42:8123/lovelace/0?disable_cch</code></li>
+<li>The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.</li>
+<li>If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.</li>
+<li>If conditionally styling a tab's icon, make sure that the tab is already an icon and not just a title.</li>
+<li>To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below.</li>
+</ul>
+<details>
+  <summary><b>Panel View Example:</b></summary>
+
+Placing this card at the end of the vertical stack can help with some spacing issues.
+
+
+<pre><code class="yaml">views:
+- title: Panel View Example
+  panel: true
+  cards:
+  - type: vertical-stack
+    cards:
+    - type: another-card
+    - type: custom:compact-custom-header
+</code></pre>
+
+</details>
+
+<h3 id="breaking-changes">Breaking Changes:<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th align="left">Version</th>
+<th align="left">Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+<th align="left">Breaking Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">1.0.2b9</td>
+<td align="left">Apr. 6, 2019</td>
+<td align="left"><strong>“background _image”</strong> and <strong>“background_color”</strong> have been replaced with just “background”.</td>
+</tr>
+<tr>
+<td align="left">1.0.0b0</td>
+<td align="left">Feb. 10, 2019</td>
+<td align="left">Complete rewrite of card. Card is now <strong>"type: module"</strong> and most config options have changed.</td>
+</tr>
+<tr>
+<td align="left">0.2.8</td>
+<td align="left">Jan. 22, 2019</td>
+<td align="left"><strong>Tab numbering</strong> in config options now starts at 0 to match Lovelace URLs.</td>
+</tr>
+</tbody>
+</table></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.0.4
+Build Date UTC : 2019-06-18 16:49:58
+-->
