@@ -29,17 +29,21 @@ export class CompactCustomHeaderEditor extends LitElement {
 
     const save = () => {
       let newConfig = {
-        ...huiRoot().lovelace.config,
+        ...lovelace.config,
         ...{ cch: this._config }
       };
-      lovelace.saveConfig(newConfig).then(() => {
-        if (huiRoot().lovelace.config != newConfig) {
-          console.log("Save failed, reverting.");
-          huiRoot().lovelace.config = previousConfig;
-        } else {
-          console.log("Saved");
-        }
-      });
+      try {
+        lovelace.saveConfig(newConfig).then(() => {
+          if (huiRoot().lovelace.config != newConfig) {
+            console.log("Save failed, reverting.");
+            lovelace.saveConfig(previousConfig);
+          } else {
+            console.log("Saved");
+          }
+        });
+      } catch (e) {
+        console.log(e)
+      }
     };
 
     const clear_cache_button = mwc_button
