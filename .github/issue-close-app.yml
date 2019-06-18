@@ -1,0 +1,14 @@
+
+comment: |
+  As described in the issue template, issues missing the required info will be closed.
+  Please open a new issue providing the nessesarry information.
+issueConfigs:
+- content:
+  - "Describe the bug"
+  - "Config YAML"
+  - "HA and/or Browser Error"
+  - "HA, Card, and Browser Versions"
+- content:
+  - "feature request"
+  - "Describe the solution"
+caseInsensitive: true
