@@ -910,25 +910,28 @@ function swipeNavigation(tabs, tabContainer) {
 }
 
 function showEditor() {
-  const container = document.createElement("editor");
-  const nest = document.createElement("div");
-  const editor = document.createElement("compact-custom-header-editor");
-  nest.style.cssText = `
-    padding: 20px;
-    max-width: 600px;
-    margin: auto;
-    background: var(--paper-card-background-color);
-  `;
-  container.style.cssText = `
-    width: 100%;
-    min-height: 100%;
-    box-sizing: border-box;
-    position: absolute;
-    background: var(--background-color);
-    z-index: 1;
-    padding: 5px;
-  `;
-  root.querySelector("ha-app-layout").insertBefore(container, view);
-  container.appendChild(nest);
-  nest.appendChild(editor);
+  if (!root.querySelector("ha-app-layout").querySelector("editor")) {
+    const container = document.createElement("editor");
+    const nest = document.createElement("div");
+    const cchEditor = document.createElement("compact-custom-header-editor");
+    nest.style.cssText = `
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background: var(--paper-card-background-color);
+    `;
+    container.style.cssText = `
+      width: 100%;
+      margin-top:10px;
+      min-height: 100%;
+      box-sizing: border-box;
+      position: absolute;
+      background: var(--background-color);
+      z-index: 1;
+      padding: 5px;
+    `;
+    root.querySelector("ha-app-layout").insertBefore(container, view);
+    container.appendChild(nest);
+    nest.appendChild(cchEditor);
+  }
 }
