@@ -51,7 +51,7 @@ export const huiRoot = () => {
   ll = ll && ll.querySelector("ha-panel-lovelace");
   ll = ll && ll.shadowRoot;
   return ll && ll.querySelector("hui-root");
-}
+};
 
 const lovelace = huiRoot().lovelace;
 const hass = document.querySelector("home-assistant").hass;
@@ -63,19 +63,27 @@ const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
 let editMode;
 let cchConfig;
 
+buildConfig();
+run();
+
 if (lovelace.mode == "storage") {
-  import("./compact-custom-header-editor.js?v=1.1.0").then(() => {
+  import("./compact-custom-header-editor.js").then(() => {
     document.createElement("compact-custom-header-editor");
   });
 }
 
-buildConfig();
-run();
-
 const callback = function(mutationsList) {
   editMode = header.className == "edit-mode";
   mutationsList.forEach(mutation => {
-    if (mutation.addedNodes.length) run();
+    if (mutation.addedNodes.length) {
+      run();
+      if (!editMode) {
+        let editor = root
+          .querySelector("ha-app-layout")
+          .querySelector("editor");
+        if (editor) root.querySelector("ha-app-layout").removeChild(editor);
+      }
+    }
   });
 };
 new MutationObserver(callback).observe(view, { childList: true });
@@ -902,10 +910,15 @@ function swipeNavigation(tabs, tabContainer) {
 }
 
 function showEditor() {
-  const container = document.createElement("div");
+  const container = document.createElement("editor");
   const nest = document.createElement("div");
   const editor = document.createElement("compact-custom-header-editor");
-  nest.style.cssText = "max-width: 900px; margin: auto;";
+  nest.style.cssText = `
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+    background: var(--paper-card-background-color);
+  `;
   container.style.cssText = `
     width: 100%;
     min-height: 100%;
@@ -913,7 +926,7 @@ function showEditor() {
     position: absolute;
     background: var(--background-color);
     z-index: 1;
-    padding: 15px;
+    padding: 5px;
   `;
   root.querySelector("ha-app-layout").insertBefore(container, view);
   container.appendChild(nest);
