@@ -377,7 +377,7 @@ export class CchConfigEditor extends LitElement {
             <div class="card-content">
               <div class="card-header">
               <iron-icon icon="hass:alert"></iron-icon>
-              Important Notes.
+              Important Notes
                 <paper-icon-button
                   icon="${this._closed ? "mdi:chevron-down" : "mdi:chevron-up"}"
                   @click="${this._toggleCard}"
@@ -385,9 +385,10 @@ export class CchConfigEditor extends LitElement {
                 </paper-icon-button>
               </div>
               <ul>
-                <li>Hiding the header or options button will remove your ability to edit from the UI. You can restore the default header by adding "?disable_cch" to the end of your URL.</li>
-                <li>If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.</li>
-                <li>When conditionally styling a tab's icon, make sure that the tab is already an icon and not just a title.</li>
+                <li>Hiding the header or the options button will remove your ability to edit from the UI.</li>
+                <li>You can disable CCH by adding "?disable_cch" to the end of your URL.</li>
+                <li>After using the raw config editor you will need to refresh the page to restore CCH.</li>
+                <li>While in edit mode select "Show All Tabs" in the options menu to display hidden tabs.</li>
               </ul>
             </div>
           </paper-card>
