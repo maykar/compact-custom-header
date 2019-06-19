@@ -27,6 +27,12 @@ export class CompactCustomHeaderEditor extends LitElement {
     this.hass = hass;
     const mwc_button = customElements.get("mwc-button") ? true : false;
 
+    const close = () => {
+      let editor = this.parentNode.parentNode.parentNode.querySelector(
+        "editor"
+      );
+      this.parentNode.parentNode.parentNode.removeChild(editor);
+    };
     const save = () => {
       let newConfig = {
         ...lovelace.config,
@@ -38,22 +44,37 @@ export class CompactCustomHeaderEditor extends LitElement {
             console.log("Save failed, reverting.");
             lovelace.saveConfig(previousConfig);
           } else {
-            console.log("Saved");
+            location.reload(true);
           }
         });
       } catch (e) {
-        console.log(e)
+        console.log("Save failed: " + e);
       }
     };
 
-    const clear_cache_button = mwc_button
+    const save_button = mwc_button
       ? html`
-          <mwc-button raised @click="${save}">Save</mwc-button>
+          <mwc-button raised @click="${save}">Save and Reload</mwc-button>
         `
       : html`
-          <paper-button raised @click="${save}">Save</paper-button>
+          <paper-button raised @click="${save}">Save and Reload</paper-button>
+        `;
+    const cancel_button = mwc_button
+      ? html`
+          <mwc-button raised @click="${close}">Cancel</mwc-button>
+        `
+      : html`
+          <paper-button raised @click="${close}"
+            >Cancel</paper-button
+          >
         `;
     return html`
+      <div
+        @click="${close}"
+        style="float:right; cursor: pointer; margin:-10px -5px -5px -5px;"
+      >
+        X
+      </div>
       ${this.renderStyle()}
       <cch-config-editor
         .defaultConfig="${defaultConfig}"
@@ -79,12 +100,12 @@ export class CompactCustomHeaderEditor extends LitElement {
       <br />
       ${mwc_button
         ? html`
-            <mwc-button raised @click="${this._addException}"
+            <mwc-button @click="${this._addException}"
               >Add Exception
             </mwc-button>
           `
         : html`
-            <paper-button raised @click="${this._addException}"
+            <paper-button @click="${this._addException}"
               >Add Exception
             </paper-button>
           `}
@@ -100,7 +121,12 @@ export class CompactCustomHeaderEditor extends LitElement {
       ${!this.exception
         ? html`
             <br />
-            ${clear_cache_button}
+            ${save_button}
+          `
+        : ""}
+      ${!this.exception
+        ? html`
+            ${cancel_button}
           `
         : ""}
     `;
@@ -222,8 +248,14 @@ export class CchConfigEditor extends LitElement {
     return {
       defaultConfig: {},
       config: {},
-      exception: {}
+      exception: {},
+      _closed: {}
     };
+  }
+
+  constructor() {
+    super();
+    this._closed = true;
   }
 
   get _hide_tabs() {
@@ -326,13 +358,40 @@ export class CchConfigEditor extends LitElement {
   render() {
     this.exception = this.exception !== undefined && this.exception !== false;
     return html`
+      <custom-style>
+        <style is="custom-style">
+          .card-header {
+            margin-top: -5px;
+            @apply --paper-font-headline;
+          }
+          .card-header paper-icon-button {
+            margin-top: -5px;
+            float: right;
+          }
+        </style>
+      </custom-style>
       ${!this.exception
         ? html`
-            <div class="warning">
+            <h1 style="margin:0"><u>CCH Settings</u></h1>
+            <paper-card ?closed=${this._closed}>
+            <div class="card-content">
+              <div class="card-header">
               <iron-icon icon="hass:alert"></iron-icon>
-              Hiding the header or options button will remove your ability to
-              edit from the UI.
+              Important Notes.
+                <paper-icon-button
+                  icon="${this._closed ? "mdi:chevron-down" : "mdi:chevron-up"}"
+                  @click="${this._toggleCard}"
+                >
+                </paper-icon-button>
+              </div>
+              <ul>
+                <li>Hiding the header or options button will remove your ability to edit from the UI. You can restore the default header by adding "?disable_cch" to the end of your URL.</li>
+                <li>If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.</li>
+                <li>When conditionally styling a tab's icon, make sure that the tab is already an icon and not just a title.</li>
+              </ul>
             </div>
+          </paper-card>
+            </br>
           `
         : ""}
       ${this.renderStyle()}
@@ -604,6 +663,11 @@ export class CchConfigEditor extends LitElement {
     `;
   }
 
+  _toggleCard() {
+    this._closed = !this._closed;
+    fireEvent(this, "iron-resize");
+  }
+
   _tabVisibility() {
     let show = this.shadowRoot.querySelector('[id="show"]');
     let hide = this.shadowRoot.querySelector('[id="hide"]');
@@ -699,6 +763,15 @@ export class CchConfigEditor extends LitElement {
           padding: 10px;
           color: #fff;
           border-radius: 5px;
+        }
+        [closed] {
+          overflow: hidden;
+          height: 52px;
+        }
+        paper-card {
+          margin-top: 10px;
+          width: 100%;
+          transition: all 0.5s ease;
         }
       </style>
     `;
