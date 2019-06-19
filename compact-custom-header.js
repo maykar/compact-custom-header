@@ -63,6 +63,13 @@ const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
 let editMode;
 let cchConfig;
 
+if (
+  lovelace.config.cch == undefined &&
+  JSON.stringify(lovelace.config.views).includes("custom:compact-custom-header")
+) {
+  breakingChangeNotification();
+}
+
 buildConfig();
 run();
 
@@ -934,4 +941,17 @@ function showEditor() {
     container.appendChild(nest);
     nest.appendChild(cchEditor);
   }
+}
+
+function breakingChangeNotification() {
+  hass.callService("persistent_notification", "create", {
+    title: "CCH Breaking Change",
+    message:
+      "There has been a breaking change in compact-custom-header. " +
+      "CCH's configuration method has changed and you are receiving this " +
+      "notification because you have updated CCH, but are still using the " +
+      "old configuration method. Please, visit the " +
+      "[upgrade guide](https://github.com/maykar/compact-custom-header/) " +
+      "for more info."
+  });
 }
