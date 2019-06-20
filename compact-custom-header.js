@@ -924,12 +924,11 @@ function showEditor() {
     nest.style.cssText = `
       padding: 20px;
       max-width: 600px;
-      margin: auto;
+      margin: 15px auto;
       background: var(--paper-card-background-color);
     `;
     container.style.cssText = `
       width: 100%;
-      margin-top:10px;
       min-height: 100%;
       box-sizing: border-box;
       position: absolute;
@@ -947,10 +946,9 @@ function breakingChangeNotification() {
   hass.callService("persistent_notification", "create", {
     title: "CCH Breaking Change",
     message:
-      "There has been a breaking change in compact-custom-header. " +
-      "CCH's configuration method has changed and you are receiving this " +
-      "notification because you have updated CCH, but are still using the " +
-      "old configuration method. Please, visit the " +
+      "Compact-Custom-Header's configuration method has changed. You are " +
+      "receiving this notification because you have updated CCH, but are " +
+      "using the old configuration method. Please, visit the " +
       "[upgrade guide](https://github.com/maykar/compact-custom-header/) " +
       "for more info."
   });
