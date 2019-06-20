@@ -34,6 +34,11 @@ export class CompactCustomHeaderEditor extends LitElement {
       this.parentNode.parentNode.parentNode.removeChild(editor);
     };
     const save = () => {
+      for (var key in this._config) {
+        if (this._config[key] == defaultConfig[key]) {
+          delete this._config[key]
+        }
+      }
       let newConfig = {
         ...lovelace.config,
         ...{ cch: this._config }
