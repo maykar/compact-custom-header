@@ -680,10 +680,12 @@ function conditionalStyling(buttons, tabs) {
       for (let x = 0; x < template.length; x++) {
         templates(template[x], buttons, tabs, _hass, notifications);
       }
+      continue;
     }
     let entity = styling[i].entity;
-    if (hass.states[entity] == undefined && entity !== "notifications") {
+    if (_hass.states[entity] == undefined && entity !== "notifications") {
       console.log(`CCH conditional styling: ${entity} does not exist.`);
+      continue;
     }
     if (entity == "notifications") condState[i] = notifications;
     else condState[i] = _hass.states[entity].state;
@@ -782,8 +784,7 @@ function templates(template, buttons, tabs, _hass, notifications) {
         return eval(template);
       }
     } catch (e) {
-      console.log("CCH conditional styling template failed on:");
-      console.log(template)
+      console.log("CCH styling template failed.");
     }
   };
 
