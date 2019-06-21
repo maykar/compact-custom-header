@@ -28,7 +28,6 @@ export const defaultConfig = {
   clock_date: false,
   date_locale: false,
   disable: false,
-  main_config: false,
   chevrons: false,
   redirect: true,
   background: "",
@@ -53,15 +52,16 @@ export const huiRoot = () => {
   return ll && ll.querySelector("hui-root");
 };
 
+export const hass = document.querySelector("home-assistant").hass;
 const lovelace = huiRoot().lovelace;
-const hass = document.querySelector("home-assistant").hass;
-
 const root = huiRoot().shadowRoot;
 const config = lovelace.config.cch || {};
 const header = root.querySelector("app-header");
 const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
-let editMode;
-let cchConfig;
+let editMode, cchConfig;
+let redirectedToDefaultTab = false;
+let sidebarClosed = false;
+let firstRun = true;
 
 if (
   lovelace.config.cch == undefined &&
@@ -78,26 +78,6 @@ if (lovelace.mode == "storage") {
     document.createElement("compact-custom-header-editor");
   });
 }
-
-const callback = function(mutationsList) {
-  editMode = header.className == "edit-mode";
-  mutationsList.forEach(mutation => {
-    if (mutation.addedNodes.length) {
-      run();
-      if (!editMode) {
-        let editor = root
-          .querySelector("ha-app-layout")
-          .querySelector("editor");
-        if (editor) root.querySelector("ha-app-layout").removeChild(editor);
-      }
-    }
-  });
-};
-new MutationObserver(callback).observe(view, { childList: true });
-new MutationObserver(callback).observe(header, {
-  attributes: true,
-  attributeFilter: ["class"]
-});
 
 function run() {
   const disable = cchConfig.disable;
@@ -130,9 +110,8 @@ function run() {
       }
     }
 
-    if (cchConfig.conditional_styles) {
+    if (cchConfig.conditional_styles && firstRun) {
       conditionalStyling(buttons, tabs);
-      notifMonitor(buttons, tabs);
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
           conditionalStyling(buttons, tabs);
@@ -140,7 +119,32 @@ function run() {
       });
     }
   }
+
   window.dispatchEvent(new Event("resize"));
+
+  if (firstRun) {
+    const callback = function(mutations) {
+      mutations.forEach(mutation => {
+        if (mutation.attributeName === "class") {
+          editMode = mutation.target.className == "edit-mode";
+          run();
+        } else if (mutation.addedNodes.length) {
+          let editor = !editMode
+            ? root.querySelector("ha-app-layout").querySelector("editor")
+            : null;
+          if (editor) root.querySelector("ha-app-layout").removeChild(editor);
+          if (!editMode) conditionalStyling(getButtonElements(), tabs);
+          return;
+        }
+      });
+    };
+    new MutationObserver(callback).observe(view, { childList: true });
+    new MutationObserver(callback).observe(header, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+  }
+  firstRun = false;
 }
 
 function buildConfig() {
@@ -440,7 +444,7 @@ function getTranslation(button) {
 }
 
 function defaultTab(tabs, tabContainer) {
-  if (cchConfig.default_tab && !window.cchDefaultTab) {
+  if (cchConfig.default_tab && !redirectedToDefaultTab) {
     let default_tab = cchConfig.default_tab;
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
     if (
@@ -450,7 +454,7 @@ function defaultTab(tabs, tabContainer) {
     ) {
       tabs[default_tab].click();
     }
-    window.cchDefaultTab = true;
+    redirectedToDefaultTab = true;
   }
 }
 
@@ -463,12 +467,9 @@ function sidebarMod(buttons) {
   if (!cchConfig.sidebar_swipe || cchConfig.kiosk_mode) {
     sidebar.removeAttribute("swipe-open");
   }
-  if (
-    (cchConfig.sidebar_closed || cchConfig.kiosk_mode) &&
-    !window.cchSidebarClosed
-  ) {
+  if ((cchConfig.sidebar_closed || cchConfig.kiosk_mode) && !sidebarClosed) {
     if (sidebar.hasAttribute("opened")) menu.click();
-    window.cchSidebarClosed = true;
+    sidebarClosed = true;
   }
 }
 
@@ -656,26 +657,15 @@ function conditionalStyling(buttons, tabs) {
     }
     tabContainerMargin(buttons, tabContainer);
   }
+  window.dispatchEvent(new Event("resize"));
 }
 
 function templates(template, buttons, tabs) {
-  // Get entity states.
-  window.hassConnection.then(({ conn }) => {
-    window.cchNotif = conn._ntf.state.length;
-    window.cchEntity = conn._ent.state;
-  });
-
-  if (!window.cchEntity || window.cchNotif == undefined) {
-    window.setTimeout(() => {
-      templates(template, buttons, tabs);
-    }, 100);
-    return;
-  }
-
   // Variables for templates.
-  let states = window.cchEntity;
-  let entity = window.cchEntity;
-  let notification = window.cchNotif;
+  let notification = document.querySelector("home-assistant").hass.connection
+    ._ntf.state.length;
+  let states = document.querySelector("home-assistant").hass.states;
+  let entity = states;
 
   const templateEval = template => {
     try {
@@ -742,20 +732,6 @@ function templates(template, buttons, tabs) {
     }
   }
   entity = null;
-}
-
-// Use notification indicator element to monitor notification status.
-function notifMonitor(buttons, tabs) {
-  let notification = !!buttons.notifications.shadowRoot.querySelector(
-    ".indicator"
-  );
-  if (window.cchNotification == undefined) {
-    window.cchNotification = notification;
-  } else if (notification !== window.cchNotification) {
-    conditionalStyling(buttons, tabs);
-    window.cchNotification = notification;
-  }
-  window.setTimeout(() => notifMonitor(buttons, tabs), 1000);
 }
 
 // Get range (e.g., "5 to 9") and build (5,6,7,8,9).
