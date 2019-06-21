@@ -3,11 +3,11 @@ import {
   html,
   fireEvent,
   defaultConfig,
-  huiRoot
+  huiRoot,
+  hass
 } from "./compact-custom-header.js";
 
 const lovelace = huiRoot().lovelace;
-const hass = document.querySelector("home-assistant").hass;
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
 const previousConfig = JSON.parse(JSON.stringify(lovelace.config));
@@ -24,7 +24,6 @@ export class CompactCustomHeaderEditor extends LitElement {
 
   render() {
     if (this._config == undefined) this._config = cchConfig;
-    this.hass = hass;
     const mwc_button = customElements.get("mwc-button") ? true : false;
 
     const close = () => {
@@ -36,7 +35,7 @@ export class CompactCustomHeaderEditor extends LitElement {
     const save = () => {
       for (var key in this._config) {
         if (this._config[key] == defaultConfig[key]) {
-          delete this._config[key]
+          delete this._config[key];
         }
       }
       let newConfig = {
@@ -69,9 +68,7 @@ export class CompactCustomHeaderEditor extends LitElement {
           <mwc-button raised @click="${close}">Cancel</mwc-button>
         `
       : html`
-          <paper-button raised @click="${close}"
-            >Cancel</paper-button
-          >
+          <paper-button raised @click="${close}">Cancel</paper-button>
         `;
     return html`
       <div
@@ -118,7 +115,7 @@ export class CompactCustomHeaderEditor extends LitElement {
       <br />
       <hr />
       <h3>Current User:</h3>
-      ${this.hass.user.name}
+      ${hass.user.name}
       <br />
       <h3>Current User Agent:</h3>
       ${navigator.userAgent}
