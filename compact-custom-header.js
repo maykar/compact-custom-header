@@ -111,10 +111,9 @@ function run() {
     }
 
     if (cchConfig.conditional_styles && firstRun) {
-      conditionalStyling(buttons, tabs);
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
-          conditionalStyling(buttons, tabs);
+          if (!editMode && huiRoot()) conditionalStyling(buttons, tabs);
         };
       });
     }
@@ -127,13 +126,15 @@ function run() {
       mutations.forEach(mutation => {
         if (mutation.attributeName === "class") {
           editMode = mutation.target.className == "edit-mode";
-          run();
+          if (huiRoot()) run();
         } else if (mutation.addedNodes.length) {
           let editor = !editMode
             ? root.querySelector("ha-app-layout").querySelector("editor")
             : null;
           if (editor) root.querySelector("ha-app-layout").removeChild(editor);
-          if (!editMode) conditionalStyling(getButtonElements(), tabs);
+          if (!editMode && !firstRun && huiRoot()) {
+            conditionalStyling(getButtonElements(), tabs);
+          }
           return;
         }
       });
@@ -268,7 +269,6 @@ function styleHeader(tabContainer, tabs) {
     view.style.minHeight = "calc(100vh - 48.5px)";
   }
 
-  // Style all icons, all tab icons, and selection indicator.
   let indicator = cchConfig.tab_indicator_color;
   let all_tabs_color = cchConfig.all_tabs_color || "var(--cch-all-tabs-color)";
   if (
@@ -290,7 +290,6 @@ function styleHeader(tabContainer, tabs) {
     root.appendChild(style);
   }
 
-  // Style active tab icon color.
   let conditionalTabs = cchConfig.conditional_styles
     ? JSON.stringify(cchConfig.conditional_styles).includes("tab")
     : false;
@@ -314,7 +313,6 @@ function styleHeader(tabContainer, tabs) {
     tabContainer.appendChild(style);
   }
 
-  // Style tab icon color.
   if (cchConfig.tab_color && Object.keys(cchConfig.tab_color).length) {
     for (let i = 0; i < tabs.length; i++) {
       tabs[i].style.color = cchConfig.tab_color[i] || all_tabs_color;
@@ -403,7 +401,7 @@ function styleButtons(buttons, tabs) {
     }
   }
 
-  // Use button colors vars set in HA theme.
+  // Use color vars set in HA theme.
   buttons.menu.style.color = "var(--cch-button-color-menu)";
   buttons.notifications.style.color = "var(--cch-button-color-notifications)";
   buttons.voice.style.color = "var(--cch-button-color-voice)";
@@ -413,7 +411,7 @@ function styleButtons(buttons, tabs) {
       cchConfig.all_buttons_color || "var(--cch-all-buttons-color)";
   }
 
-  // Use button colors set in config.
+  // Use colors set in CCH config.
   for (const button in buttons) {
     if (cchConfig.button_color[button]) {
       buttons[button].style.color = cchConfig.button_color[button];
@@ -512,9 +510,9 @@ function hideTabs(tabContainer, tabs) {
   }
 
   if (cchConfig.redirect) {
-    // Check if current tab is a hidden tab.
     const activeTab = tabContainer.querySelector("paper-tab.iron-selected");
     const activeTabIndex = tabs.indexOf(activeTab);
+    // Is the current tab hidden and is there at least one tab is visible.
     if (
       hidden_tabs.includes(activeTabIndex) &&
       hidden_tabs.length != tabs.length
@@ -530,7 +528,6 @@ function hideTabs(tabContainer, tabs) {
   return hidden_tabs;
 }
 
-// Insert items into overflow menu.
 function insertMenuItem(menu_items, element) {
   let first_item = menu_items.querySelector("paper-item");
   if (!menu_items.querySelector(`[id="${element.id}"]`)) {
@@ -597,9 +594,8 @@ function insertClock(buttons, clock_button) {
       padding = "margin-left:-20px";
       fontSize = "font-size:12pt";
     }
-    let marginTop = cchConfig.clock_date ? "-4px" : "2px";
     clockElement.style.cssText = `
-              margin-top: ${marginTop};
+              margin-top: ${cchConfig.clock_date ? "-4px" : "2px"};
               text-align: ${clockAlign};
               ${padding};
               ${fontSize};
@@ -636,9 +632,39 @@ function updateClock(clock, clockFormat) {
   window.setTimeout(() => updateClock(clock, clockFormat), 60000);
 }
 
+let condState = [];
+let prevColor = {};
+let prevState = [];
 function conditionalStyling(buttons, tabs) {
-  let styling = [];
+  let _hass = document.querySelector("home-assistant").hass;
+  let notifications = _hass.connection._ntf.state.length;
   const conditional_styles = cchConfig.conditional_styles;
+  let tabContainer = tabs[0] ? tabs[0].parentNode : "";
+  let elem, color, bg, hide, onIcon, offIcon, iconElem;
+
+  const styleElements = () => {
+    if (bg && elem == "background") header.style.background = bg;
+    else if (color) elem.style.color = color;
+    if (onIcon && iconElem) iconElem.setAttribute("icon", onIcon);
+    if (hide && elem !== "background" && !editMode) {
+      elem.style.display = "none";
+    }
+  };
+
+  const getElements = (key, elemArray, i, obj, styling) => {
+    elem = elemArray[key];
+    color = styling[i][obj][key].color;
+    onIcon = styling[i][obj][key].on_icon;
+    offIcon = styling[i][obj][key].off_icon;
+    hide = styling[i][obj][key].hide;
+    if (!prevColor[key]) {
+      prevColor[key] = window
+        .getComputedStyle(elem, null)
+        .getPropertyValue("color");
+    }
+  };
+
+  let styling = [];
   if (Array.isArray(conditional_styles)) {
     for (let i = 0; i < conditional_styles.length; i++) {
       styling.push(Object.assign({}, conditional_styles[i]));
@@ -648,23 +674,104 @@ function conditionalStyling(buttons, tabs) {
   }
 
   for (let i = 0; i < styling.length; i++) {
-    if (styling[i]) {
-      if (!styling[i].length) styling[i] = [styling[i]];
-      for (let x = 0; x < styling[i].length; x++) {
-        templates(styling[i][x], buttons, tabs);
+    let template = styling[i].template;
+    if (template) {
+      if (!template.length) template = [template];
+      for (let x = 0; x < template.length; x++) {
+        templates(template[x], buttons, tabs, _hass, notifications);
       }
-      continue;
     }
-    tabContainerMargin(buttons, tabContainer);
+    let entity = styling[i].entity;
+    if (hass.states[entity] == undefined && entity !== "notifications") {
+      console.log(`CCH conditional styling: ${entity} does not exist.`);
+    }
+    if (entity == "notifications") condState[i] = notifications;
+    else condState[i] = _hass.states[entity].state;
+
+    if (condState[i] !== prevState[i] || !condState.length) {
+      prevState[i] = condState[i];
+      let above = styling[i].condition.above;
+      let below = styling[i].condition.below;
+
+      for (const obj in styling[i]) {
+        let key;
+        if (styling[i][obj]) {
+          key = Object.keys(styling[i][obj])[0];
+        }
+        if (obj == "background") {
+          elem = "background";
+          color = styling[i][obj].color;
+          bg = styling[i][obj];
+          iconElem = false;
+          if (!prevColor[obj]) {
+            prevColor[obj] = window
+              .getComputedStyle(header, null)
+              .getPropertyValue("background");
+          }
+        } else if (obj == "button") {
+          getElements(key, buttons, i, obj, styling);
+          if (key == "menu") {
+            iconElem = elem
+              .querySelector("paper-icon-button")
+              .shadowRoot.querySelector("iron-icon");
+          } else {
+            iconElem = elem.shadowRoot
+              .querySelector("paper-icon-button")
+              .shadowRoot.querySelector("iron-icon");
+          }
+        } else if (obj == "tab") {
+          getElements(key, tabs, i, obj, styling);
+          iconElem = elem.querySelector("ha-icon");
+        }
+
+        if (condState[i] == styling[i].condition.state) {
+          styleElements();
+        } else if (
+          above !== undefined &&
+          below !== undefined &&
+          condState[i] > above &&
+          condState[i] < below
+        ) {
+          styleElements();
+        } else if (
+          above !== undefined &&
+          below == undefined &&
+          condState[i] > above
+        ) {
+          styleElements();
+        } else if (
+          above == undefined &&
+          below !== undefined &&
+          condState[i] < below
+        ) {
+          styleElements();
+        } else {
+          if (elem !== "background" && hide && elem.style.display == "none") {
+            elem.style.display = "";
+          }
+          if (bg && elem == "background") {
+            header.style.background = prevColor[obj];
+          } else if (
+            obj !== "background" &&
+            obj !== "entity" &&
+            obj !== "condition"
+          ) {
+            elem.style.color = prevColor[key];
+          }
+          if (onIcon && offIcon) {
+            iconElem.setAttribute("icon", offIcon);
+          }
+        }
+      }
+    }
   }
+  tabContainerMargin(buttons, tabContainer);
   window.dispatchEvent(new Event("resize"));
 }
 
-function templates(template, buttons, tabs) {
+function templates(template, buttons, tabs, _hass, notifications) {
   // Variables for templates.
-  let notification = document.querySelector("home-assistant").hass.connection
-    ._ntf.state.length;
-  let states = document.querySelector("home-assistant").hass.states;
+  let states = _hass.states;
   let entity = states;
 
   const templateEval = template => {
@@ -675,16 +782,14 @@ function templates(template, buttons, tabs) {
         return eval(template);
       }
     } catch (e) {
-      console.log(e);
+      console.log("CCH conditional styling template failed on:");
+      console.log(template)
     }
   };
 
   for (const condition in template) {
     if (condition == "tab") {
       for (const tab in template[condition]) {
-        if (!template[condition][tab].length) {
-          template[condition][tab] = [template[condition][tab]];
-        }
         for (let i = 0; i < template[condition][tab].length; i++) {
           let tabIndex = parseInt(Object.keys(template[condition]));
           let styleTarget = Object.keys(template[condition][tab][i]);
@@ -704,9 +809,6 @@ function templates(template, buttons, tabs) {
       }
     } else if (condition == "button") {
       for (const button in template[condition]) {
-        if (!template[condition][button].length) {
-          template[condition][button] = [template[condition][button]];
-        }
         for (let i = 0; i < template[condition][button].length; i++) {
           let buttonName = Object.keys(template[condition]);
           let styleTarget = Object.keys(template[condition][button][i]);
@@ -731,7 +833,6 @@ function templates(template, buttons, tabs) {
       header.style.background = templateEval(template[condition], entity);
     }
   }
-  entity = null;
 }
 
 // Get range (e.g., "5 to 9") and build (5,6,7,8,9).
@@ -752,7 +853,47 @@ function buildRanges(array) {
   return array.sort(sortNumber);
 }
 
+function showEditor() {
+  if (!root.querySelector("ha-app-layout").querySelector("editor")) {
+    const container = document.createElement("editor");
+    const nest = document.createElement("div");
+    const cchEditor = document.createElement("compact-custom-header-editor");
+    nest.style.cssText = `
+      padding: 20px;
+      max-width: 600px;
+      margin: 15px auto;
+      background: var(--paper-card-background-color);
+    `;
+    container.style.cssText = `
+      width: 100%;
+      min-height: 100%;
+      box-sizing: border-box;
+      position: absolute;
+      background: var(--background-color);
+      z-index: 1;
+      padding: 5px;
+    `;
+    root.querySelector("ha-app-layout").insertBefore(container, view);
+    container.appendChild(nest);
+    nest.appendChild(cchEditor);
+  }
+}
+
+function breakingChangeNotification() {
+  hass.callService("persistent_notification", "create", {
+    title: "CCH Breaking Change",
+    message:
+      "Compact-Custom-Header's configuration method has changed. You are " +
+      "receiving this notification because you have updated CCH, but are " +
+      "using the old configuration method. Please, visit the " +
+      "[upgrade guide](https://github.com/maykar/compact-custom-header/) " +
+      "for more info."
+  });
+}
+
 function swipeNavigation(tabs, tabContainer) {
+  // To make it easier to update lovelace-swipe-navigation
+  // keep this as close to the standalone lovelace addon as possible.
   let swipe_amount = cchConfig.swipe_amount || 15;
   let animate = cchConfig.swipe_animate || "none";
   let skip_tabs = cchConfig.swipe_skip
@@ -890,42 +1031,4 @@ function swipeNavigation(tabs, tabContainer) {
       );
     }
   }
-}
-
-function showEditor() {
-  if (!root.querySelector("ha-app-layout").querySelector("editor")) {
-    const container = document.createElement("editor");
-    const nest = document.createElement("div");
-    const cchEditor = document.createElement("compact-custom-header-editor");
-    nest.style.cssText = `
-      padding: 20px;
-      max-width: 600px;
-      margin: 15px auto;
-      background: var(--paper-card-background-color);
-    `;
-    container.style.cssText = `
-      width: 100%;
-      min-height: 100%;
-      box-sizing: border-box;
-      position: absolute;
-      background: var(--background-color);
-      z-index: 1;
-      padding: 5px;
-    `;
-    root.querySelector("ha-app-layout").insertBefore(container, view);
-    container.appendChild(nest);
-    nest.appendChild(cchEditor);
-  }
-}
-
-function breakingChangeNotification() {
-  hass.callService("persistent_notification", "create", {
-    title: "CCH Breaking Change",
-    message:
-      "Compact-Custom-Header's configuration method has changed. You are " +
-      "receiving this notification because you have updated CCH, but are " +
-      "using the old configuration method. Please, visit the " +
-      "[upgrade guide](https://github.com/maykar/compact-custom-header/) " +
-      "for more info."
-  });
 }
