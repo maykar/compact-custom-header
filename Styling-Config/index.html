@@ -8,7 +8,7 @@
         
         <link rel="canonical" href="https://maykar.github.io/compact-custom-header/Styling-Config/">
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Styling - Compact Custom Header</title>
+        <title>Header Styling - Compact Custom Header</title>
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -55,15 +55,15 @@
                                 <ul class="dropdown-menu">
                                     
 <li >
-    <a href="../Main-Config-Options/">Main Config</a>
+    <a href="../Main-Config-Options/">Main Configuration</a>
 </li>
                                     
 <li >
-    <a href="../Exception-Config/">Exception</a>
+    <a href="../Exception-Config/">User/Device Exceptions</a>
 </li>
                                     
 <li class="active">
-    <a href="./">Styling</a>
+    <a href="./">Header Styling</a>
 </li>
                                     
 <li >
@@ -102,7 +102,6 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#styling-config">Styling Config</a></li>
-            <li><a href="#notes-on-styling-config">Notes on styling config:</a></li>
             <li><a href="#theme-variables">Theme Variables</a></li>
     </ul>
 </div></div>
@@ -156,14 +155,14 @@
 </tr>
 </tbody>
 </table>
-<h3 id="notes-on-styling-config">Notes on styling config:<a class="headerlink" href="#notes-on-styling-config" title="Permanent link">&para;</a></h3>
+<p><b>Notes on styling config:</b></p>
 <ul>
 <li>You can use styling in your exceptions as well and have separate themes per user/device.</li>
 <li>You may use any <a href="https://www.w3schools.com/cssref/pr_text_color.asp">valid CSS for colors</a>.</li>
 <li>If using hex colors <code>#ffffff</code> be sure to enclose in quotes <code>"#ffffff"</code>.</li>
 </ul>
-<p><img src="https://i.imgur.com/t6VMKHf.png" width="400px"><br>
-Ugly example to illustrate.<br>The example below is the code that was used to make it.</p>
+<p><br>Ugly example to illustrate.<br>The example below is the code that was used to make it.<br><br>
+<img src="https://i.imgur.com/t6VMKHf.png" width="400px"><br></p>
 <p><strong>Styling Example:</strong></p>
 <pre><code class="yaml">cch:
   background: transparent url(&quot;https://goo.gl/M3Dsf2&quot;) # header with background image &amp; transparent as color
@@ -187,11 +186,10 @@ Ugly example to illustrate.<br>The example below is the code that was used to ma
   clock_date: true
   clock_format: 12
   date_locale: en-gb
-  main_config: true
 </code></pre>
 
 <h2 id="theme-variables">Theme Variables<a class="headerlink" href="#theme-variables" title="Permanent link">&para;</a></h2>
-<p>You can also style CCH from your HA theme's YAML to make it easier to share and lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the config of the card will override these options.</p>
+<p>You can also style CCH from your HA theme's YAML to make it easier to share and lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the Lovelace config will override the themes values.</p>
 <p><strong>Theme Variables Example:</strong><br>
 The color and image values are just examples.<br>
 All options default to HA's default values if not set here or in config.</p>

@@ -55,15 +55,15 @@
                                 <ul class="dropdown-menu">
                                     
 <li >
-    <a href="../Main-Config-Options/">Main Config</a>
+    <a href="../Main-Config-Options/">Main Configuration</a>
 </li>
                                     
 <li >
-    <a href="../Exception-Config/">Exception</a>
+    <a href="../Exception-Config/">User/Device Exceptions</a>
 </li>
                                     
 <li >
-    <a href="../Styling-Config/">Styling</a>
+    <a href="../Styling-Config/">Header Styling</a>
 </li>
                                     
 <li class="active">
@@ -102,8 +102,6 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#conditional-styling-config">Conditional Styling Config</a></li>
-            <li><a href="#example">Example:</a></li>
-            <li><a href="#full-example">Full Example.</a></li>
         <li class="main "><a href="#conditional-styling-templates">Conditional Styling Templates</a></li>
     </ul>
 </div></div>
@@ -118,9 +116,10 @@ For more complex conditions (multiple conditions for one element, using entity a
 <li><strong>All conditional style configuration is done in yaml/raw edit mode.</strong></li>
 <li><strong>In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.</strong></li>
 <li><strong>If styling an icon, the view must already have an icon associated with it and not just a title.</strong></li>
-<li><strong><a href="#full-example">See full example below for use.</a></strong></li>
+<li><strong><a href="#full-example">See full example below for use.</a></strong>
+<br><br></li>
 </ul>
-<h2 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<p><strong>Example:</strong></p>
 <pre><code class="yaml">  conditional_styles:
     - entity: input_boolean.boolean1    # entity to watch
       condition:                     
@@ -130,26 +129,34 @@ For more complex conditions (multiple conditions for one element, using entity a
           color: yellow                 # what to style
 </code></pre>
 
-<p><strong>Entity:</strong>
-* You may use any HA entity.
-* You can use "notifications" in place of an entity, this will return "true" when there are notifications and "false" otherwise.</p>
-<p><strong>Condition:</strong>
-* <strong>state:</strong> The state of the entity to match to trigger the change. Cannot be used with <code>above:</code> or <code>below:</code>
-* <strong>above:</strong> If the state returns a number, trigger change when above this number. Can be used with or without <code>below:</code>.
-* <strong>below:</strong> If the state returns a number, trigger change when below this number. Can be used with or without <code>above:</code>.</p>
-<p><strong>Items to style</strong>
-* <strong>background:</strong> You can change the header's background color or image.
-* <strong>tab:</strong> You can change any tab's color, icon, or hide it completely.
-* <strong>button:</strong> You can change any button's color, icon, or hide it completely.</p>
-<p><strong>Styling</strong>
-* <strong>color:</strong> Can use any CSS value that can be used with styling config (background, tab, or button).
-* <strong>image:</strong> Can use any CSS value that can be used with styling config (background only).
-* <strong>hide:</strong> Set to true to hide the item (button or tab).
-* <strong>on_icon:</strong> The <a href="https://materialdesignicons.com/">mdi icon</a> to use when condition matches. Must be used with <code>off_icon:</code> (button or tab).
-* <strong>off_icon:</strong> The <a href="https://materialdesignicons.com/">mdi icon</a> to use when condition does not match. Must be used with <code>on_icon:</code> (button or tab).</p>
-<h2 id="full-example">Full Example.<a class="headerlink" href="#full-example" title="Permanent link">&para;</a></h2>
+<p><br><br>
+<strong>Entity:</strong></p>
+<ul>
+<li>You may use any HA entity.</li>
+<li>You can use "notifications" in place of an entity, this will return "true" when there are notifications and "false" otherwise.</li>
+</ul>
+<p><strong>Condition:</strong></p>
+<ul>
+<li><strong>state:</strong> The state of the entity to match to trigger the change. Cannot be used with <code>above:</code> or <code>below:</code></li>
+<li><strong>above:</strong> If the state returns a number, trigger change when above this number. Can be used with or without <code>below:</code>.</li>
+<li><strong>below:</strong> If the state returns a number, trigger change when below this number. Can be used with or without <code>above:</code>.</li>
+</ul>
+<p><strong>Items to style</strong></p>
+<ul>
+<li><strong>background:</strong> You can change the header's background color or image.</li>
+<li><strong>tab:</strong> You can change any tab's color, icon, or hide it completely.</li>
+<li><strong>button:</strong> You can change any button's color, icon, or hide it completely.</li>
+</ul>
+<p><strong>Styling</strong></p>
+<ul>
+<li><strong>color:</strong> Can use any CSS value that can be used with styling config (background, tab, or button).</li>
+<li><strong>image:</strong> Can use any CSS value that can be used with styling config (background only).</li>
+<li><strong>hide:</strong> Set to true to hide the item (button or tab).</li>
+<li><strong>on_icon:</strong> The <a href="https://materialdesignicons.com/">mdi icon</a> to use when condition matches. Must be used with <code>off_icon:</code> (button or tab).</li>
+<li><strong>off_icon:</strong> The <a href="https://materialdesignicons.com/">mdi icon</a> to use when condition does not match. Must be used with <code>on_icon:</code> (button or tab).</li>
+</ul>
+<p><strong>Full Example.</strong></p>
 <pre><code class="yaml">cch:
-  main_config: true
   conditional_styles:
     - entity: input_boolean.boolean1
       condition:
@@ -194,10 +201,9 @@ Tabs and buttons can style <code>icon</code>, <code>color</code>, and <code>disp
 <li><strong>If styling an icon, the view must already have an icon associated with it and not just a title.</strong>
 <br><br></li>
 </ul>
-<p>Example:<br>
+<p><strong>Example:</strong><br><br>
 <strong>This is just an example, you can use whatever JavaScript you prefer (e.g., You can use return statements, ternaries, etc. if you'd like).</strong></p>
 <pre><code class="yaml">cch:
-  main_config: true
   conditional_styles:
     template:
       - background: &gt;  # Style the header's background can use CSS colors or background images.

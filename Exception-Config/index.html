@@ -8,7 +8,7 @@
         
         <link rel="canonical" href="https://maykar.github.io/compact-custom-header/Exception-Config/">
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Exception - Compact Custom Header</title>
+        <title>User/Device Exceptions - Compact Custom Header</title>
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -55,15 +55,15 @@
                                 <ul class="dropdown-menu">
                                     
 <li >
-    <a href="../Main-Config-Options/">Main Config</a>
+    <a href="../Main-Config-Options/">Main Configuration</a>
 </li>
                                     
 <li class="active">
-    <a href="./">Exception</a>
+    <a href="./">User/Device Exceptions</a>
 </li>
                                     
 <li >
-    <a href="../Styling-Config/">Styling</a>
+    <a href="../Styling-Config/">Header Styling</a>
 </li>
                                     
 <li >
@@ -102,25 +102,34 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#exception-config">Exception Config</a></li>
-            <li><a href="#exceptions-config-example">Exceptions Config Example:</a></li>
+            <li><a href="#example">Example:</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
+
+<!-- Disable sidebar -->
+
+<script>
+let sidebar = document.getElementsByClassName("col-md-3")[0];
+sidebar.parentNode.removeChild(sidebar);
+document.getElementsByClassName("col-md-9")[0].style.cssText = "width:70%;display:block;margin-left:15%";
+</script>
+
+<!-- Disable sidebar -->
 
 <h1 id="exception-config">Exception Config<a class="headerlink" href="#exception-config" title="Permanent link">&para;</a></h1>
 <p>You can have different settings depending on username, user agent, and media query. You can use any combination as well.</p>
 <ul>
 <li><strong>user:</strong> This is the Home Assistant user's name, not username (if they're different). You can look to the bottom of the editor to see which to use. This option is case sensitive.</li>
-<li><strong>user_agent:</strong> A matching word or phrase from the devices user agent. You can find this at the bottom of this cards editor or by <a href="http://www.google.com/search?q=whats+my+user+agent">googling "what's my user agent"</a> on the device in question. This option is case sensitive.</li>
+<li><strong>user_agent:</strong> A matching word or phrase from the devices user agent. You can find this at the bottom of the CCH settings or by <a href="http://www.google.com/search?q=whats+my+user+agent">googling "what's my user agent"</a> on the device in question. This option is case sensitive.</li>
 <li><strong>media_query:</strong> A valid <a href="https://www.w3schools.com/css/css_rwd_mediaqueries.asp">CSS media query</a>.</li>
 </ul>
-<h2 id="exceptions-config-example">Exceptions Config Example:<a class="headerlink" href="#exceptions-config-example" title="Permanent link">&para;</a></h2>
+<h2 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Under exceptions set your conditions and then set up their config below that.</li>
 <li>If a config item is left out of an exception's config the main config's value is used.</li>
 </ul>
 <pre><code class="yaml">cch:
-  main_config: true
   menu: overflow
   options: clock
   voice: hide
