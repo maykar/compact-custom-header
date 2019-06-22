@@ -59,10 +59,6 @@
 </li>
                                     
 <li >
-    <a href="../Swipe-Navigation/">Swipe Navigation</a>
-</li>
-                                    
-<li >
     <a href="../Exception-Config/">Exception</a>
 </li>
                                     
@@ -73,17 +69,13 @@
 <li class="active">
     <a href="./">Conditional Styling</a>
 </li>
-                                    
-<li >
-    <a href="../Conditional-Styling-Templates/">Conditional Styling Templates</a>
-</li>
                                 </ul>
                             </li>
                             <li >
                                 <a href="../Troubleshooting/">Troubleshooting</a>
                             </li>
                             <li >
-                                <a href="../Issues.md">Issues</a>
+                                <a href="https://github.com/maykar/compact-custom-header/issues">Issues</a>
                             </li>
                         </ul>
 
@@ -94,7 +86,7 @@
                                 </a>
                             </li>
                             <li >
-                                <a rel="prev" href="../Conditional-Styling-Templates/">
+                                <a rel="prev" href="../Troubleshooting/">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -112,6 +104,7 @@
         <li class="main active"><a href="#conditional-styling-config">Conditional Styling Config</a></li>
             <li><a href="#example">Example:</a></li>
             <li><a href="#full-example">Full Example.</a></li>
+        <li class="main "><a href="#conditional-styling-templates">Conditional Styling Templates</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -182,6 +175,52 @@ For more complex conditions (multiple conditions for one element, using entity a
           color: yellow
           off_icon: mdi:emoticon-dead
           on_icon: mdi:emoticon-excited
+</code></pre>
+
+<h1 id="conditional-styling-templates">Conditional Styling Templates<a class="headerlink" href="#conditional-styling-templates" title="Permanent link">&para;</a></h1>
+<p>You can use JavaScript for complex conditional styling of header background, tabs, and buttons.
+Tabs and buttons can style <code>icon</code>, <code>color</code>, and <code>display</code> (display will <code>show</code> or <code>hide</code> buttons or tabs).<br><br>
+<strong>All templates must return a string.</strong>
+* Icon templates need to return a MDI icon: <code>"mdi:account-off"</code>.
+* Color templates must return any valid CSS color: <code>"red"</code> or <code>"#ff0000"</code> or <code>"rgb(255, 0, 0)"</code> etc.
+* Display templates must return either <code>"show"</code> or <code>"hide"</code>
+* Background template must return any valid background CSS color or image property: <code>"#000000:</code> or <code>"rgb(255, 0, 0)"</code> or <code>"url("/local/background.jpg")"</code> etc.</p>
+<p>Formatting is <strong>VERY</strong> important here.</p>
+<ul>
+<li><strong>After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)</strong></li>
+<li><strong>Conditional styles may be used inside exceptions.</strong></li>
+<li><strong>All conditional style configuration is done in yaml/raw edit mode.</strong></li>
+<li><strong>In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.</strong></li>
+<li><strong>If styling an icon, the view must already have an icon associated with it and not just a title.</strong>
+<br><br></li>
+</ul>
+<p>Example:<br>
+<strong>This is just an example, you can use whatever JavaScript you prefer (e.g., You can use return statements, ternaries, etc. if you'd like).</strong></p>
+<pre><code class="yaml">cch:
+  main_config: true
+  conditional_styles:
+    template:
+      - background: &gt;  # Style the header's background can use CSS colors or background images.
+          if (states[&quot;input_boolean.living_room&quot;].state == &quot;off&quot;) &quot;#000&quot;;
+          else if (states[&quot;input_boolean.living_room&quot;].state == &quot;on&quot;) &quot;url('/local/bg.jpg')&quot;;
+      - tab:
+          3:  # Number of the tab to style.
+          - icon: &gt;  # MDI icon for tab or button.
+              if (states[&quot;device_tracker.galaxys8&quot;].state == &quot;home&quot;) &quot;mdi:account&quot;;
+              else &quot;mdi:account-off&quot;;
+          - color: &gt;  # Color for tab or button icon.
+              if (states[&quot;device_tracker.galaxys8&quot;].state == &quot;home&quot;) &quot;blue&quot;;
+              else &quot;#ffffff&quot;;
+      - tab:
+          1:
+            display: &gt;  # Show or hide buttons or tabs.
+              if (states[&quot;media_player.living_room&quot;].state == &quot;off&quot;) &quot;hide&quot;;
+              else if (states[&quot;media_player.living_room&quot;].state == &quot;playing&quot;) &quot;show&quot;;
+      - button:
+          menu:  # Button to style. `menu`, `notifications`, `options`, or `voice`.
+            icon: &gt;
+              if (states[&quot;device_tracker.galaxys8&quot;].state == &quot;home&quot;) &quot;blue&quot;;
+              else if (states[&quot;device_tracker.galaxys8&quot;].state == &quot;not_home&quot;) &quot;#ffffff&quot;;
 </code></pre></div>
         </div>
 
