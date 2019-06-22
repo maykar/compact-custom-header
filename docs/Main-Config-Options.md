@@ -2,7 +2,7 @@
 
 ## UI Config
 Unless you use Lovelace in "YAML mode" you can edit CCH's config from the UI. From the options menu select "Configure UI", there will now be a new item in the options menu "CCH Settings". You can configure every option using the built in card editor with the exception of `date_locale`, `default_tab`, styling options, and conditional styling options.<br>
-<img src="https://github.com/maykar/compact-custom-header/tree/master/docs/CCH_config.gif?raw=true" width="514px"><br>
+<img src="https://i.imgur.com/Toe4qDl.gif" width="514px"><br>
 
 ## YAML Config
 Configuration for this card happens in the root of your Lovelace config. You may put it wherever you like, but do not put it inside views or anything else. It lives in the root of your configuration. Example:
