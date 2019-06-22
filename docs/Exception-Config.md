@@ -13,7 +13,7 @@ You can have different settings depending on username, user agent, and media que
 * If a config item is left out of an exception's config the main config's value is used.
 
 ```yaml
-- type: 'custom:compact-custom-header'
+cch:
   main_config: true
   menu: overflow
   options: clock

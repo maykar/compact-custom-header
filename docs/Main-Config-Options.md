@@ -1,6 +1,20 @@
 # Main Config Options
 
-**You can configure every option using the built in card editor with the exception of `date_locale`, `default_tab`, styling options, and conditional styling options.**
+## UI Config
+Unless you use Lovelace in "YAML mode" you can edit CCH's config from the UI. From the options menu select "Configure UI", there will now be a new item in the options menu "CCH Settings". You can configure every option using the built in card editor with the exception of `date_locale`, `default_tab`, styling options, and conditional styling options.<br>
+<img src="https://github.com/maykar/compact-custom-header/tree/master/docs/CCH_config.gif?raw=true" width="514px"><br>
+
+## YAML Config
+Configuration for this card happens in the root of your Lovelace config. You may put it wherever you like, but do not put it inside views or anything else. It lives in the root of your configuration. Example:
+```yaml
+resources:
+  - url: /community_plugin/compact-custom-header/compact-custom-header.js
+    type: module
+cch:
+  hide_tabs: '4,5,6,7,8'
+  options: clock
+views:
+```
 
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
@@ -23,8 +37,9 @@
 |sidebar_closed|boolean|false||If sidebar was previously open, close on load.
 |kiosk_mode|boolean|false||Turns off `sidebar_swipe`, turns on `sidebar_closed`, and hides the header.
 |default_tab|number|||Tab number to start on when navigating to `/lovelace/` for the first time.
-|exception||||Allows for different configs when exceptions are met, see [Exception Config](https://github.com/maykar/compact-custom-header/wiki/Exception-Config).
+|hide_help|boolean|false||Removes "Help" item from options menu.
+|exception||||Allows for different configs when exceptions are met, see [Exception Config](https://maykar.github.io/compact-custom-header/Exception-Config/).
 
-### Button Config:
+## Button Config:
 
 Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". Each button except for the options button can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the option button's drop-down menu.

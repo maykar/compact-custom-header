@@ -1,6 +1,7 @@
 # Swipe Nav Config
 
-You can enable swipe navigation between your Lovelace views. For now this can only be configured in yaml/raw edit mode.
+You can enable swipe navigation between your Lovelace views.<br>
+<img src="https://github.com/maykar/lovelace-swipe-navigation/blob/master/example.gif?raw=true" width="350px">
 
 ## Config:
 

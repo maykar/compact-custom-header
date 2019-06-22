@@ -1,6 +1,6 @@
 # Styling Config
 
-## All style configuration is done in yaml/raw edit mode or from your [HA theme](https://github.com/maykar/compact-custom-header/wiki/Theme-Styling-Config#theme-variables).
+## All style configuration is done in yaml/raw edit mode or from your [HA theme](#theme-variables).
 
 |NAME|DESCRIPTION|
 |-|-|
@@ -12,7 +12,7 @@
 |notify_indicator_color|Sets the color of the new notification indicator.
 |notify_text_color|Sets the color of the number of new notifications inside the indicator.
 |active_tab_color|Sets the color of the current tab's icon.
-|conditional_styles|Dynamically change styles depending on an entity's state, see [Conditional Styling](https://github.com/maykar/compact-custom-header/wiki/Conditional-Styling-Config).
+|conditional_styles|Dynamically change styles depending on an entity's state, see [Conditional Styling](https://maykar.github.io/compact-custom-header/Conditional-Styling-Config/).
 
 ### Notes on styling config:
 * You can use styling in your exceptions as well and have separate themes per user/device.
@@ -25,7 +25,7 @@ Ugly example to illustrate.<br>The example below is the code that was used to ma
 **Styling Example:**
   
 ```yaml
-- type: 'custom:compact-custom-header'
+cch:
   background: transparent url("https://goo.gl/M3Dsf2") # header with background image & transparent as color
   all_buttons_color: green # color of all buttons unless set in button_color
   button_color:

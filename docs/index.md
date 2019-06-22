@@ -12,6 +12,14 @@ Customize the header and add enhancements to Lovelace.
 * Hide tabs/buttons from user's and devices.
 * Set a default/starting view.
 
+**Before:**<br>
+<img src="https://i.imgur.com/GnT85b0.png?2" width="400px"><br>
+**After:**<br>
+<img src="https://i.imgur.com/LeKHDCh.png?1" width="400px"><br>
+
+**Conditional Styling Demo:**<br>
+<img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="400px"><br>
+
 ## Installation
 
 * There are 2 methods of installation: Manually or with [HACS](https://github.com/custom-components/hacs). Follow only one of these methods.

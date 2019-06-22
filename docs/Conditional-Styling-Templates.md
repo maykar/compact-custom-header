@@ -22,7 +22,7 @@ Formatting is **VERY** important here.
 Example:<br>
 **This is just an example, you can use whatever JavaScript you prefer (e.g., You can use return statements, ternaries, etc. if you'd like).**
 ```yaml
-- type: custom:compact-custom-header
+cch:
   main_config: true
   conditional_styles:
     template:

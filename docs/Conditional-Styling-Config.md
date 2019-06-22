@@ -1,7 +1,7 @@
 # Conditional Styling Config
 
 Conditional styling allows for simple dynamic styling of the header, buttons, and tabs depending on an entity's state.
-For more complex conditions (multiple conditions for one element, using entity attributes, dynamically hiding tabs, etc.) use [conditional styling templates](https://github.com/maykar/compact-custom-header/wiki/Conditional-Styling-Templates).
+For more complex conditions (multiple conditions for one element, using entity attributes, dynamically hiding tabs, etc.) use [conditional styling templates](https://maykar.github.io/compact-custom-header/Conditional-Styling-Templates/).
 
 * **After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)**
 * **Conditional styles may be used inside exceptions.**
@@ -30,7 +30,6 @@ For more complex conditions (multiple conditions for one element, using entity a
 * **state:** The state of the entity to match to trigger the change. Cannot be used with `above:` or `below:`
 * **above:** If the state returns a number, trigger change when above this number. Can be used with or without `below:`.
 * **below:** If the state returns a number, trigger change when below this number. Can be used with or without `above:`.
-* **For conditions more complicated than the above (multiple entity states, OR conditions, etc.) create a [Template Sensor](https://www.home-assistant.io/components/template/) or a [Template Binary Sensor](https://www.home-assistant.io/components/binary_sensor.template/) and use that new sensor for your condition.**
 
 **Items to style**
 * **background:** You can change the header's background color or image.
@@ -46,7 +45,7 @@ For more complex conditions (multiple conditions for one element, using entity a
 
 ## Full Example.
 ```yaml
-- type: custom:compact-custom-header
+cch:
   main_config: true
   conditional_styles:
     - entity: input_boolean.boolean1

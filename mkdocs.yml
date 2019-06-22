@@ -9,7 +9,6 @@ markdown_extensions:
         baselevel: 1
 nav:
   - Home: index.md
-  - Installation: Installation.md
   - Configuration:
       - Main Config: Main-Config-Options.md
       - Swipe Navigation: Swipe-Navigation.md
@@ -18,7 +17,10 @@ nav:
       - Conditional Styling: Conditional-Styling-Config.md
       - Conditional Styling Templates: Conditional-Styling-Templates.md
   - Troubleshooting: Troubleshooting.md
-  - Issues: https://github.com/maykar/compact-custom-header/issues
+  - Issues: Issues.md
 theme:
     name: mkdocs
     include_sidebar: false
+    highlightjs: true
+    hljs_languages:
+        - yaml
