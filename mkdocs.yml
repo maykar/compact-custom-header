@@ -19,7 +19,7 @@ nav:
   - Troubleshooting: Troubleshooting.md
   - Issues: Issues.md
 theme:
-    name: yeti
+    name: cosmo
     include_sidebar: false
     highlightjs: true
     hljs_languages:
