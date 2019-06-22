@@ -23,6 +23,7 @@ Customize the header and add enhancements to Lovelace.
 
 |Version|Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|Breaking Change|
 |:-|:-|:-|
+|1.1.0|Not yet released| Configuration has changed. No longer required to use CCH as a card. More info here.
 |1.0.2b9|Apr. 6, 2019|**“background _image”** and **“background_color”** have been replaced with just “background”.
 |1.0.0b0|Feb. 10, 2019|Complete rewrite of card. Card is now **"type: module"** and most config options have changed.
 |0.2.8|Jan. 22, 2019|**Tab numbering** in config options now starts at 0 to match Lovelace URLs.
