@@ -1,6 +1,6 @@
 # Styling Config
 
-## All style configuration is done in yaml/raw edit mode or from your [HA theme](#theme-variables).
+<b>All style configuration is done in yaml/raw edit mode or from your [HA theme](#theme-variables).</b>
 
 |NAME|DESCRIPTION|
 |-|-|

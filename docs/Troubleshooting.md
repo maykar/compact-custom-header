@@ -13,6 +13,7 @@ This card may not work on some older/unsupported browsers. User @pjv maintains a
 **Disable CCH to see if your issue still exists without it.**
 
 When posting issues here or on the forums always include:
+
 * The browser you are using
 * Home Assistant version
 * The config & resources section of your Lovelace code for this card

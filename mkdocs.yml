@@ -11,16 +11,13 @@ nav:
   - Home: index.md
   - Configuration:
       - Main Config: Main-Config-Options.md
-      - Swipe Navigation: Swipe-Navigation.md
       - Exception: Exception-Config.md
       - Styling: Styling-Config.md
       - Conditional Styling: Conditional-Styling-Config.md
-      - Conditional Styling Templates: Conditional-Styling-Templates.md
   - Troubleshooting: Troubleshooting.md
-  - Issues: Issues.md
+  - Issues: https://github.com/maykar/compact-custom-header/issues
 theme:
     name: cosmo
-    include_sidebar: false
     highlightjs: true
     hljs_languages:
         - yaml
