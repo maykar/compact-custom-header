@@ -1,38 +1,23 @@
 # Compact Custom Header
+Customize the header and add enhancements to Lovelace.
 
-* [**Installation**](../Installation)
-* [**Troubleshooting**](../Troubleshooting)
-* [**Main Config**](../Main-Config-Options)
-  * [**Swipe Nav Config**](../Swipe-Navigation): Enable and configure swipe navigation.
-  * [**Exception Config**](../Exception-Config): Per user/device config.
-  * [**Styling Config**](../Styling-Config): Style the header.
-  * [**Conditional Styling Config**](../Conditional-Styling-Config): Conditionally Style the header.
-  * [**Conditional Styling Templates**](../Conditional-Styling-Templates): Complex Conditional styling.
+## Features:
+
+* Compact design that removes header text.
+* Per user/device settings.
+* Style & hide anything in the header & the header itself.
+* Dynamically style header elements based on entity states/attributes.
+* Add swipe navigation to Lovelace for mobile devices.
+* Any button can be hidden, turned into clock with optional date, or placed in the options menu.
+* Hide tabs/buttons from user's and devices.
+* Set a default/starting view.
 
 ## Important notes:
 
-* Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: `http://192.168.1.42:8123/lovelace/0?disable_cch`
-* The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.
-* If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.
-* If conditionally styling a tab's icon, make sure that the tab is already an icon and not just a title.
-* To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below.
-
-<details>
-  <summary><b>Panel View Example:</b></summary>
-
-Placing this card at the end of the vertical stack can help with some spacing issues.
-
-```yaml
-views:
-- title: Panel View Example
-  panel: true
-  cards:
-  - type: vertical-stack
-    cards:
-    - type: another-card
-    - type: custom:compact-custom-header
-```
-</details>
+* Hiding the header or the options button will remove your ability to edit from the UI.
+* You can disable CCH by adding "?disable_cch" to the end of your URL.
+* After using the raw config editor you will need to refresh the page to restore CCH.
+* While in edit mode select "Show All Tabs" in the options menu to display hidden tabs.
 
 ### Breaking Changes:
 
