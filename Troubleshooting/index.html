@@ -22,6 +22,7 @@
         <script src="../js/jquery-1.10.2.min.js" defer></script>
         <script src="../js/bootstrap-3.0.3.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
@@ -48,9 +49,6 @@
                         <ul class="nav navbar-nav">
                             <li >
                                 <a href="..">Home</a>
-                            </li>
-                            <li >
-                                <a href="../Installation/">Installation</a>
                             </li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuration <b class="caret"></b></a>
@@ -85,7 +83,7 @@
                                 <a href="./">Troubleshooting</a>
                             </li>
                             <li >
-                                <a href="https://github.com/maykar/compact-custom-header/issues">Issues</a>
+                                <a href="../Issues.md">Issues</a>
                             </li>
                         </ul>
 
@@ -112,14 +110,13 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#troubleshooting">Troubleshooting</a></li>
-        <li class="main "><a href="#common-issues">Common issues:</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
 <h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h1>
-<p>Please, read through this guide and search the <a href="https://community.home-assistant.io/t/compact-custom-header">HA forum thread</a> and <a href="https://github.com/maykar/compact-custom-header/issues?utf8=%E2%9C%93&amp;q=">Github issues</a> (open and closed) for your issue before posting to the forums or submitting an issue on Github.</p>
-<p>Be sure to read through the <a href="https://github.com/maykar/compact-custom-header/wiki#important-notes">"Important Notes"</a> section of the Wiki and <a href="https://github.com/maykar/compact-custom-header/wiki#breaking-changes">"Breaking Changes"</a> section for important changes you may have missed.</p>
+<p>Please, read through this guide and search the <a href="https://community.home-assistant.io/t/compact-custom-header">HA forum thread</a> and <a href="https://github.com/maykar/compact-custom-header/issues?utf8=%E2%9C%93&amp;q=is%3Aissue">Github issues</a> (open and closed) for your issue before posting to the forums or submitting an issue on Github.</p>
+<p>Be sure to read through the <a href="https://maykar.github.io/compact-custom-header/#important-notes">"Important Notes"</a> section of the Wiki and <a href="https://maykar.github.io/compact-custom-header/#breaking-changes">"Breaking Changes"</a> section for important changes you may have missed.</p>
 <p><a href="https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins">@thomasloven's lovelace guide</a> is a great resource for installation of custom cards and solutions to common problems.</p>
 <p>This card may not work on some older/unsupported browsers. User @pjv maintains a version of CCH for those cases, found here: <a href="https://gist.github.com/pjv/521073b982e37418339afbf420691310">Lovelace Compact Custom Header for old devices</a>. <strong>I do not offer support for this method</strong>.</p>
 <p><strong>Many issues are solved by clearing your cache and refreshing the page.</strong></p>
@@ -128,12 +125,7 @@
 * The browser you are using
 * Home Assistant version
 * The config &amp; resources section of your Lovelace code for this card
-* Any errors in the HA logs and in your browser’s Dev-Tools (F12) pertaining to this card</p>
-<h1 id="common-issues">Common issues:<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h1>
-<p><strong>Header overlaps the cards in the view:</strong><br>
-This usually happens when the card isn't added to every view, read over the <a href="https://github.com/maykar/compact-custom-header/wiki/Installation">installation instructions</a>.</p>
-<p><strong>Error when conditionally styling a tab's icon:</strong><br>
-Make sure the tab already has an icon and not just a title.</p></div>
+* Any errors in the HA logs and in your browser’s Dev-Tools (F12) pertaining to this card</p></div>
         </div>
 
         <footer class="col-md-12">

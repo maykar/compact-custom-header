@@ -22,6 +22,7 @@
         <script src="js/jquery-1.10.2.min.js" defer></script>
         <script src="js/bootstrap-3.0.3.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
@@ -48,9 +49,6 @@
                         <ul class="nav navbar-nav">
                             <li class="active">
                                 <a href=".">Home</a>
-                            </li>
-                            <li >
-                                <a href="Installation/">Installation</a>
                             </li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuration <b class="caret"></b></a>
@@ -85,7 +83,7 @@
                                 <a href="Troubleshooting/">Troubleshooting</a>
                             </li>
                             <li >
-                                <a href="https://github.com/maykar/compact-custom-header/issues">Issues</a>
+                                <a href="Issues.md">Issues</a>
                             </li>
                         </ul>
 
@@ -96,7 +94,7 @@
                                 </a>
                             </li>
                             <li >
-                                <a rel="prev" href="Installation/">
+                                <a rel="prev" href="Main-Config-Options/">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -112,48 +110,78 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#compact-custom-header">Compact Custom Header</a></li>
+            <li><a href="#features">Features:</a></li>
+            <li><a href="#installation">Installation</a></li>
             <li><a href="#important-notes">Important notes:</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
 <h1 id="compact-custom-header">Compact Custom Header<a class="headerlink" href="#compact-custom-header" title="Permanent link">&para;</a></h1>
+<p>Customize the header and add enhancements to Lovelace.</p>
+<h2 id="features">Features:<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../Installation"><strong>Installation</strong></a></li>
-<li><a href="../Troubleshooting"><strong>Troubleshooting</strong></a></li>
-<li><a href="../Main-Config-Options"><strong>Main Config</strong></a></li>
-<li><a href="../Swipe-Navigation"><strong>Swipe Nav Config</strong></a>: Enable and configure swipe navigation.</li>
-<li><a href="../Exception-Config"><strong>Exception Config</strong></a>: Per user/device config.</li>
-<li><a href="../Styling-Config"><strong>Styling Config</strong></a>: Style the header.</li>
-<li><a href="../Conditional-Styling-Config"><strong>Conditional Styling Config</strong></a>: Conditionally Style the header.</li>
-<li><a href="../Conditional-Styling-Templates"><strong>Conditional Styling Templates</strong></a>: Complex Conditional styling.</li>
+<li>Compact design that removes header text.</li>
+<li>Per user/device settings.</li>
+<li>Style &amp; hide anything in the header &amp; the header itself.</li>
+<li>Dynamically style header elements based on entity states/attributes.</li>
+<li>Add swipe navigation to Lovelace for mobile devices.</li>
+<li>Any button can be hidden, turned into clock with optional date, or placed in the options menu.</li>
+<li>Hide tabs/buttons from user's and devices.</li>
+<li>Set a default/starting view.</li>
 </ul>
-<h2 id="important-notes">Important notes:<a class="headerlink" href="#important-notes" title="Permanent link">&para;</a></h2>
+<p><strong>Before:</strong><br>
+<img src="https://i.imgur.com/GnT85b0.png?2" width="400px"><br>
+<strong>After:</strong><br>
+<img src="https://i.imgur.com/LeKHDCh.png?1" width="400px"><br></p>
+<p><strong>Conditional Styling Demo:</strong><br>
+<img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="400px"><br></p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Hiding the header or options button will remove your ability to edit from the UI. In this case, you can restore the default header by adding "?disable_cch" to the end of your URL. Example: <code>http://192.168.1.42:8123/lovelace/0?disable_cch</code></li>
-<li>The card will automatically display when "configuring UI" to allow for editing, but is otherwise hidden.</li>
-<li>If hiding tabs, while in edit mode there is a new option in the options drop-down menu "Show All Tabs" to help with configuration.</li>
-<li>If conditionally styling a tab's icon, make sure that the tab is already an icon and not just a title.</li>
-<li>To use with panel view place this card inside a "container card" with the panel card (vertical stack card, layout-card, etc.), otherwise this card isn't "displayed" and won't load. Example below.</li>
+<li>There are 2 methods of installation: Manually or with <a href="https://github.com/custom-components/hacs">HACS</a>. Follow only one of these methods.</li>
+<li><a href="https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins">@thomasloven's lovelace guide</a> is a great resource for installation of cards in lovelace and issues.</li>
 </ul>
 <details>
-  <summary><b>Panel View Example:</b></summary>
+  <summary><b>Manual installation:</b></summary>
 
-Placing this card at the end of the vertical stack can help with some spacing issues.
+1. Install by copying both .js files to `www/custom-lovelace/compact-custom-header/`. [Be sure you're using the raw files from github](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin).
+
+2. Add the code below in ui-lovelace.yaml (yaml mode) or by using the "Raw Config" editor while "Configuring UI" (storage mode). When updating be sure add to the version number at the end of this code.
 
 
-<pre><code class="yaml">views:
-- title: Panel View Example
-  panel: true
-  cards:
-  - type: vertical-stack
-    cards:
-    - type: another-card
-    - type: custom:compact-custom-header
+<pre><code class="yaml">resources:
+  - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
+    type: module
 </code></pre>
 
+3. Refresh the page.
 </details>
 
+<details>
+  <summary><b>Installation and tracking HACS:</b></summary>
+
+1. In the HACS store search for "CCH" or "compact-custom-header" and install.
+
+2. Configure Lovelace to load the card:
+
+
+<pre><code class="yaml">resources:
+  - url: /community_plugin/compact-custom-header/compact-custom-header.js
+    type: module
+</code></pre>
+
+
+3. Refresh the page.
+</details>
+
+<p>CCH may not work on some older/unsupported browsers. User @pjv maintains a version of CCH for those cases, found here: <a href="https://gist.github.com/pjv/521073b982e37418339afbf420691310">Lovelace Compact Custom Header for old devices</a>. <strong>I do not offer support for this method</strong>.</p>
+<h2 id="important-notes">Important notes:<a class="headerlink" href="#important-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Hiding the header or the options button will remove your ability to edit from the UI.</li>
+<li>You can disable CCH by adding "?disable_cch" to the end of your URL.</li>
+<li>After using the raw config editor you will need to refresh the page to restore CCH.</li>
+<li>While in edit mode select "Show All Tabs" in the options menu to display hidden tabs.</li>
+</ul>
 <h3 id="breaking-changes">Breaking Changes:<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -164,6 +192,11 @@ Placing this card at the end of the vertical stack can help with some spacing is
 </tr>
 </thead>
 <tbody>
+<tr>
+<td align="left">1.1.0</td>
+<td align="left">Not yet released</td>
+<td align="left">Configuration has changed. No longer required to use CCH as a card. More info here.</td>
+</tr>
 <tr>
 <td align="left">1.0.2b9</td>
 <td align="left">Apr. 6, 2019</td>
@@ -239,5 +272,5 @@ Placing this card at the end of the vertical stack can help with some spacing is
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-06-22 15:51:42
+Build Date UTC : 2019-06-22 17:39:52
 -->

@@ -22,6 +22,7 @@
         <script src="../js/jquery-1.10.2.min.js" defer></script>
         <script src="../js/bootstrap-3.0.3.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
@@ -48,9 +49,6 @@
                         <ul class="nav navbar-nav">
                             <li >
                                 <a href="..">Home</a>
-                            </li>
-                            <li >
-                                <a href="../Installation/">Installation</a>
                             </li>
                             <li class="dropdown active">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuration <b class="caret"></b></a>
@@ -85,7 +83,7 @@
                                 <a href="../Troubleshooting/">Troubleshooting</a>
                             </li>
                             <li >
-                                <a href="https://github.com/maykar/compact-custom-header/issues">Issues</a>
+                                <a href="../Issues.md">Issues</a>
                             </li>
                         </ul>
 
@@ -120,7 +118,7 @@
 
 <h1 id="conditional-styling-config">Conditional Styling Config<a class="headerlink" href="#conditional-styling-config" title="Permanent link">&para;</a></h1>
 <p>Conditional styling allows for simple dynamic styling of the header, buttons, and tabs depending on an entity's state.
-For more complex conditions (multiple conditions for one element, using entity attributes, dynamically hiding tabs, etc.) use <a href="https://github.com/maykar/compact-custom-header/wiki/Conditional-Styling-Templates">conditional styling templates</a>.</p>
+For more complex conditions (multiple conditions for one element, using entity attributes, dynamically hiding tabs, etc.) use <a href="https://maykar.github.io/compact-custom-header/Conditional-Styling-Templates/">conditional styling templates</a>.</p>
 <ul>
 <li><strong>After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)</strong></li>
 <li><strong>Conditional styles may be used inside exceptions.</strong></li>
@@ -145,8 +143,7 @@ For more complex conditions (multiple conditions for one element, using entity a
 <p><strong>Condition:</strong>
 * <strong>state:</strong> The state of the entity to match to trigger the change. Cannot be used with <code>above:</code> or <code>below:</code>
 * <strong>above:</strong> If the state returns a number, trigger change when above this number. Can be used with or without <code>below:</code>.
-* <strong>below:</strong> If the state returns a number, trigger change when below this number. Can be used with or without <code>above:</code>.
-* <strong>For conditions more complicated than the above (multiple entity states, OR conditions, etc.) create a <a href="https://www.home-assistant.io/components/template/">Template Sensor</a> or a <a href="https://www.home-assistant.io/components/binary_sensor.template/">Template Binary Sensor</a> and use that new sensor for your condition.</strong></p>
+* <strong>below:</strong> If the state returns a number, trigger change when below this number. Can be used with or without <code>above:</code>.</p>
 <p><strong>Items to style</strong>
 * <strong>background:</strong> You can change the header's background color or image.
 * <strong>tab:</strong> You can change any tab's color, icon, or hide it completely.
@@ -158,7 +155,7 @@ For more complex conditions (multiple conditions for one element, using entity a
 * <strong>on_icon:</strong> The <a href="https://materialdesignicons.com/">mdi icon</a> to use when condition matches. Must be used with <code>off_icon:</code> (button or tab).
 * <strong>off_icon:</strong> The <a href="https://materialdesignicons.com/">mdi icon</a> to use when condition does not match. Must be used with <code>on_icon:</code> (button or tab).</p>
 <h2 id="full-example">Full Example.<a class="headerlink" href="#full-example" title="Permanent link">&para;</a></h2>
-<pre><code class="yaml">- type: custom:compact-custom-header
+<pre><code class="yaml">cch:
   main_config: true
   conditional_styles:
     - entity: input_boolean.boolean1
