@@ -10,9 +10,9 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Configuration:
-      - Main Config: Main-Config-Options.md
-      - Exception: Exception-Config.md
-      - Styling: Styling-Config.md
+      - Main Configuration: Main-Config-Options.md
+      - User/Device Exceptions: Exception-Config.md
+      - Header Styling: Styling-Config.md
       - Conditional Styling: Conditional-Styling-Config.md
   - Troubleshooting: Troubleshooting.md
   - Issues: https://github.com/maykar/compact-custom-header/issues

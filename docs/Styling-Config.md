@@ -14,13 +14,15 @@
 |active_tab_color|Sets the color of the current tab's icon.
 |conditional_styles|Dynamically change styles depending on an entity's state, see [Conditional Styling](https://maykar.github.io/compact-custom-header/Conditional-Styling-Config/).
 
-### Notes on styling config:
+<b>Notes on styling config:</b>
+
 * You can use styling in your exceptions as well and have separate themes per user/device.
 * You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
 * If using hex colors `#ffffff` be sure to enclose in quotes `"#ffffff"`.
 
+<br>Ugly example to illustrate.<br>The example below is the code that was used to make it.<br><br>
 <img src="https://i.imgur.com/t6VMKHf.png" width="400px"><br>
-Ugly example to illustrate.<br>The example below is the code that was used to make it.
+
 
 **Styling Example:**
   
@@ -47,11 +49,10 @@ cch:
   clock_date: true
   clock_format: 12
   date_locale: en-gb
-  main_config: true
 ```
 
 ## Theme Variables
-You can also style CCH from your HA theme's YAML to make it easier to share and lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the config of the card will override these options.
+You can also style CCH from your HA theme's YAML to make it easier to share and lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the Lovelace config will override the themes values.
 
 **Theme Variables Example:**<br>
 The color and image values are just examples.<br>

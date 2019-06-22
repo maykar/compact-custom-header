@@ -1,7 +1,7 @@
 # Compact Custom Header
 Customize the header and add enhancements to Lovelace.
 
-## Features:
+## Features
 
 * Compact design that removes header text.
 * Per user/device settings.
@@ -18,7 +18,7 @@ Customize the header and add enhancements to Lovelace.
 * [@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for installation of cards in lovelace and issues.
 
 <details>
-  <summary><b>Manual installation:</b></summary>
+  <summary><b>Manual installation</b></summary>
 
 1. Install by copying both .js files to `www/custom-lovelace/compact-custom-header/`. [Be sure you're using the raw files from github](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin).
 
@@ -32,11 +32,11 @@ resources:
 3. Refresh the page.
 </details>
 <details>
-  <summary><b>Installation and tracking HACS:</b></summary>
+  <summary><b>Installation and tracking HACS</b></summary>
 
 1. In the HACS store search for "CCH" or "compact-custom-header" and install.
 
-2. Configure Lovelace to load the card:
+2. Configure Lovelace to load CCH:
 
 ```yaml
 resources:
@@ -51,7 +51,7 @@ resources:
 CCH may not work on some older/unsupported browsers. User @pjv maintains a version of CCH for those cases, found here: [Lovelace Compact Custom Header for old devices](https://gist.github.com/pjv/521073b982e37418339afbf420691310). **I do not offer support for this method**.
 
 
-## Important notes:
+## Important notes
 
 * Hiding the header or the options button will remove your ability to edit from the UI.
 * You can disable CCH by adding "?disable_cch" to the end of your URL.
@@ -64,5 +64,5 @@ CCH may not work on some older/unsupported browsers. User @pjv maintains a versi
 |:-|:-|:-|
 |1.1.0|Not yet released| Configuration has changed. No longer required to use CCH as a card. More info here.
 |1.0.2b9|Apr. 6, 2019|**“background _image”** and **“background_color”** have been replaced with just “background”.
-|1.0.0b0|Feb. 10, 2019|Complete rewrite of card. Card is now **"type: module"** and most config options have changed.
+|1.0.0b0|Feb. 10, 2019|Complete rewrite. Now **"type: module"** and most config options have changed.
 |0.2.8|Jan. 22, 2019|**Tab numbering** in config options now starts at 0 to match Lovelace URLs.

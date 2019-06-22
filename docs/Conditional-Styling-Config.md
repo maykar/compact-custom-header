@@ -9,8 +9,9 @@ For more complex conditions (multiple conditions for one element, using entity a
 * **In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.**
 * **If styling an icon, the view must already have an icon associated with it and not just a title.**
 * **[See full example below for use.](#full-example)**
+<br><br>
 
-## Example:
+**Example:**
 
 ```yaml
   conditional_styles:
@@ -21,32 +22,35 @@ For more complex conditions (multiple conditions for one element, using entity a
         menu:                           # item to style
           color: yellow                 # what to style
 ```
-
+<br><br>
 **Entity:**
+
 * You may use any HA entity.
 * You can use "notifications" in place of an entity, this will return "true" when there are notifications and "false" otherwise.
 
 **Condition:**
+
 * **state:** The state of the entity to match to trigger the change. Cannot be used with `above:` or `below:`
 * **above:** If the state returns a number, trigger change when above this number. Can be used with or without `below:`.
 * **below:** If the state returns a number, trigger change when below this number. Can be used with or without `above:`.
 
 **Items to style**
+
 * **background:** You can change the header's background color or image.
 * **tab:** You can change any tab's color, icon, or hide it completely.
 * **button:** You can change any button's color, icon, or hide it completely.
 
 **Styling**
+
 * **color:** Can use any CSS value that can be used with styling config (background, tab, or button).
 * **image:** Can use any CSS value that can be used with styling config (background only).
 * **hide:** Set to true to hide the item (button or tab).
 * **on_icon:** The [mdi icon](https://materialdesignicons.com/) to use when condition matches. Must be used with `off_icon:` (button or tab).
 * **off_icon:** The [mdi icon](https://materialdesignicons.com/) to use when condition does not match. Must be used with `on_icon:` (button or tab).
 
-## Full Example.
+**Full Example.**
 ```yaml
 cch:
-  main_config: true
   conditional_styles:
     - entity: input_boolean.boolean1
       condition:
@@ -93,11 +97,10 @@ Formatting is **VERY** important here.
 * **If styling an icon, the view must already have an icon associated with it and not just a title.**
 <br><br>
 
-Example:<br>
+**Example:**<br><br>
 **This is just an example, you can use whatever JavaScript you prefer (e.g., You can use return statements, ternaries, etc. if you'd like).**
 ```yaml
 cch:
-  main_config: true
   conditional_styles:
     template:
       - background: >  # Style the header's background can use CSS colors or background images.
