@@ -101,79 +101,81 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#compact-custom-header">Compact Custom Header</a></li>
+        <li class="main active"><a href="#compact-custom-header">COMPACT CUSTOM HEADER</a></li>
             <li><a href="#features">Features</a></li>
             <li><a href="#installation">Installation</a></li>
             <li><a href="#important-notes">Important notes</a></li>
+            <li><a href="#breaking-changes">Breaking Changes</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="compact-custom-header">Compact Custom Header<a class="headerlink" href="#compact-custom-header" title="Permanent link">&para;</a></h1>
+<h1 id="compact-custom-header"><strong>COMPACT CUSTOM HEADER</strong><a class="headerlink" href="#compact-custom-header" title="Permanent link">&para;</a></h1>
 <p>Customize the header and add enhancements to Lovelace.</p>
-<h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
+<h2 style="color: red">These docs are for an unreleased version of CCH. Do not follow this guide until version 1.1.0 has been released.</h2>
+
+<h2 id="features"><u>Features</u><a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Compact design that removes header text.</li>
 <li>Per user/device settings.</li>
 <li>Style &amp; hide anything in the header &amp; the header itself.</li>
 <li>Dynamically style header elements based on entity states/attributes.</li>
 <li>Add swipe navigation to Lovelace for mobile devices.</li>
-<li>Any button can be hidden, turned into clock with optional date, or placed in the options menu.</li>
+<li>Buttons can be hidden, turned into clock with optional date, or placed in the options menu.</li>
 <li>Hide tabs/buttons from user's and devices.</li>
 <li>Set a default/starting view.</li>
 </ul>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<h2 id="installation"><u>Installation</u><a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <ul>
-<li>There are 2 methods of installation: Manually or with <a href="https://github.com/custom-components/hacs">HACS</a>. Follow only one of these methods.</li>
-<li><a href="https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins">@thomasloven's lovelace guide</a> is a great resource for installation of cards in lovelace and issues.</li>
+<li>There are 2 methods of installation: <a href="#manual-installation">Manually</a> or with <a href="#installation-and-tracking-with-hacs">HACS</a>. Follow only one of these methods.</li>
+<li><a href="https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins">@thomasloven's lovelace guide</a> is a great resource for installation of cards in lovelace and issues.
+<br><br></li>
 </ul>
-<details>
-  <summary><b>Manual installation</b></summary>
-
-1. Install by copying both .js files to `www/custom-lovelace/compact-custom-header/`. [Be sure you're using the raw files from github](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin).
-
-2. Add the code below in ui-lovelace.yaml (yaml mode) or by using the "Raw Config" editor while "Configuring UI" (storage mode). When updating be sure add to the version number at the end of this code.
-
-
+<h4 id="manual-installation"><strong>Manual installation</strong><a class="headerlink" href="#manual-installation" title="Permanent link">&para;</a></h4>
+<ol>
+<li>
+<p>Install by copying both .js files to <code>www/custom-lovelace/compact-custom-header/</code>. <a href="https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin">Be sure you're using the raw files from github</a>.</p>
+</li>
+<li>
+<p>Add the code below to your resources and refresh the page.</p>
+</li>
+</ol>
 <pre><code class="yaml">resources:
+  # Add to the version number at the end of URL when updating.
   - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
     type: module
 </code></pre>
 
-3. Refresh the page.
-</details>
-
-<details>
-  <summary><b>Installation and tracking HACS</b></summary>
-
-1. In the HACS store search for "CCH" or "compact-custom-header" and install.
-
-2. Configure Lovelace to load CCH:
-
-
+<p><br><br></p>
+<h4 id="installation-and-tracking-with-hacs"><strong>Installation and tracking with <a href="https://github.com/custom-components/hacs">HACS</a></strong><a class="headerlink" href="#installation-and-tracking-with-hacs" title="Permanent link">&para;</a></h4>
+<ol>
+<li>
+<p>In the HACS store search for "CCH" and install.</p>
+</li>
+<li>
+<p>Add the code below to your resources and refresh the page.</p>
+</li>
+</ol>
 <pre><code class="yaml">resources:
   - url: /community_plugin/compact-custom-header/compact-custom-header.js
     type: module
 </code></pre>
 
-
-3. Refresh the page.
-</details>
-
-<p>CCH may not work on some older/unsupported browsers. User @pjv maintains a version of CCH for those cases, found here: <a href="https://gist.github.com/pjv/521073b982e37418339afbf420691310">Lovelace Compact Custom Header for old devices</a>. <strong>I do not offer support for this method</strong>.</p>
-<h2 id="important-notes">Important notes<a class="headerlink" href="#important-notes" title="Permanent link">&para;</a></h2>
+<p><br></p>
+<h2 id="important-notes"><u>Important notes</u><a class="headerlink" href="#important-notes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Hiding the header or the options button will remove your ability to edit from the UI.</li>
 <li>You can disable CCH by adding "?disable_cch" to the end of your URL.</li>
 <li>After using the raw config editor you will need to refresh the page to restore CCH.</li>
-<li>While in edit mode select "Show All Tabs" in the options menu to display hidden tabs.</li>
+<li>While in edit mode select "Show All Tabs" in the options menu to display hidden tabs.
+<br><br></li>
 </ul>
-<h3 id="breaking-changes">Breaking Changes:<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h3>
+<h2 id="breaking-changes"><u>Breaking Changes</u><a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th align="left">Version</th>
-<th align="left">Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+<th align="left">Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.</th>
 <th align="left">Breaking Change</th>
 </tr>
 </thead>
@@ -258,5 +260,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-06-22 22:03:38
+Build Date UTC : 2019-06-23 01:41:50
 -->

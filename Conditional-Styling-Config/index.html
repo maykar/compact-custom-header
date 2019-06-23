@@ -101,25 +101,27 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#conditional-styling-config">Conditional Styling Config</a></li>
-        <li class="main "><a href="#conditional-styling-templates">Conditional Styling Templates</a></li>
+        <li class="main active"><a href="#conditional-styling">CONDITIONAL STYLING</a></li>
+            <li><a href="#conditional-styling-templates">Conditional Styling Templates</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<h1 id="conditional-styling-config">Conditional Styling Config<a class="headerlink" href="#conditional-styling-config" title="Permanent link">&para;</a></h1>
+<h1 id="conditional-styling"><strong>CONDITIONAL STYLING</strong><a class="headerlink" href="#conditional-styling" title="Permanent link">&para;</a></h1>
 <p>Conditional styling allows for simple dynamic styling of the header, buttons, and tabs depending on an entity's state.
-For more complex conditions (multiple conditions for one element, using entity attributes, dynamically hiding tabs, etc.) use <a href="https://maykar.github.io/compact-custom-header/Conditional-Styling-Templates/">conditional styling templates</a>.</p>
+For more complex conditions (multiple conditions for one element, using entity attributes, dynamically hiding tabs, etc.) use <a href="#conditional-styling-templates">conditional styling templates</a>.</p>
+<p><br>
+<img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="500px"><br><br></p>
 <ul>
-<li><strong>After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)</strong></li>
-<li><strong>Conditional styles may be used inside exceptions.</strong></li>
-<li><strong>All conditional style configuration is done in yaml/raw edit mode.</strong></li>
-<li><strong>In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.</strong></li>
-<li><strong>If styling an icon, the view must already have an icon associated with it and not just a title.</strong></li>
-<li><strong><a href="#full-example">See full example below for use.</a></strong>
+<li>After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)</li>
+<li>Conditional styles may be used inside exceptions.</li>
+<li>All conditional style configuration is done in yaml/raw edit mode.</li>
+<li>In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.</li>
+<li>If styling an icon, the view must already have an icon associated with it and not just a title.</li>
+<li><a href="#full-example">See full example below for use.</a>
 <br><br></li>
 </ul>
-<p><strong>Example:</strong></p>
+<p>Example:</p>
 <pre><code class="yaml">  conditional_styles:
     - entity: input_boolean.boolean1    # entity to watch
       condition:                     
@@ -155,7 +157,8 @@ For more complex conditions (multiple conditions for one element, using entity a
 <li><strong>on_icon:</strong> The <a href="https://materialdesignicons.com/">mdi icon</a> to use when condition matches. Must be used with <code>off_icon:</code> (button or tab).</li>
 <li><strong>off_icon:</strong> The <a href="https://materialdesignicons.com/">mdi icon</a> to use when condition does not match. Must be used with <code>on_icon:</code> (button or tab).</li>
 </ul>
-<p><strong>Full Example.</strong></p>
+<p><br>
+Full Example:</p>
 <pre><code class="yaml">cch:
   conditional_styles:
     - entity: input_boolean.boolean1
@@ -184,34 +187,37 @@ For more complex conditions (multiple conditions for one element, using entity a
           on_icon: mdi:emoticon-excited
 </code></pre>
 
-<h1 id="conditional-styling-templates">Conditional Styling Templates<a class="headerlink" href="#conditional-styling-templates" title="Permanent link">&para;</a></h1>
+<p><br><br></p>
+<h2 id="conditional-styling-templates"><u>Conditional Styling Templates</u><a class="headerlink" href="#conditional-styling-templates" title="Permanent link">&para;</a></h2>
 <p>You can use JavaScript for complex conditional styling of header background, tabs, and buttons.
 Tabs and buttons can style <code>icon</code>, <code>color</code>, and <code>display</code> (display will <code>show</code> or <code>hide</code> buttons or tabs).<br><br>
-<strong>All templates must return a string.</strong>
-* Icon templates need to return a MDI icon: <code>"mdi:account-off"</code>.
-* Color templates must return any valid CSS color: <code>"red"</code> or <code>"#ff0000"</code> or <code>"rgb(255, 0, 0)"</code> etc.
-* Display templates must return either <code>"show"</code> or <code>"hide"</code>
-* Background template must return any valid background CSS color or image property: <code>"#000000:</code> or <code>"rgb(255, 0, 0)"</code> or <code>"url("/local/background.jpg")"</code> etc.</p>
+<strong>All templates must return a string.</strong></p>
+<ul>
+<li>Icon templates need to return a MDI icon: <code>"mdi:account-off"</code>.</li>
+<li>Color templates must return any valid CSS color: <code>"red"</code> or <code>"#ff0000"</code> or <code>"rgb(255, 0, 0)"</code> etc.</li>
+<li>Display templates must return either <code>"show"</code> or <code>"hide"</code></li>
+<li>Background template must return valid background CSS color or image property: <code>"#000000:</code> or <code>"rgb(255, 0, 0)"</code> or <code>"url("/local/background.jpg")"</code> etc.</li>
+</ul>
 <p>Formatting is <strong>VERY</strong> important here.</p>
 <ul>
-<li><strong>After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)</strong></li>
-<li><strong>Conditional styles may be used inside exceptions.</strong></li>
-<li><strong>All conditional style configuration is done in yaml/raw edit mode.</strong></li>
-<li><strong>In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.</strong></li>
-<li><strong>If styling an icon, the view must already have an icon associated with it and not just a title.</strong>
+<li>After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)</li>
+<li>Conditional styles may be used inside exceptions.</li>
+<li>In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.</li>
+<li>If styling an icon, the view must already have an icon associated with it and not just a title.</li>
+<li>You can use "notifications" in place of an entity (last example below).
 <br><br></li>
 </ul>
-<p><strong>Example:</strong><br><br>
-<strong>This is just an example, you can use whatever JavaScript you prefer (e.g., You can use return statements, ternaries, etc. if you'd like).</strong></p>
+<p>Example:<br><br>
+This is just an example, you can use any valid JavaScript (return statements, ternaries, etc. would work fine as well).</p>
 <pre><code class="yaml">cch:
   conditional_styles:
     template:
-      - background: &gt;  # Style the header's background can use CSS colors or background images.
+      - background: &gt;
           if (states[&quot;input_boolean.living_room&quot;].state == &quot;off&quot;) &quot;#000&quot;;
           else if (states[&quot;input_boolean.living_room&quot;].state == &quot;on&quot;) &quot;url('/local/bg.jpg')&quot;;
       - tab:
-          3:  # Number of the tab to style.
-          - icon: &gt;  # MDI icon for tab or button.
+          3:
+          - icon: &gt;
               if (states[&quot;device_tracker.galaxys8&quot;].state == &quot;home&quot;) &quot;mdi:account&quot;;
               else &quot;mdi:account-off&quot;;
           - color: &gt;  # Color for tab or button icon.
@@ -223,10 +229,15 @@ Tabs and buttons can style <code>icon</code>, <code>color</code>, and <code>disp
               if (states[&quot;media_player.living_room&quot;].state == &quot;off&quot;) &quot;hide&quot;;
               else if (states[&quot;media_player.living_room&quot;].state == &quot;playing&quot;) &quot;show&quot;;
       - button:
-          menu:  # Button to style. `menu`, `notifications`, `options`, or `voice`.
+          menu:
             icon: &gt;
               if (states[&quot;device_tracker.galaxys8&quot;].state == &quot;home&quot;) &quot;blue&quot;;
               else if (states[&quot;device_tracker.galaxys8&quot;].state == &quot;not_home&quot;) &quot;#ffffff&quot;;
+      - button:
+          notifications:
+            display: &gt;
+              if (notifications) &quot;show&quot;;
+              else &quot;hide&quot;;
 </code></pre></div>
         </div>
 
