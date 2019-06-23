@@ -1,11 +1,12 @@
-# Main Config Options
-
-## UI Configuration
-Unless you use Lovelace in "YAML mode" you can edit CCH's config from the UI. From the options menu select "Configure UI", there will now be a new item in the options menu "CCH Settings".<br><br>You can configure every option in settings with the exception of `date_locale`, `default_tab`, styling options, and conditional styling options.<br><br>
+# **MAIN CONFIGURATION**
+<br>
+## <u>Configuration with the UI</u>
+After installing CCH select "Configure UI" from the options menu. There will now be a new item in the options menu called "CCH Settings". You can configure almost every config option from the UI except for `date_locale`, `default_tab`, and styling configuration.<br><br>
 <img src="https://i.imgur.com/Toe4qDl.gif" width="514px"><br>
-
-## YAML Configuration
-Configuration for CCH happens in the root of your Lovelace config. You may put it wherever you like, but do not put it inside views, resources, or anything else. It needs to be at the root of your configuration. Example:
+<br><br>
+## <u>Configuration with YAML</u>
+Configuration for CCH happens in the root of your Lovelace config. You may put it wherever you like, but **DO NOT** put it inside views, resources, or anything else.<br><br>
+<p style="color: green"><b>Like this:</b></p>
 ```yaml
 resources:
   - url: /community_plugin/compact-custom-header/compact-custom-header.js
@@ -15,6 +16,17 @@ cch:
   options: clock
 views:
 ```
+<br><p style="color: red"><b>NEVER like this:</b></p>
+```
+resources:
+  - url: /community_plugin/compact-custom-header/compact-custom-header.js
+    type: module
+views:
+  cch:
+    hide_tabs: '4,5,6,7,8'
+    options: clock
+```
+<br>
 
 |NAME|TYPE|DEFAULT|DESCRIPTION|
 |-|-|-|-|
@@ -33,11 +45,13 @@ views:
 |kiosk_mode|boolean|false|Turns off `sidebar_swipe`, turns on `sidebar_closed`, and hides the header.
 |default_tab|number||Tab number to start on when navigating to `/lovelace/` for the first time.
 |hide_help|boolean|false|Removes "Help" item from options menu.
-|exception|||Allows for different configs when exceptions are met, see [Exception Config](https://maykar.github.io/compact-custom-header/Exception-Config/).
+|exception|||Allows for different configs when exceptions are met, see [Exception Config](../Exception-Config/).
 
-## Button Config
+<br>
+## <u>Button Config</u>
 
 Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". Each button except for the options button can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the option button's drop-down menu.
+<br><br>
 
 |NAME|TYPE|DEFAULT|ICON|DESCRIPTION|
 |-|-|-|-|-|
@@ -45,11 +59,13 @@ Each button (menu, notifications, voice, and options) can be set as "show", "hid
 |notifications|string|show|<img src="https://github.com/google/material-design-icons/blob/master/social/2x_web/ic_notifications_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |voice|string|show|<img src="https://github.com/google/material-design-icons/blob/master/av/2x_web/ic_mic_black_18dp.png?raw=true">|Can be "show", "hide", "clock", or "overflow".|
 |options|string|show|<img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true">|Can be "show", "hide" or "clock".|
+<br>
 
-## Swipe Navigation Config<br><br>
+## <u>Swipe Navigation Config</u>
 
-You can enable swipe navigation between your Lovelace views.<br><br>
-<img src="https://github.com/maykar/lovelace-swipe-navigation/blob/master/example.gif?raw=true" width="438px">
+
+Enable swipe navigation between Lovelace views.<br><br>
+<img src="https://github.com/maykar/lovelace-swipe-navigation/blob/master/example.gif?raw=true" width="438px"><br><br><br>
 
 |NAME|TYPE|DEFAULT|DESCRIPTION|
 |-|-|-|-|

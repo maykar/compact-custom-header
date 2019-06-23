@@ -1,42 +1,44 @@
-# Compact Custom Header
+# **COMPACT CUSTOM HEADER**
 Customize the header and add enhancements to Lovelace.
 
-## Features
+
+<h2 style="color: red">These docs are for an unreleased version of CCH. Do not follow this guide until version 1.1.0 has been released.</h2>
+
+## <u>Features</u>
 
 * Compact design that removes header text.
 * Per user/device settings.
 * Style & hide anything in the header & the header itself.
 * Dynamically style header elements based on entity states/attributes.
 * Add swipe navigation to Lovelace for mobile devices.
-* Any button can be hidden, turned into clock with optional date, or placed in the options menu.
+* Buttons can be hidden, turned into clock with optional date, or placed in the options menu.
 * Hide tabs/buttons from user's and devices.
 * Set a default/starting view.
 
-## Installation
+## <u>Installation</u>
 
-* There are 2 methods of installation: Manually or with [HACS](https://github.com/custom-components/hacs). Follow only one of these methods.
+* There are 2 methods of installation: [Manually](#manual-installation) or with [HACS](#installation-and-tracking-with-hacs). Follow only one of these methods.
 * [@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for installation of cards in lovelace and issues.
-
-<details>
-  <summary><b>Manual installation</b></summary>
+<br><br>
+#### **Manual installation**
 
 1. Install by copying both .js files to `www/custom-lovelace/compact-custom-header/`. [Be sure you're using the raw files from github](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin).
 
-2. Add the code below in ui-lovelace.yaml (yaml mode) or by using the "Raw Config" editor while "Configuring UI" (storage mode). When updating be sure add to the version number at the end of this code.
-
+2. Add the code below to your resources and refresh the page.
 ```yaml
 resources:
+  # Add to the version number at the end of URL when updating.
   - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
     type: module
 ```
-3. Refresh the page.
-</details>
-<details>
-  <summary><b>Installation and tracking HACS</b></summary>
 
-1. In the HACS store search for "CCH" or "compact-custom-header" and install.
+<br><br>
 
-2. Configure Lovelace to load CCH:
+#### **Installation and tracking with [HACS](https://github.com/custom-components/hacs)**
+
+1. In the HACS store search for "CCH" and install.
+
+2. Add the code below to your resources and refresh the page.
 
 ```yaml
 resources:
@@ -44,23 +46,18 @@ resources:
     type: module
 ```
 
-3. Refresh the page.
-</details>
+<br>
 
-
-CCH may not work on some older/unsupported browsers. User @pjv maintains a version of CCH for those cases, found here: [Lovelace Compact Custom Header for old devices](https://gist.github.com/pjv/521073b982e37418339afbf420691310). **I do not offer support for this method**.
-
-
-## Important notes
+## <u>Important notes</u>
 
 * Hiding the header or the options button will remove your ability to edit from the UI.
 * You can disable CCH by adding "?disable_cch" to the end of your URL.
 * After using the raw config editor you will need to refresh the page to restore CCH.
 * While in edit mode select "Show All Tabs" in the options menu to display hidden tabs.
+<br><br>
+## <u>Breaking Changes</u>
 
-### Breaking Changes:
-
-|Version|Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|Breaking Change|
+|Version|Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.|Breaking Change|
 |:-|:-|:-|
 |1.1.0|Not yet released| Configuration has changed. No longer required to use CCH as a card. More info here.
 |1.0.2b9|Apr. 6, 2019|**“background _image”** and **“background_color”** have been replaced with just “background”.

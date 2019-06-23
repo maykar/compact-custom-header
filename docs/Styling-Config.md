@@ -1,6 +1,7 @@
-# Styling Config
+# **STYLING CONFIGURATION**
 
-<b>All style configuration is done in yaml/raw edit mode or from your [HA theme](#theme-variables).</b>
+Style configuration can be done in yaml, raw edit mode, or from your [HA theme](#theme-variables).
+<br><br>
 
 |NAME|DESCRIPTION|
 |-|-|
@@ -12,20 +13,19 @@
 |notify_indicator_color|Sets the color of the new notification indicator.
 |notify_text_color|Sets the color of the number of new notifications inside the indicator.
 |active_tab_color|Sets the color of the current tab's icon.
-|conditional_styles|Dynamically change styles depending on an entity's state, see [Conditional Styling](https://maykar.github.io/compact-custom-header/Conditional-Styling-Config/).
+|conditional_styles|Dynamically change styles depending on an entity's state, see [Conditional Styling](../Conditional-Styling-Config/).
 
+<br>
 <b>Notes on styling config:</b>
 
-* You can use styling in your exceptions as well and have separate themes per user/device.
-* You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
 * If using hex colors `#ffffff` be sure to enclose in quotes `"#ffffff"`.
+* You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
+* You can use styling in your exceptions as well and have different themes per user/device.
 
-<br>Ugly example to illustrate.<br>The example below is the code that was used to make it.<br><br>
+<br>
+## <u>Example</u>
 <img src="https://i.imgur.com/t6VMKHf.png" width="400px"><br>
 
-
-**Styling Example:**
-  
 ```yaml
 cch:
   background: transparent url("https://goo.gl/M3Dsf2") # header with background image & transparent as color
@@ -51,12 +51,11 @@ cch:
   date_locale: en-gb
 ```
 
-## Theme Variables
+## <u>Theme Variables</u>
 You can also style CCH from your HA theme's YAML to make it easier to share and lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the Lovelace config will override the themes values.
-
-**Theme Variables Example:**<br>
-The color and image values are just examples.<br>
-All options default to HA's default values if not set here or in config.
+<br>
+<br>
+Example:<br>
 
 ```yaml
   cch-background: url("https://goo.gl/M3Dsf2")

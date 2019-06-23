@@ -1,17 +1,20 @@
-# Conditional Styling Config
+# **CONDITIONAL STYLING**
 
 Conditional styling allows for simple dynamic styling of the header, buttons, and tabs depending on an entity's state.
-For more complex conditions (multiple conditions for one element, using entity attributes, dynamically hiding tabs, etc.) use [conditional styling templates](https://maykar.github.io/compact-custom-header/Conditional-Styling-Templates/).
+For more complex conditions (multiple conditions for one element, using entity attributes, dynamically hiding tabs, etc.) use [conditional styling templates](#conditional-styling-templates).
 
-* **After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)**
-* **Conditional styles may be used inside exceptions.**
-* **All conditional style configuration is done in yaml/raw edit mode.**
-* **In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.**
-* **If styling an icon, the view must already have an icon associated with it and not just a title.**
-* **[See full example below for use.](#full-example)**
+<br>
+<img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="500px"><br><br>
+
+* After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)
+* Conditional styles may be used inside exceptions.
+* All conditional style configuration is done in yaml/raw edit mode.
+* In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.
+* If styling an icon, the view must already have an icon associated with it and not just a title.
+* [See full example below for use.](#full-example)
 <br><br>
 
-**Example:**
+Example:
 
 ```yaml
   conditional_styles:
@@ -48,7 +51,8 @@ For more complex conditions (multiple conditions for one element, using entity a
 * **on_icon:** The [mdi icon](https://materialdesignicons.com/) to use when condition matches. Must be used with `off_icon:` (button or tab).
 * **off_icon:** The [mdi icon](https://materialdesignicons.com/) to use when condition does not match. Must be used with `on_icon:` (button or tab).
 
-**Full Example.**
+<br>
+Full Example:
 ```yaml
 cch:
   conditional_styles:
@@ -78,37 +82,39 @@ cch:
           on_icon: mdi:emoticon-excited
 ```
 
-# Conditional Styling Templates
+<br><br>
+## <u>Conditional Styling Templates</u>
 
 You can use JavaScript for complex conditional styling of header background, tabs, and buttons.
 Tabs and buttons can style `icon`, `color`, and `display` (display will `show` or `hide` buttons or tabs).<br><br>
 **All templates must return a string.**
+
 * Icon templates need to return a MDI icon: `"mdi:account-off"`.
 * Color templates must return any valid CSS color: `"red"` or `"#ff0000"` or `"rgb(255, 0, 0)"` etc.
 * Display templates must return either `"show"` or `"hide"`
-* Background template must return any valid background CSS color or image property: `"#000000:` or `"rgb(255, 0, 0)"` or `"url("/local/background.jpg")"` etc.
+* Background template must return valid background CSS color or image property: `"#000000:` or `"rgb(255, 0, 0)"` or `"url("/local/background.jpg")"` etc.
 
 Formatting is **VERY** important here.
 
-* **After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)**
-* **Conditional styles may be used inside exceptions.**
-* **All conditional style configuration is done in yaml/raw edit mode.**
-* **In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.**
-* **If styling an icon, the view must already have an icon associated with it and not just a title.**
+* After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)
+* Conditional styles may be used inside exceptions.
+* In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.
+* If styling an icon, the view must already have an icon associated with it and not just a title.
+* You can use "notifications" in place of an entity (last example below).
 <br><br>
 
-**Example:**<br><br>
-**This is just an example, you can use whatever JavaScript you prefer (e.g., You can use return statements, ternaries, etc. if you'd like).**
+Example:<br><br>
+This is just an example, you can use any valid JavaScript (return statements, ternaries, etc. would work fine as well).
 ```yaml
 cch:
   conditional_styles:
     template:
-      - background: >  # Style the header's background can use CSS colors or background images.
+      - background: >
           if (states["input_boolean.living_room"].state == "off") "#000";
           else if (states["input_boolean.living_room"].state == "on") "url('/local/bg.jpg')";
       - tab:
-          3:  # Number of the tab to style.
-          - icon: >  # MDI icon for tab or button.
+          3:
+          - icon: >
               if (states["device_tracker.galaxys8"].state == "home") "mdi:account";
               else "mdi:account-off";
           - color: >  # Color for tab or button icon.
@@ -120,8 +126,13 @@ cch:
               if (states["media_player.living_room"].state == "off") "hide";
               else if (states["media_player.living_room"].state == "playing") "show";
       - button:
-          menu:  # Button to style. `menu`, `notifications`, `options`, or `voice`.
+          menu:
             icon: >
               if (states["device_tracker.galaxys8"].state == "home") "blue";
               else if (states["device_tracker.galaxys8"].state == "not_home") "#ffffff";
+      - button:
+          notifications:
+            display: >
+              if (notifications) "show";
+              else "hide";
 ```

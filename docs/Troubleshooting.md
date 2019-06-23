@@ -2,11 +2,11 @@
 <script>
 let sidebar = document.getElementsByClassName("col-md-3")[0];
 sidebar.parentNode.removeChild(sidebar);
-document.getElementsByClassName("col-md-9")[0].style.cssText = "width:70%;display:block;margin-left:15%";
+document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;display:block;margin-left:10%";
 </script>
 <!-- Disable sidebar -->
 
-# Troubleshooting
+# **TROUBLESHOOTING**
 
 Please, read through this guide and search the [HA forum thread](https://community.home-assistant.io/t/compact-custom-header) and [Github issues](https://github.com/maykar/compact-custom-header/issues?utf8=%E2%9C%93&q=is%3Aissue) (open and closed) for your issue before posting to the forums or submitting an issue on Github.
 
@@ -20,7 +20,7 @@ CCH may not work on some older/unsupported browsers. User @pjv maintains a versi
 
 **Disable CCH to see if your issue still exists without it.**
 
-When posting issues here or on the forums always include:
+When posting issues on Github or HA's forums always include:
 
 * The browser you are using
 * Home Assistant version
