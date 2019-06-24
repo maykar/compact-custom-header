@@ -37,7 +37,16 @@ export const defaultConfig = {
   sidebar_swipe: true,
   sidebar_closed: false,
   tab_color: {},
-  button_color: {}
+  button_color: {},
+  hide_help: false,
+  swipe: false,
+  swipe_amount: 15,
+  swipe_animate: "none",
+  swipe_skip: "",
+  swipe_wrap: true,
+  swipe_prevent_default: false,
+  date_locale: document.querySelector("home-assistant").hass.language,
+  default_tab: 0
 };
 
 export const huiRoot = () => {
@@ -119,6 +128,18 @@ function run() {
     }
   }
 
+  if (cchConfig.hide_help) {
+    let menuItems = buttons.options
+      .querySelector("paper-listbox")
+      .querySelectorAll("paper-item");
+    [].forEach.call(menuItems, function(item) {
+      if (item.innerHTML == "<!---->Help<!---->") {
+        item.parentNode.removeChild(item);
+        return;
+      }
+    });
+  }
+
   window.dispatchEvent(new Event("resize"));
 
   if (firstRun) {
@@ -128,6 +149,7 @@ function run() {
           editMode = mutation.target.className == "edit-mode";
           if (huiRoot()) run();
         } else if (mutation.addedNodes.length) {
+          if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") return;
           let editor = !editMode
             ? root.querySelector("ha-app-layout").querySelector("editor")
             : null;
