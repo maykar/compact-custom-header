@@ -74,7 +74,7 @@ export class CompactCustomHeaderEditor extends LitElement {
     return html`
       <div
         @click="${close}"
-        style="float:right; cursor: pointer; margin:-10px -5px -5px -5px;"
+        style="font-weight:bold;font-size:22px;float:right; cursor: pointer; margin:-10px -5px -5px -5px;"
       >
         X
       </div>
@@ -238,8 +238,12 @@ export class CompactCustomHeaderEditor extends LitElement {
           width: 100%;
         }
         .underline {
-          border-bottom: 1px solid var(--primary-text-color);
+          border-bottom: 1px solid var(--primary-color);
           width: 100%;
+          background: var(--primary-color);
+          padding: 5px;
+          width: calc(100% + 30px);
+          margin-left: calc(0% - 20px);
         }
       </style>
     `;
@@ -425,7 +429,7 @@ export class CchConfigEditor extends LitElement {
       ${
         !this.exception
           ? html`
-            <h1 style="margin:0" class="underline">
+            <h1 style="margin-top:-20px;" class="underline">
               Compact Custom Header Settings
             </h1>
             <paper-card ?closed=${this._closed}>
@@ -986,8 +990,12 @@ export class CchConfigEditor extends LitElement {
           transition: all 0.5s ease;
         }
         .underline {
-          border-bottom: 1px solid var(--primary-text-color);
+          border-bottom: 1px solid var(--primary-color);
           width: 100%;
+          background: var(--primary-color);
+          padding: 5px;
+          width: calc(100% + 30px);
+          margin-left: calc(0% - 20px);
         }
       </style>
     `;
