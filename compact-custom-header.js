@@ -46,7 +46,7 @@ export const defaultConfig = {
   swipe_wrap: true,
   swipe_prevent_default: false,
   date_locale: document.querySelector("home-assistant").hass.language,
-  default_tab: ""
+  default_tab: []
 };
 
 export const huiRoot = () => {
@@ -100,8 +100,8 @@ function run() {
     ? Array.from(tabContainer.querySelectorAll("paper-tab"))
     : [];
 
-  if (editMode && !disable) {
-    removeStyles(tabContainer, tabs);
+  if (editMode) {
+    if (!disable) removeStyles(tabContainer, tabs);
     insertEditMenu(buttons, tabs);
   } else if (!disable && !window.location.href.includes("disable_cch")) {
     styleButtons(buttons, tabs);
@@ -144,9 +144,8 @@ function run() {
     }
 
     window.dispatchEvent(new Event("resize"));
-
-    if (firstRun) monitorElements(tabs);
   }
+  if (firstRun) monitorElements(tabs);
   firstRun = false;
 }
 
@@ -163,8 +162,6 @@ function buildConfig() {
     });
   }
 
-  // If main config uses hide_tabs and exception uses show_tabs or vice versa,
-  // delete main config option to avoid conflict.
   if (
     exceptionConfig.hide_tabs &&
     config.show_tabs &&
@@ -206,7 +203,9 @@ function monitorElements(tabs) {
     mutations.forEach(mutation => {
       if (mutation.target.className == "empty") {
         notifications = mutation.target.style.display == "none" ? true : false;
-        conditionalStyling(getButtonElements(), tabs);
+        if (!editMode && !firstRun && huiRoot()) {
+          conditionalStyling(getButtonElements(), tabs);
+        }
         return;
       } else if (mutation.attributeName === "class") {
         editMode = mutation.target.className == "edit-mode";
@@ -219,9 +218,7 @@ function monitorElements(tabs) {
           ? root.querySelector("ha-app-layout").querySelector("editor")
           : null;
         if (editor) root.querySelector("ha-app-layout").removeChild(editor);
-        if (!editMode && !firstRun && huiRoot()) {
-          conditionalStyling(getButtonElements(), tabs);
-        }
+        if (!editMode) conditionalStyling(getButtonElements(), tabs);
       }
     });
   };
@@ -693,7 +690,6 @@ let prevColor = {};
 let prevState = [];
 function conditionalStyling(buttons, tabs) {
   let _hass = document.querySelector("home-assistant").hass;
-
   const conditional_styles = cchConfig.conditional_styles;
   let tabContainer = tabs[0] ? tabs[0].parentNode : "";
   let elem, color, bg, hide, onIcon, offIcon, iconElem;
@@ -734,7 +730,7 @@ function conditionalStyling(buttons, tabs) {
     if (template) {
       if (!template.length) template = [template];
       for (let x = 0; x < template.length; x++) {
-        templates(template[x], buttons, tabs, _hass, notifications);
+        templates(template[x], buttons, tabs, _hass);
       }
       continue;
     }
@@ -840,7 +836,8 @@ function templates(template, buttons, tabs, _hass) {
         return eval(template);
       }
     } catch (e) {
-      console.log("CCH styling template failed.");
+      console.log("CCH styling template failed:");
+      console.log(e);
     }
   };
 
