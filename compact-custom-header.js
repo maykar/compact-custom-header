@@ -40,13 +40,13 @@ export const defaultConfig = {
   button_color: {},
   hide_help: false,
   swipe: false,
-  swipe_amount: 15,
+  swipe_amount: "15",
   swipe_animate: "none",
   swipe_skip: "",
   swipe_wrap: true,
   swipe_prevent_default: false,
   date_locale: document.querySelector("home-assistant").hass.language,
-  default_tab: 0
+  default_tab: ""
 };
 
 export const huiRoot = () => {
@@ -182,6 +182,25 @@ function buildConfig() {
       }
     });
   }
+
+  // If main config uses hide_tabs and exception uses show_tabs or vice versa,
+  // delete main config option to avoid conflict.
+  if (
+    exceptionConfig.hide_tabs &&
+    config.show_tabs &&
+    exceptionConfig.hide_tabs.length &&
+    config.show_tabs.length
+  ) {
+    delete config.show_tabs;
+  } else if (
+    exceptionConfig.show_tabs &&
+    config.hide_tabs &&
+    exceptionConfig.show_tabs.length &&
+    config.hide_tabs.length
+  ) {
+    delete config.hide_tabs;
+  }
+
   cchConfig = { ...defaultConfig, ...config, ...exceptionConfig };
 
   function countMatches(conditions) {
@@ -886,13 +905,14 @@ function showEditor() {
       max-width: 600px;
       margin: 15px auto;
       background: var(--paper-card-background-color);
+      border: 6px solid var(--paper-card-background-color);
     `;
     container.style.cssText = `
       width: 100%;
       min-height: 100%;
       box-sizing: border-box;
       position: absolute;
-      background: var(--background-color);
+      background: var(--background-color, grey);
       z-index: 1;
       padding: 5px;
     `;
