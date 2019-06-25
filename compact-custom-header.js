@@ -67,6 +67,10 @@ const root = huiRoot().shadowRoot;
 const config = lovelace.config.cch || {};
 const header = root.querySelector("app-header");
 const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
+const notifDrawer = huiRoot()
+  .shadowRoot.querySelector("hui-notification-drawer")
+  .shadowRoot.querySelector(".notifications");
+let notifications = notifDrawer.querySelectorAll(".notification").length;
 let editMode, cchConfig;
 let redirectedToDefaultTab = false;
 let sidebarClosed = false;
@@ -126,46 +130,22 @@ function run() {
         };
       });
     }
-  }
 
-  if (cchConfig.hide_help) {
-    let menuItems = buttons.options
-      .querySelector("paper-listbox")
-      .querySelectorAll("paper-item");
-    [].forEach.call(menuItems, function(item) {
-      if (item.innerHTML == "<!---->Help<!---->") {
-        item.parentNode.removeChild(item);
-        return;
-      }
-    });
-  }
-
-  window.dispatchEvent(new Event("resize"));
-
-  if (firstRun) {
-    const callback = function(mutations) {
-      mutations.forEach(mutation => {
-        if (mutation.attributeName === "class") {
-          editMode = mutation.target.className == "edit-mode";
-          if (huiRoot()) run();
-        } else if (mutation.addedNodes.length) {
-          if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") return;
-          let editor = !editMode
-            ? root.querySelector("ha-app-layout").querySelector("editor")
-            : null;
-          if (editor) root.querySelector("ha-app-layout").removeChild(editor);
-          if (!editMode && !firstRun && huiRoot()) {
-            conditionalStyling(getButtonElements(), tabs);
-          }
+    if (cchConfig.hide_help) {
+      let menuItems = buttons.options
+        .querySelector("paper-listbox")
+        .querySelectorAll("paper-item");
+      [].forEach.call(menuItems, function(item) {
+        if (item.innerHTML == "<!---->Help<!---->") {
+          item.parentNode.removeChild(item);
           return;
         }
       });
-    };
-    new MutationObserver(callback).observe(view, { childList: true });
-    new MutationObserver(callback).observe(header, {
-      attributes: true,
-      attributeFilter: ["class"]
-    });
+    }
+
+    window.dispatchEvent(new Event("resize"));
+
+    if (firstRun) monitorElements(tabs);
   }
   firstRun = false;
 }
@@ -219,6 +199,41 @@ function buildConfig() {
     }
     return count;
   }
+}
+
+function monitorElements(tabs) {
+  const callback = function(mutations) {
+    mutations.forEach(mutation => {
+      if (mutation.target.className == "empty") {
+        notifications = mutation.target.style.display == "none" ? true : false;
+        conditionalStyling(getButtonElements(), tabs);
+        return;
+      } else if (mutation.attributeName === "class") {
+        editMode = mutation.target.className == "edit-mode";
+        if (huiRoot()) run();
+      } else if (mutation.addedNodes.length) {
+        if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") {
+          return;
+        }
+        let editor = !editMode
+          ? root.querySelector("ha-app-layout").querySelector("editor")
+          : null;
+        if (editor) root.querySelector("ha-app-layout").removeChild(editor);
+        if (!editMode && !firstRun && huiRoot()) {
+          conditionalStyling(getButtonElements(), tabs);
+        }
+      }
+    });
+  };
+  new MutationObserver(callback).observe(view, { childList: true });
+  new MutationObserver(callback).observe(notifDrawer.querySelector(".empty"), {
+    attributes: true,
+    attributeFilter: ["style"]
+  });
+  new MutationObserver(callback).observe(header, {
+    attributes: true,
+    attributeFilter: ["class"]
+  });
 }
 
 function tabContainerMargin(buttons, tabContainer) {
@@ -678,7 +693,7 @@ let prevColor = {};
 let prevState = [];
 function conditionalStyling(buttons, tabs) {
   let _hass = document.querySelector("home-assistant").hass;
-  let notifications = _hass.connection._ntf.state.length;
+
   const conditional_styles = cchConfig.conditional_styles;
   let tabContainer = tabs[0] ? tabs[0].parentNode : "";
   let elem, color, bg, hide, onIcon, offIcon, iconElem;
@@ -812,7 +827,7 @@ function conditionalStyling(buttons, tabs) {
   window.dispatchEvent(new Event("resize"));
 }
 
-function templates(template, buttons, tabs, _hass, notifications) {
+function templates(template, buttons, tabs, _hass) {
   // Variables for templates.
   let states = _hass.states;
   let entity = states;
