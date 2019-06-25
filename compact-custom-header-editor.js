@@ -72,10 +72,7 @@ export class CompactCustomHeaderEditor extends LitElement {
           <paper-button raised @click="${close}">Cancel</paper-button>
         `;
     return html`
-      <div
-        @click="${close}"
-        style="font-weight:bold;font-size:22px;float:right; cursor: pointer; margin:-10px -5px -5px -5px;"
-      >
+      <div @click="${close}" class="title_control">
         X
       </div>
       ${this.renderStyle()}
@@ -86,6 +83,7 @@ export class CompactCustomHeaderEditor extends LitElement {
       >
       </cch-config-editor>
       <h4 class="underline">Exceptions</h4>
+      <br />
       ${this._config.exceptions
         ? this._config.exceptions.map((exception, index) => {
             return html`
@@ -112,14 +110,13 @@ export class CompactCustomHeaderEditor extends LitElement {
               >Add Exception
             </paper-button>
           `}
-      <br />
-      <br />
 
       <h4 class="underline">Current User</h4>
-      ${hass.user.name}
-      <br />
+      <p style="font-size:16pt">${hass.user.name}</p>
       <h4 class="underline">Current User Agent</h4>
+      <br />
       ${navigator.userAgent}
+      <br />
       <br />
       ${!this.exception
         ? html`
@@ -228,6 +225,14 @@ export class CompactCustomHeaderEditor extends LitElement {
           background-color: transparent;
           color: var(--primary-color);
         }
+        .title_control {
+          color: var(--text-dark-color);
+          font-weight: bold;
+          font-size: 22px;
+          float: right;
+          cursor: pointer;
+          margin: -10px -5px -5px -5px;
+        }
         .user_agent {
           display: block;
           margin-left: auto;
@@ -238,9 +243,9 @@ export class CompactCustomHeaderEditor extends LitElement {
           width: 100%;
         }
         .underline {
-          border-bottom: 1px solid var(--primary-color);
           width: 100%;
-          background: var(--primary-color);
+          background: var(--dark-color);
+          color: var(--text-dark-color);
           padding: 5px;
           width: calc(100% + 30px);
           margin-left: calc(0% - 20px);
@@ -416,6 +421,10 @@ export class CchConfigEditor extends LitElement {
     return html`
       <custom-style>
         <style is="custom-style">
+          a {
+            color: var(--text-dark-color);
+            text-decoration: none;
+          }
           .card-header {
             margin-top: -5px;
             @apply --paper-font-headline;
@@ -426,43 +435,48 @@ export class CchConfigEditor extends LitElement {
           }
         </style>
       </custom-style>
-      ${
-        !this.exception
-          ? html`
-            <h1 style="margin-top:-20px;" class="underline">
-              Compact Custom Header Settings
+      ${!this.exception
+        ? html`
+            <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
+              Compact Custom Header
             </h1>
-            <paper-card ?closed=${this._closed}>
-            <div class="card-content">
-              <div class="card-header">
-              <iron-icon icon="hass:alert"></iron-icon>
-              Important Notes
-                <paper-icon-button
-                  icon="${this._closed ? "mdi:chevron-down" : "mdi:chevron-up"}"
-                  @click="${this._toggleCard}"
-                >
-                </paper-icon-button>
-              </div>
-              <ul>
-                <li>Hiding the header or the options button will remove your ability to edit from the UI.</li>
-                <li>You can disable CCH by adding "?disable_cch" to the end of your URL.</li>
-                <li>After using the raw config editor you will need to refresh the page to restore CCH.</li>
-                <li>While in edit mode select "Show All Tabs" in the options menu to display hidden tabs.</li>
-              </ul>
-            </div>
-          </paper-card>
-            </br>
+            <h4
+              style="margin-top:-5px;padding-top:10px;font-size:12pt;"
+              class="underline"
+            >
+              <a
+                href="https://maykar.github.io/compact-custom-header/"
+                target="_blank"
+              >
+                <ha-icon icon="mdi:help-circle" style="margin-top:-5px;">
+                </ha-icon>
+                Docs&nbsp;&nbsp;&nbsp;</a
+              >
+              <a
+                href="https://github.com/maykar/compact-custom-header"
+                target="_blank"
+              >
+                <ha-icon icon="mdi:github-circle" style="margin-top:-5px;">
+                </ha-icon>
+                Github&nbsp;&nbsp;&nbsp;</a
+              >
+              <a
+                href="https://community.home-assistant.io/t/compact-custom-header"
+                target="_blank"
+              >
+                <ha-icon icon="hass:home-assistant" style="margin-top:-5px;">
+                </ha-icon>
+                Forums</a
+              >
+            </h4>
           `
-          : ""
-      }
+        : ""}
       ${this.renderStyle()}
       <div class="side-by-side">
         <paper-toggle-button
-          class="${
-            this.exception && this.config.disable === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.disable === undefined
+            ? "inherited"
+            : ""}"
           ?checked="${this._disable !== false}"
           .configValue="${"disable"}"
           @change="${this._valueChanged}"
@@ -471,11 +485,9 @@ export class CchConfigEditor extends LitElement {
           Disable CCH
         </paper-toggle-button>
         <paper-toggle-button
-          class="${
-            this.exception && this.config.header === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.header === undefined
+            ? "inherited"
+            : ""}"
           ?checked="${this._header !== false && this._kiosk_mode == false}"
           .configValue="${"header"}"
           @change="${this._valueChanged}"
@@ -484,11 +496,9 @@ export class CchConfigEditor extends LitElement {
           Display Header
         </paper-toggle-button>
         <paper-toggle-button
-          class="${
-            this.exception && this.config.chevrons === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.chevrons === undefined
+            ? "inherited"
+            : ""}"
           ?checked="${this._chevrons !== false}"
           .configValue="${"chevrons"}"
           @change="${this._valueChanged}"
@@ -497,11 +507,9 @@ export class CchConfigEditor extends LitElement {
           Display Tab Chevrons
         </paper-toggle-button>
         <paper-toggle-button
-          class="${
-            this.exception && this.config.redirect === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.redirect === undefined
+            ? "inherited"
+            : ""}"
           ?checked="${this._redirect !== false}"
           .configValue="${"redirect"}"
           @change="${this._valueChanged}"
@@ -510,11 +518,9 @@ export class CchConfigEditor extends LitElement {
           Hidden Tab Redirect
         </paper-toggle-button>
         <paper-toggle-button
-          class="${
-            this.exception && this.config.kiosk_mode === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.kiosk_mode === undefined
+            ? "inherited"
+            : ""}"
           ?checked="${this._kiosk_mode !== false}"
           .configValue="${"kiosk_mode"}"
           @change="${this._valueChanged}"
@@ -523,11 +529,20 @@ export class CchConfigEditor extends LitElement {
           Kiosk Mode
         </paper-toggle-button>
         <paper-toggle-button
-          class="${
-            this.exception && this.config.sidebar_closed === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.hide_help === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this._hide_help !== false}"
+          .configValue="${"hide_help"}"
+          @change="${this._valueChanged}"
+          title='Hide "Help" in options menu.'
+        >
+          Hide Help
+        </paper-toggle-button>
+        <paper-toggle-button
+          class="${this.exception && this.config.sidebar_closed === undefined
+            ? "inherited"
+            : ""}"
           ?checked="${this._sidebar_closed !== false ||
             this._kiosk_mode !== false}"
           .configValue="${"sidebar_closed"}"
@@ -537,11 +552,9 @@ export class CchConfigEditor extends LitElement {
           Close Sidebar
         </paper-toggle-button>
         <paper-toggle-button
-          class="${
-            this.exception && this.config.sidebar_swipe === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.sidebar_swipe === undefined
+            ? "inherited"
+            : ""}"
           ?checked="${this._sidebar_swipe !== false &&
             this._kiosk_mode == false}"
           .configValue="${"sidebar_swipe"}"
@@ -550,27 +563,14 @@ export class CchConfigEditor extends LitElement {
         >
           Swipe Open Sidebar
         </paper-toggle-button>
-        <paper-toggle-button
-          class="${
-            this.exception && this.config.hide_help === undefined
-              ? "inherited"
-              : ""
-          }"
-          ?checked="${this._hide_help !== false}"
-          .configValue="${"hide_help"}"
-          @change="${this._valueChanged}"
-          title='Hide "Help" in options menu.'
-        >
-          Hide Help
-        </paper-toggle-button>
       </div>
 
       <h4 class="underline">Buttons</h4>
       <div class="buttons side-by-side">
         <div
-          class="${
-            this.exception && this.config.menu === undefined ? "inherited" : ""
-          }"
+          class="${this.exception && this.config.menu === undefined
+            ? "inherited"
+            : ""}"
         >
           <iron-icon icon="hass:menu"></iron-icon>
           <paper-dropdown-menu
@@ -591,11 +591,9 @@ export class CchConfigEditor extends LitElement {
           </paper-dropdown-menu>
         </div>
         <div
-          class="${
-            this.exception && this.config.notifications === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.notifications === undefined
+            ? "inherited"
+            : ""}"
         >
           <iron-icon icon="hass:bell"></iron-icon>
           <paper-dropdown-menu
@@ -616,9 +614,9 @@ export class CchConfigEditor extends LitElement {
           </paper-dropdown-menu>
         </div>
         <div
-          class="${
-            this.exception && this.config.voice === undefined ? "inherited" : ""
-          }"
+          class="${this.exception && this.config.voice === undefined
+            ? "inherited"
+            : ""}"
         >
           <iron-icon icon="hass:microphone"></iron-icon>
           <paper-dropdown-menu
@@ -639,11 +637,9 @@ export class CchConfigEditor extends LitElement {
           </paper-dropdown-menu>
         </div>
         <div
-          class="${
-            this.exception && this.config.options === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.options === undefined
+            ? "inherited"
+            : ""}"
         >
           <iron-icon icon="hass:dots-vertical"></iron-icon>
           <paper-dropdown-menu
@@ -664,68 +660,65 @@ export class CchConfigEditor extends LitElement {
           </paper-dropdown-menu>
         </div>
       </div>
-      ${
-        this._clock
-          ? html`
-              <h4 class="underline">Clock Options</h4>
-              <div class="side-by-side">
-                <paper-dropdown-menu
-                  class="${this.exception &&
-                  this.config.clock_format === undefined
-                    ? "inherited"
-                    : ""}"
-                  label="Clock format"
-                  @value-changed="${this._valueChanged}"
-                  .configValue="${"clock_format"}"
+      ${this._clock
+        ? html`
+            <h4 class="underline">Clock Options</h4>
+            <div class="side-by-side">
+              <paper-dropdown-menu
+                class="${this.exception &&
+                this.config.clock_format === undefined
+                  ? "inherited"
+                  : ""}"
+                label="Clock format"
+                @value-changed="${this._valueChanged}"
+                .configValue="${"clock_format"}"
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  .selected="${this._clock_format === "24" ? 1 : 0}"
                 >
-                  <paper-listbox
-                    slot="dropdown-content"
-                    .selected="${this._clock_format === "24" ? 1 : 0}"
-                  >
-                    <paper-item>12</paper-item>
-                    <paper-item>24</paper-item>
-                  </paper-listbox>
-                </paper-dropdown-menu>
-                <paper-input
-                  class="${this.exception &&
-                  this.config.date_locale === undefined
-                    ? "inherited"
-                    : ""}"
-                  label="Date Locale:"
-                  .value="${this._date_locale}"
-                  .configValue="${"date_locale"}"
-                  @value-changed="${this._valueChanged}"
-                >
-                </paper-input>
+                  <paper-item>12</paper-item>
+                  <paper-item>24</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-input
+                class="${this.exception && this.config.date_locale === undefined
+                  ? "inherited"
+                  : ""}"
+                label="Date Locale:"
+                .value="${this._date_locale}"
+                .configValue="${"date_locale"}"
+                @value-changed="${this._valueChanged}"
+              >
+              </paper-input>
 
-                <div class="side-by-side">
-                  <paper-toggle-button
-                    class="${this.exception &&
-                    this.config.clock_am_pm === undefined
-                      ? "inherited"
-                      : ""}"
-                    ?checked="${this._clock_am_pm !== false}"
-                    .configValue="${"clock_am_pm"}"
-                    @change="${this._valueChanged}"
-                  >
-                    AM / PM</paper-toggle-button
-                  >
-                  <paper-toggle-button
-                    class="${this.exception &&
-                    this.config.clock_date === undefined
-                      ? "inherited"
-                      : ""}"
-                    ?checked="${this._clock_date !== false}"
-                    .configValue="${"clock_date"}"
-                    @change="${this._valueChanged}"
-                  >
-                    Date</paper-toggle-button
-                  >
-                </div>
+              <div class="side-by-side">
+                <paper-toggle-button
+                  class="${this.exception &&
+                  this.config.clock_am_pm === undefined
+                    ? "inherited"
+                    : ""}"
+                  ?checked="${this._clock_am_pm !== false}"
+                  .configValue="${"clock_am_pm"}"
+                  @change="${this._valueChanged}"
+                >
+                  AM / PM</paper-toggle-button
+                >
+                <paper-toggle-button
+                  class="${this.exception &&
+                  this.config.clock_date === undefined
+                    ? "inherited"
+                    : ""}"
+                  ?checked="${this._clock_date !== false}"
+                  .configValue="${"clock_date"}"
+                  @change="${this._valueChanged}"
+                >
+                  Date</paper-toggle-button
+                >
               </div>
-            `
-          : ""
-      }
+            </div>
+          `
+        : ""}
       <h4 class="underline">Tabs</h4>
       <paper-dropdown-menu id="tabs" @value-changed="${this._tabVisibility}">
         <paper-listbox
@@ -737,59 +730,53 @@ export class CchConfigEditor extends LitElement {
         </paper-listbox>
       </paper-dropdown-menu>
       <div class="side-by-side">
-      <div
-        id="show"
-        style="display:${this._show_tabs.length > 0 ? "initial" : "none"}"
-      >
-        <paper-input
-          class="${
-            this.exception && this.config.show_tabs === undefined
-              ? "inherited"
-              : ""
-          }"
-          label="Comma-separated list of tab numbers to show:"
-          .value="${this._show_tabs}"
-          .configValue="${"show_tabs"}"
-          @value-changed="${this._valueChanged}"
+        <div
+          id="show"
+          style="display:${this._show_tabs.length > 0 ? "initial" : "none"}"
         >
-        </paper-input>
-      </div>
-      <div
-        id="hide"
-        style="display:${this._show_tabs.length > 0 ? "none" : "initial"}"
-      >
-        <paper-input
-          class="${
-            this.exception && this.config.hide_tabs === undefined
+          <paper-input
+            class="${this.exception && this.config.show_tabs === undefined
               ? "inherited"
-              : ""
-          }"
-          label="Comma-separated list of tab numbers to hide:"
-          .value="${this._hide_tabs}"
-          .configValue="${"hide_tabs"}"
-          @value-changed="${this._valueChanged}"
+              : ""}"
+            label="Comma-separated list of tab numbers to show:"
+            .value="${this._show_tabs}"
+            .configValue="${"show_tabs"}"
+            @value-changed="${this._valueChanged}"
+          >
+          </paper-input>
+        </div>
+        <div
+          id="hide"
+          style="display:${this._show_tabs.length > 0 ? "none" : "initial"}"
         >
-        </paper-input>
+          <paper-input
+            class="${this.exception && this.config.hide_tabs === undefined
+              ? "inherited"
+              : ""}"
+            label="Comma-separated list of tab numbers to hide:"
+            .value="${this._hide_tabs}"
+            .configValue="${"hide_tabs"}"
+            @value-changed="${this._valueChanged}"
+          >
+          </paper-input>
         </div>
         <paper-input
-          class="${
-            this.exception && this.config.default_tab === undefined
-              ? "inherited"
-              : ""
-          }"
+          class="${this.exception && this.config.default_tab === undefined
+            ? "inherited"
+            : ""}"
           label="Default tab:"
           .value="${this._default_tab}"
           .configValue="${"default_tab"}"
           @value-changed="${this._valueChanged}"
         >
         </paper-input>
-        </div>
-        <h4 class="underline">Swipe Navigation</h4>
-        <div class="side-by-side">
+      </div>
+      <h4 class="underline">Swipe Navigation</h4>
+      <div class="side-by-side">
         <paper-toggle-button
-          class="${
-            this.exception && this.config.swipe === undefined ? "inherited" : ""
-          }"
+          class="${this.exception && this.config.swipe === undefined
+            ? "inherited"
+            : ""}"
           ?checked="${this._swipe !== false}"
           .configValue="${"swipe"}"
           @change="${this._valueChanged}"
@@ -797,6 +784,8 @@ export class CchConfigEditor extends LitElement {
         >
           Swipe Navigation
         </paper-toggle-button>
+        ${this.config.swipe
+          ? html`
         <paper-toggle-button
           class="${
             this.exception && this.config.swipe_wrap === undefined
@@ -874,6 +863,9 @@ export class CchConfigEditor extends LitElement {
         @value-changed="${this._valueChanged}"
       >
       </paper-input>
+      </div>
+    `
+          : ""}
       </div>
     `;
   }
@@ -990,9 +982,9 @@ export class CchConfigEditor extends LitElement {
           transition: all 0.5s ease;
         }
         .underline {
-          border-bottom: 1px solid var(--primary-color);
           width: 100%;
-          background: var(--primary-color);
+          background: var(--dark-color);
+          color: var(--text-dark-color);
           padding: 5px;
           width: calc(100% + 30px);
           margin-left: calc(0% - 20px);
@@ -1053,13 +1045,13 @@ export class CchExceptionEditor extends LitElement {
             >
             </paper-icon-button>
           </div>
-          <h2>Conditions:</h2>
+          <h4 class="underline">Conditions</h4>
           <cch-conditions-editor
             .conditions="${this.exception.conditions}"
             @cch-conditions-changed="${this._conditionsChanged}"
           >
           </cch-conditions-editor>
-          <h2>Config:</h2>
+          <h4 class="underline">Config</h4>
           <cch-config-editor
             exception
             .defaultConfig="${{ ...defaultConfig, ...this.config }}"
@@ -1075,6 +1067,12 @@ export class CchExceptionEditor extends LitElement {
   renderStyle() {
     return html`
       <style>
+        h3,
+        h4 {
+          font-size: 16pt;
+          margin-bottom: 5px;
+          width: 100%;
+        }
         [closed] {
           overflow: hidden;
           height: 52px;
@@ -1083,6 +1081,14 @@ export class CchExceptionEditor extends LitElement {
           margin-top: 10px;
           width: 100%;
           transition: all 0.5s ease;
+        }
+        .underline {
+          width: 100%;
+          background: var(--dark-color);
+          color: var(--text-dark-color);
+          padding: 5px;
+          width: calc(100% + 30px);
+          margin-left: calc(0% - 20px);
         }
       </style>
     `;
