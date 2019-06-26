@@ -28,7 +28,8 @@ Style configuration can be done in yaml, raw edit mode, or from your [HA theme](
 
 ```yaml
 cch:
-  background: transparent url("https://goo.gl/M3Dsf2") # header with background image & transparent as color
+  # background image with transparency and background color transparent
+  background: transparent url("https://goo.gl/M3Dsf2")
   all_buttons_color: green # color of all buttons unless set in button_color
   button_color:
     menu: rgb(255,192,203)

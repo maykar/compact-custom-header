@@ -11,7 +11,6 @@ For more complex conditions (multiple conditions for one element, using entity a
 * All conditional style configuration is done in yaml/raw edit mode.
 * In order to keep important tab style changes visible, active tab styling is disabled when using conditional styling on tabs.
 * If styling an icon, the view must already have an icon associated with it and not just a title.
-* [See full example below for use.](#full-example)
 <br><br>
 
 Example:

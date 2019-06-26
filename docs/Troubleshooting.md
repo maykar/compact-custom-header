@@ -7,18 +7,18 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 <!-- Disable sidebar -->
 
 # **TROUBLESHOOTING**
+<br>
+**Many issues are solved by clearing your cache and refreshing the page.**
 
-Please, read through this guide and search the [HA forum thread](https://community.home-assistant.io/t/compact-custom-header) and [Github issues](https://github.com/maykar/compact-custom-header/issues?utf8=%E2%9C%93&q=is%3Aissue) (open and closed) for your issue before posting to the forums or submitting an issue on Github.
+**To be sure that CCH is the source of the issue, disabling it and checking if the issue persists. The easiest way to do is to remove or comment out CCH in `resources:`.**
+<br><br>
+Please, read through these docs and search the [HA forum thread](https://community.home-assistant.io/t/compact-custom-header) and [Github issues](https://github.com/maykar/compact-custom-header/issues?utf8=%E2%9C%93&q=is%3Aissue) (open and closed) before posting issues on the forums or Github.
 
-Be sure to read through the ["Important Notes"](https://maykar.github.io/compact-custom-header/#important-notes) section of the Wiki and ["Breaking Changes"](https://maykar.github.io/compact-custom-header/#breaking-changes) section for important changes you may have missed.
+Be sure to read ["Important Notes"](https://maykar.github.io/compact-custom-header/#important-notes) and ["Breaking Changes"](https://maykar.github.io/compact-custom-header/#breaking-changes) for important info and changes you may have missed.
 
 [@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for installation of custom cards and solutions to common problems.
 
-CCH may not work on some older/unsupported browsers. User @pjv maintains a version of CCH for those cases, found here: [Lovelace Compact Custom Header for old devices](https://gist.github.com/pjv/521073b982e37418339afbf420691310). **I do not offer support for this method**.
-
-**Many issues are solved by clearing your cache and refreshing the page.**
-
-**Disable CCH to see if your issue still exists without it.**
+CCH may not function on some older/unsupported browsers. @pjv maintains a version of CCH for those cases, found here: [Lovelace Compact Custom Header for old devices](https://gist.github.com/pjv/521073b982e37418339afbf420691310). **I do not offer support for this method**.
 
 When posting issues on Github or HA's forums always include:
 
