@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         
-        <link rel="canonical" href="https://maykar.github.io/compact-custom-header/Troubleshooting/">
+        <link rel="canonical" href="https://maykar.github.io/compact-custom-header/1_1_0_upgrade/">
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Troubleshooting - Compact Custom Header</title>
+        <title>1 1 0 upgrade - Compact Custom Header</title>
         <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -71,8 +71,8 @@
 </li>
                                 </ul>
                             </li>
-                            <li class="active">
-                                <a href="./">Troubleshooting</a>
+                            <li >
+                                <a href="../Troubleshooting/">Troubleshooting</a>
                             </li>
                             <li >
                                 <a href="https://github.com/maykar/compact-custom-header/issues">Issues</a>
@@ -80,18 +80,8 @@
                         </ul>
 
                     <ul class="nav navbar-nav navbar-right">
-                            <li >
-                                <a rel="next" href="../Conditional-Styling-Config/">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="disabled">
-                                <a rel="prev" >
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
                             <li>
-                                <a href="https://github.com/maykar/compact-custom-header/edit/master/docs/Troubleshooting.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/maykar/compact-custom-header/edit/master/docs/1_1_0_upgrade.md"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -101,7 +91,7 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#troubleshooting">TROUBLESHOOTING</a></li>
+        <li class="main active"><a href="#110-breaking-changes">1.1.0 Breaking Changes</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -116,22 +106,24 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 
 <!-- Disable sidebar -->
 
-<h1 id="troubleshooting"><strong>TROUBLESHOOTING</strong><a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h1>
+<h1 id="110-breaking-changes"><strong>1.1.0 Breaking Changes</strong><a class="headerlink" href="#110-breaking-changes" title="Permanent link">&para;</a></h1>
 <p><br>
-<strong>Many issues are solved by clearing your cache and refreshing the page.</strong></p>
-<p><strong>To be sure that CCH is the source of the issue, disabling it and checking if the issue persists. The easiest way to do is to remove or comment out CCH in <code>resources:</code>.</strong>
-<br><br>
-Please, read through these docs and search the <a href="https://community.home-assistant.io/t/compact-custom-header">HA forum thread</a> and <a href="https://github.com/maykar/compact-custom-header/issues?utf8=%E2%9C%93&amp;q=is%3Aissue">Github issues</a> (open and closed) before posting issues on the forums or Github.</p>
-<p>Be sure to read <a href="https://maykar.github.io/compact-custom-header/#important-notes">"Important Notes"</a> and <a href="https://maykar.github.io/compact-custom-header/#breaking-changes">"Breaking Changes"</a> for important info and changes you may have missed.</p>
-<p><a href="https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins">@thomasloven's lovelace guide</a> is a great resource for installation of custom cards and solutions to common problems.</p>
-<p>CCH may not function on some older/unsupported browsers. @pjv maintains a version of CCH for those cases, found here: <a href="https://gist.github.com/pjv/521073b982e37418339afbf420691310">Lovelace Compact Custom Header for old devices</a>. <strong>I do not offer support for this method</strong>.</p>
-<p>When posting issues on Github or HA's forums always include:</p>
-<ul>
-<li>The browser you are using</li>
-<li>Home Assistant version</li>
-<li>The config &amp; resources section of your Lovelace code for CCH</li>
-<li>Any errors in the HA logs and in your browser’s Dev-Tools (F12) pertaining to this card</li>
-</ul></div>
+<strong>Configuration has changed in version 1.1.0</strong></p>
+<p>CCH is no longer a card and all configuration happens in the root of your lovelace config. The config options remain the same so you can copy and paste your previous config from the card to the new config.
+<br>
+<br>
+<strong>Steps to upgrade:</strong></p>
+<ol>
+<li>
+<p>Visit the <a href="../Main-Config-Options/">Main Configuration</a> page of these docs to see how the new config works (this page also explains how the new UI editor works).</p>
+</li>
+<li>
+<p>Copy your previous configuration from the card and paste into <code>cch:</code> as shown in the "Configuration with YAML" section on the page from previous step.</p>
+</li>
+<li>
+<p>Remove the CCH card from all views and the <code>main_config:</code> option from your configuration, they are no longer needed.</p>
+</li>
+</ol></div>
         </div>
 
         <footer class="col-md-12">

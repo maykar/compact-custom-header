@@ -113,11 +113,11 @@
 <h1 id="main-configuration"><strong>MAIN CONFIGURATION</strong><a class="headerlink" href="#main-configuration" title="Permanent link">&para;</a></h1>
 <p><br></p>
 <h2 id="configuration-with-the-ui"><u>Configuration with the UI</u><a class="headerlink" href="#configuration-with-the-ui" title="Permanent link">&para;</a></h2>
-<p>After installing CCH select "Configure UI" from the options menu. There will now be a new item in the options menu called "CCH Settings". You can configure almost every config option from the UI except for <code>date_locale</code>, <code>default_tab</code>, and styling configuration.<br><br>
+<p>After installing CCH, select "Configure UI" from the options menu. There will be a new item in the options menu, "CCH Settings". With the exception of styling, everything in CCH can be configured using this UI. This editor is not available when using Lovelace in YAML Mode.<br><br>
 <img src="https://i.imgur.com/Toe4qDl.gif" width="514px"><br>
 <br><br></p>
 <h2 id="configuration-with-yaml"><u>Configuration with YAML</u><a class="headerlink" href="#configuration-with-yaml" title="Permanent link">&para;</a></h2>
-<p>Configuration for CCH happens in the root of your Lovelace config. You may put it wherever you like, but <strong>DO NOT</strong> put it inside views, resources, or anything else.<br><br>
+<p>Configuration for CCH happens in the root of your Lovelace config. You may put it wherever you like, but <strong>DO NOT</strong> place it inside views, resources, or anything else.<br><br>
 <p style="color: green"><b>Like this:</b></p></p>
 <pre><code class="yaml">resources:
   - url: /community_plugin/compact-custom-header/compact-custom-header.js
@@ -162,34 +162,28 @@ views:
 <td>Display or hide the header.</td>
 </tr>
 <tr>
-<td>chevrons</td>
+<td>default_tab</td>
+<td>number</td>
+<td></td>
+<td>Tab number to start on when navigating to <code>/lovelace/</code> for the first time.</td>
+</tr>
+<tr>
+<td>kiosk_mode</td>
 <td>boolean</td>
 <td>false</td>
-<td>Hide or show the tab's navigation chevrons.</td>
+<td>Turns off <code>sidebar_swipe</code>, turns on <code>sidebar_closed</code>, and hides the header.</td>
 </tr>
 <tr>
-<td>clock_format</td>
-<td>number</td>
-<td>12</td>
-<td>12 or 24 hour clock format. Choices are 12 or 24.</td>
-</tr>
-<tr>
-<td>clock_am_pm</td>
+<td>sidebar_swipe</td>
 <td>boolean</td>
 <td>true</td>
-<td>Display or hide the AM/PM indicator on 12 hour clock.</td>
+<td>Toggle ability to swipe open sidebar on mobile.</td>
 </tr>
 <tr>
-<td>clock_date</td>
+<td>sidebar_closed</td>
 <td>boolean</td>
 <td>false</td>
-<td>Adds a date below the clock.</td>
-</tr>
-<tr>
-<td>date_locale</td>
-<td>string</td>
-<td></td>
-<td>By default the date format/language is set to your HA preference, this option allows you to override that with <a href="http://download1.parallels.com/SiteBuilder/Windows/docs/3.2/en_US/sitebulder-3.2-win-sdk-localization-pack-creation-guide/30801.htm">locale codes</a>. This option must be set manually in yaml code (raw editor). Example <code>date_locale: en-gb</code>.</td>
+<td>If sidebar was previously open, close on load.</td>
 </tr>
 <tr>
 <td>hide_tabs</td>
@@ -210,28 +204,10 @@ views:
 <td>Toggles auto redirecting from a hidden tab to a visible tab.</td>
 </tr>
 <tr>
-<td>sidebar_swipe</td>
-<td>boolean</td>
-<td>true</td>
-<td>Toggle ability to swipe open sidebar on mobile.</td>
-</tr>
-<tr>
-<td>sidebar_closed</td>
+<td>chevrons</td>
 <td>boolean</td>
 <td>false</td>
-<td>If sidebar was previously open, close on load.</td>
-</tr>
-<tr>
-<td>kiosk_mode</td>
-<td>boolean</td>
-<td>false</td>
-<td>Turns off <code>sidebar_swipe</code>, turns on <code>sidebar_closed</code>, and hides the header.</td>
-</tr>
-<tr>
-<td>default_tab</td>
-<td>number</td>
-<td></td>
-<td>Tab number to start on when navigating to <code>/lovelace/</code> for the first time.</td>
+<td>Hide or show the tab's navigation chevrons.</td>
 </tr>
 <tr>
 <td>hide_help</td>
@@ -289,6 +265,34 @@ views:
 <td>show</td>
 <td><img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true"></td>
 <td>Can be "show", "hide" or "clock".</td>
+</tr>
+<tr>
+<td>clock_format</td>
+<td>number</td>
+<td>12</td>
+<td></td>
+<td>12 or 24 hour clock format. Choices are 12 or 24.</td>
+</tr>
+<tr>
+<td>clock_am_pm</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+<td>Display or hide the AM/PM indicator on 12 hour clock.</td>
+</tr>
+<tr>
+<td>clock_date</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+<td>Adds a date below the clock.</td>
+</tr>
+<tr>
+<td>date_locale</td>
+<td>string</td>
+<td></td>
+<td></td>
+<td>By default the date format/language is set to your HA preference, this option allows you to override that with <a href="http://download1.parallels.com/SiteBuilder/Windows/docs/3.2/en_US/sitebulder-3.2-win-sdk-localization-pack-creation-guide/30801.htm">locale codes</a>.</td>
 </tr>
 <tr>
 <td><br></td>
