@@ -117,18 +117,22 @@ export class CompactCustomHeaderEditor extends LitElement {
       <br />
       ${navigator.userAgent}
       <br />
-      <br />
-      ${!this.exception
-        ? html`
-            <br />
-            ${save_button}
-          `
-        : ""}
-      ${!this.exception
-        ? html`
-            ${cancel_button}
-          `
-        : ""}
+      <h4
+        style="background:var(--paper-card-background-color);
+      margin-bottom:-20px;"
+        class="underline"
+      >
+        ${!this.exception
+          ? html`
+              ${save_button}
+            `
+          : ""}
+        ${!this.exception
+          ? html`
+              ${cancel_button}
+            `
+          : ""}
+      </h4>
     `;
   }
 
@@ -270,19 +274,6 @@ export class CchConfigEditor extends LitElement {
     };
   }
 
-  constructor() {
-    super();
-    this._closed = true;
-  }
-
-  get _hide_tabs() {
-    return this.config.hide_tabs || this.defaultConfig.hide_tabs || "";
-  }
-
-  get _show_tabs() {
-    return this.config.show_tabs || this.defaultConfig.show_tabs || "";
-  }
-
   get _clock() {
     return (
       this._menu == "clock" ||
@@ -292,128 +283,10 @@ export class CchConfigEditor extends LitElement {
     );
   }
 
-  get _clock_format() {
-    return this.config.clock_format || this.defaultConfig.clock_format;
-  }
-
-  get _clock_am_pm() {
-    return this.config.clock_am_pm !== undefined
-      ? this.config.clock_am_pm
-      : this.defaultConfig.clock_am_pm;
-  }
-
-  get _clock_date() {
-    return this.config.clock_date !== undefined
-      ? this.config.clock_date
-      : this.defaultConfig.clock_date;
-  }
-
-  get _disable() {
-    return this.config.disable !== undefined
-      ? this.config.disable
-      : this.defaultConfig.disable;
-  }
-
-  get _header() {
-    return this.config.header !== undefined
-      ? this.config.header
-      : this.defaultConfig.header;
-  }
-
-  get _chevrons() {
-    return this.config.chevrons !== undefined
-      ? this.config.chevrons
-      : this.defaultConfig.chevrons;
-  }
-
-  get _hide_help() {
-    return this.config.hide_help || this.defaultConfig.hide_help;
-  }
-
-  get _redirect() {
-    return this.config.redirect !== undefined
-      ? this.config.redirect
-      : this.defaultConfig.redirect;
-  }
-
-  get _kiosk_mode() {
-    return this.config.kiosk_mode !== undefined
-      ? this.config.kiosk_mode
-      : this.defaultConfig.kiosk_mode;
-  }
-
-  get _sidebar_closed() {
-    return this.config.sidebar_closed !== undefined
-      ? this.config.sidebar_closed
-      : this.defaultConfig.sidebar_closed;
-  }
-
-  get _sidebar_swipe() {
-    return this.config.sidebar_swipe !== undefined
-      ? this.config.sidebar_swipe
-      : this.defaultConfig.sidebar_swipe;
-  }
-
-  get _date_locale() {
-    return this.config.date_locale || this.defaultConfig.date_locale;
-  }
-
-  get _menu() {
-    return this.config.menu || this.defaultConfig.menu;
-  }
-
-  get _voice() {
-    return this.config.voice !== undefined
-      ? this.config.voice
-      : this.defaultConfig.voice;
-  }
-
-  get _notifications() {
-    return this.config.notifications !== undefined
-      ? this.config.notifications
-      : this.defaultConfig.notifications;
-  }
-
-  get _options() {
-    return this.config.options !== undefined
-      ? this.config.options
-      : this.defaultConfig.options;
-  }
-
-  get _swipe() {
-    return this.config.swipe !== undefined
-      ? this.config.swipe
-      : this.defaultConfig.swipe;
-  }
-
-  get _swipe_amount() {
-    return this.config.swipe_amount !== undefined
-      ? this.config.swipe_amount
-      : this.defaultConfig.swipe_amount;
-  }
-
-  get _swipe_animate() {
-    return this.config.swipe_animate || this.defaultConfig.swipe_animate;
-  }
-
-  get _default_tab() {
-    return this.config.default_tab || this.defaultConfig.default_tab;
-  }
-
-  get _swipe_skip() {
-    return this.config.swipe_skip || this.defaultConfig.swipe_skip;
-  }
-
-  get _swipe_wrap() {
-    return this.config.swipe_wrap !== undefined
-      ? this.config.swipe_wrap
-      : this.defaultConfig.swipe_wrap;
-  }
-
-  get _swipe_prevent_default() {
-    return this.config.swipe_prevent_default !== undefined
-      ? this.config.swipe_prevent_default
-      : this.defaultConfig.swipe_prevent_default;
+  getConfig(item) {
+    return this.config[item] !== undefined
+      ? this.config[item]
+      : this.defaultConfig[item];
   }
 
   render() {
@@ -477,7 +350,7 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.disable === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._disable !== false}"
+          ?checked="${this.getConfig("disable") !== false}"
           .configValue="${"disable"}"
           @change="${this._valueChanged}"
           title="Completely disable CCH. Useful for exceptions."
@@ -488,7 +361,8 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.header === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._header !== false && this._kiosk_mode == false}"
+          ?checked="${this.getConfig("header") !== false &&
+            this.getConfig("kiosk_mode") == false}"
           .configValue="${"header"}"
           @change="${this._valueChanged}"
           title="Turn off to hide the header completely."
@@ -499,7 +373,7 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.chevrons === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._chevrons !== false}"
+          ?checked="${this.getConfig("chevrons") !== false}"
           .configValue="${"chevrons"}"
           @change="${this._valueChanged}"
           title="Tab/view scrolling controls in header."
@@ -510,7 +384,7 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.redirect === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._redirect !== false}"
+          ?checked="${this.getConfig("redirect") !== false}"
           .configValue="${"redirect"}"
           @change="${this._valueChanged}"
           title="Auto-redirect away from hidden tabs."
@@ -521,7 +395,7 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.kiosk_mode === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._kiosk_mode !== false}"
+          ?checked="${this.getConfig("kiosk_mode") !== false}"
           .configValue="${"kiosk_mode"}"
           @change="${this._valueChanged}"
           title="Hide the header, close the sidebar, and disable sidebar swipe."
@@ -532,7 +406,7 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.hide_help === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._hide_help !== false}"
+          ?checked="${this.getConfig("hide_help") !== false}"
           .configValue="${"hide_help"}"
           @change="${this._valueChanged}"
           title='Hide "Help" in options menu.'
@@ -543,8 +417,8 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.sidebar_closed === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._sidebar_closed !== false ||
-            this._kiosk_mode !== false}"
+          ?checked="${this.getConfig("sidebar_closed") !== false ||
+            this.getConfig("kiosk_mode") !== false}"
           .configValue="${"sidebar_closed"}"
           @change="${this._valueChanged}"
           title="Closes the sidebar on opening Lovelace."
@@ -555,8 +429,8 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.sidebar_swipe === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._sidebar_swipe !== false &&
-            this._kiosk_mode == false}"
+          ?checked="${this.getConfig("sidebar_swipe") !== false &&
+            this.getConfig("kiosk_mode") == false}"
           .configValue="${"sidebar_swipe"}"
           @change="${this._valueChanged}"
           title="Swipe to open sidebar on mobile devices."
@@ -580,7 +454,7 @@ export class CchConfigEditor extends LitElement {
           >
             <paper-listbox
               slot="dropdown-content"
-              .selected="${buttonOptions.indexOf(this._menu)}"
+              .selected="${buttonOptions.indexOf(this.getConfig("menu"))}"
             >
               ${buttonOptions.map(option => {
                 return html`
@@ -603,7 +477,9 @@ export class CchConfigEditor extends LitElement {
           >
             <paper-listbox
               slot="dropdown-content"
-              .selected="${buttonOptions.indexOf(this._notifications)}"
+              .selected="${buttonOptions.indexOf(
+                this.getConfig("notifications")
+              )}"
             >
               ${buttonOptions.map(option => {
                 return html`
@@ -626,7 +502,7 @@ export class CchConfigEditor extends LitElement {
           >
             <paper-listbox
               slot="dropdown-content"
-              .selected="${buttonOptions.indexOf(this._voice)}"
+              .selected="${buttonOptions.indexOf(this.getConfig("voice"))}"
             >
               ${buttonOptions.map(option => {
                 return html`
@@ -649,7 +525,7 @@ export class CchConfigEditor extends LitElement {
           >
             <paper-listbox
               slot="dropdown-content"
-              .selected="${overflowOptions.indexOf(this._options)}"
+              .selected="${overflowOptions.indexOf(this.getConfig("options"))}"
             >
               ${overflowOptions.map(option => {
                 return html`
@@ -666,7 +542,7 @@ export class CchConfigEditor extends LitElement {
             <div class="side-by-side">
               <paper-dropdown-menu
                 class="${this.exception &&
-                this.config.clock_format === undefined
+                this.config.getConfig("clock_format") === undefined
                   ? "inherited"
                   : ""}"
                 label="Clock format"
@@ -675,7 +551,7 @@ export class CchConfigEditor extends LitElement {
               >
                 <paper-listbox
                   slot="dropdown-content"
-                  .selected="${this._clock_format === "24" ? 1 : 0}"
+                  .selected="${this.getConfig("clock_format") === "24" ? 1 : 0}"
                 >
                   <paper-item>12</paper-item>
                   <paper-item>24</paper-item>
@@ -686,7 +562,7 @@ export class CchConfigEditor extends LitElement {
                   ? "inherited"
                   : ""}"
                 label="Date Locale:"
-                .value="${this._date_locale}"
+                .value="${this.getConfig("date_locale")}"
                 .configValue="${"date_locale"}"
                 @value-changed="${this._valueChanged}"
               >
@@ -698,7 +574,7 @@ export class CchConfigEditor extends LitElement {
                   this.config.clock_am_pm === undefined
                     ? "inherited"
                     : ""}"
-                  ?checked="${this._clock_am_pm !== false}"
+                  ?checked="${this.getConfig("clock_am_pm") !== false}"
                   .configValue="${"clock_am_pm"}"
                   @change="${this._valueChanged}"
                 >
@@ -709,7 +585,7 @@ export class CchConfigEditor extends LitElement {
                   this.config.clock_date === undefined
                     ? "inherited"
                     : ""}"
-                  ?checked="${this._clock_date !== false}"
+                  ?checked="${this.getConfig("clock_date") !== false}"
                   .configValue="${"clock_date"}"
                   @change="${this._valueChanged}"
                 >
@@ -723,7 +599,7 @@ export class CchConfigEditor extends LitElement {
       <paper-dropdown-menu id="tabs" @value-changed="${this._tabVisibility}">
         <paper-listbox
           slot="dropdown-content"
-          .selected="${this._show_tabs.length > 0 ? "1" : "0"}"
+          .selected="${this.getConfig("show_tabs").length > 0 ? "1" : "0"}"
         >
           <paper-item>Hide Tabs</paper-item>
           <paper-item>Show Tabs</paper-item>
@@ -732,14 +608,16 @@ export class CchConfigEditor extends LitElement {
       <div class="side-by-side">
         <div
           id="show"
-          style="display:${this._show_tabs.length > 0 ? "initial" : "none"}"
+          style="display:${this.getConfig("show_tabs").length > 0
+            ? "initial"
+            : "none"}"
         >
           <paper-input
             class="${this.exception && this.config.show_tabs === undefined
               ? "inherited"
               : ""}"
             label="Comma-separated list of tab numbers to show:"
-            .value="${this._show_tabs}"
+            .value="${this.getConfig("show_tabs")}"
             .configValue="${"show_tabs"}"
             @value-changed="${this._valueChanged}"
           >
@@ -747,14 +625,16 @@ export class CchConfigEditor extends LitElement {
         </div>
         <div
           id="hide"
-          style="display:${this._show_tabs.length > 0 ? "none" : "initial"}"
+          style="display:${this.getConfig("show_tabs").length > 0
+            ? "none"
+            : "initial"}"
         >
           <paper-input
             class="${this.exception && this.config.hide_tabs === undefined
               ? "inherited"
               : ""}"
             label="Comma-separated list of tab numbers to hide:"
-            .value="${this._hide_tabs}"
+            .value="${this.getConfig("hide_tabs")}"
             .configValue="${"hide_tabs"}"
             @value-changed="${this._valueChanged}"
           >
@@ -765,7 +645,7 @@ export class CchConfigEditor extends LitElement {
             ? "inherited"
             : ""}"
           label="Default tab:"
-          .value="${this._default_tab}"
+          .value="${this.getConfig("default_tab")}"
           .configValue="${"default_tab"}"
           @value-changed="${this._valueChanged}"
         >
@@ -777,7 +657,7 @@ export class CchConfigEditor extends LitElement {
           class="${this.exception && this.config.swipe === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this._swipe !== false}"
+          ?checked="${this.getConfig("swipe") !== false}"
           .configValue="${"swipe"}"
           @change="${this._valueChanged}"
           title="Toggle Swipe Navigation"
@@ -792,7 +672,7 @@ export class CchConfigEditor extends LitElement {
               ? "inherited"
               : ""
           }"
-          ?checked="${this._swipe_wrap !== false}"
+          ?checked="${this.getConfig("swipe_wrap") !== false}"
           .configValue="${"swipe_wrap"}"
           @change="${this._valueChanged}"
           title="Wrap from first to last tab and vice versa."
@@ -805,7 +685,7 @@ export class CchConfigEditor extends LitElement {
               ? "inherited"
               : ""
           }"
-          ?checked="${this._swipe_prevent_default !== false}"
+          ?checked="${this.getConfig("swipe_prevent_default") !== false}"
           .configValue="${"swipe_prevent_default"}"
           @change="${this._valueChanged}"
           title="Prevent browsers default horizontal swipe action."
@@ -828,7 +708,9 @@ export class CchConfigEditor extends LitElement {
         >
           <paper-listbox
             slot="dropdown-content"
-            .selected="${swipeAnimation.indexOf(this._swipe_animate)}"
+            .selected="${swipeAnimation.indexOf(
+              this.getConfig("swipe_animate")
+            )}"
           >
             ${swipeAnimation.map(option => {
               return html`
@@ -845,7 +727,7 @@ export class CchConfigEditor extends LitElement {
           : ""
       }"
       label="Percentage of screen width needed for swipe:"
-      .value="${this._swipe_amount}"
+      .value="${this.getConfig("swipe_amount")}"
       .configValue="${"swipe_amount"}"
       @value-changed="${this._valueChanged}"
     >
@@ -858,7 +740,7 @@ export class CchConfigEditor extends LitElement {
             : ""
         }"
         label="Comma-separated list of tabs to skip over on swipe:"
-        .value="${this._swipe_skip}"
+        .value="${this.getConfig("swipe_skip")}"
         .configValue="${"swipe_skip"}"
         @value-changed="${this._valueChanged}"
       >
