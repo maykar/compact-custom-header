@@ -144,6 +144,7 @@ function run() {
     }
 
     window.dispatchEvent(new Event("resize"));
+
   }
   if (firstRun) monitorElements(tabs);
   firstRun = false;
@@ -836,8 +837,8 @@ function templates(template, buttons, tabs, _hass) {
         return eval(template);
       }
     } catch (e) {
-      console.log("CCH styling template failed:");
-      console.log(e);
+      console.log("CCH styling template failed.");
+      console.log(e)
     }
   };
 
@@ -941,7 +942,7 @@ function breakingChangeNotification() {
       "Compact-Custom-Header's configuration method has changed. You are " +
       "receiving this notification because you have updated CCH, but are " +
       "using the old configuration method. Please, visit the " +
-      "[upgrade guide](https://github.com/maykar/compact-custom-header/) " +
+      "[upgrade guide](https://maykar.github.io/compact-custom-header/1_1_0_upgrade/) " +
       "for more info."
   });
 }
