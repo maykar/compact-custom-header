@@ -7,11 +7,11 @@ Customize the Home Assistant header and much more!<br><br>
 
 * Compact design that removes header text.
 * Per user/device settings.
+* Hide tabs/buttons from user's and devices.
 * Style & hide anything in the header & the header itself.
 * Dynamically style header elements based on entity states/attributes.
 * Add swipe navigation to Lovelace for mobile devices.
 * Any button can be hidden, turned into clock with optional date, or placed in the options menu.
-* Hide tabs/buttons from user's and devices.
 * Set a default/starting view.
 
 **Before:**<br>
