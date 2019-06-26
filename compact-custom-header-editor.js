@@ -33,6 +33,7 @@ export class CompactCustomHeaderEditor extends LitElement {
       );
       this.parentNode.parentNode.parentNode.removeChild(editor);
     };
+    
     const save = () => {
       for (var key in this._config) {
         if (this._config[key] == defaultConfig[key]) {
@@ -43,17 +44,19 @@ export class CompactCustomHeaderEditor extends LitElement {
         ...lovelace.config,
         ...{ cch: this._config }
       };
-      try {
-        lovelace.saveConfig(newConfig).then(() => {
-          if (huiRoot().lovelace.config != newConfig) {
-            console.log("Save failed, reverting.");
-            lovelace.saveConfig(previousConfig);
-          } else {
-            location.reload(true);
-          }
-        });
-      } catch (e) {
-        console.log("Save failed: " + e);
+      if (previousConfig.resources) {
+        try {
+          lovelace.saveConfig(newConfig).then(() => {
+            if (huiRoot().lovelace.config != newConfig) {
+              console.log("Save failed, reverting.");
+              lovelace.saveConfig(previousConfig);
+            } else {
+              location.reload(true);
+            }
+          });
+        } catch (e) {
+          console.log("Save failed: " + e);
+        }
       }
     };
 
@@ -71,6 +74,7 @@ export class CompactCustomHeaderEditor extends LitElement {
       : html`
           <paper-button raised @click="${close}">Cancel</paper-button>
         `;
+
     return html`
       <div @click="${close}" class="title_control">
         X
