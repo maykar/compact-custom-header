@@ -28,3 +28,18 @@ I've made a [quick guide](https://maykar.github.io/compact-custom-header/1_1_0_u
 
 **Conditional Styling Demo:**<br>
 <img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="400px"><br>
+
+## Important Notes
+
+* Hiding the header or the options button will remove your ability to edit from the UI.
+* You can disable CCH by adding "?disable_cch" to the end of your URL.
+* After using the raw config editor you will need to refresh the page to restore CCH.
+* While in edit mode select "Show All Tabs" in the options menu to display hidden tabs. 
+
+This card requires `type: module`. More info in the [installation instructions](https://maykar.github.io/compact-custom-header/)
+```yaml
+resources:
+  - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js
+    type: module
+```
+
