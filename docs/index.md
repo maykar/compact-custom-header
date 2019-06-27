@@ -19,7 +19,7 @@ Customize the header and add enhancements to Lovelace.
 <br><br>
 #### **Manual installation**
 
-1. Install by copying both .js files to `www/custom-lovelace/compact-custom-header/`. [Be sure you're using the raw files from github](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin).
+1. Install by copying [both .js files](https://github.com/maykar/compact-custom-header/) to `www/custom-lovelace/compact-custom-header/`. [Be sure you're using the raw files from github](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin).
 
 2. Add the code below to your resources and refresh the page.
 ```yaml
@@ -56,7 +56,7 @@ resources:
 
 |Version|Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<dot style="color: #fff">.</dot>|Breaking Change|
 |:-|:-|:-|
-|1.1.0|Not released| Configuration has changed. No longer required to use CCH as a card. [More info here](1_1_0_upgrade.md).
+|1.1.0|Jun. 26, 2019| Configuration has changed. No longer required to use CCH as a card. [More info here](1_1_0_upgrade.md).
 |1.0.2b9|Apr. 6, 2019|**“background _image”** and **“background_color”** have been replaced with just “background”.
 |1.0.0b0|Feb. 10, 2019|Complete rewrite. Now **"type: module"** and most config options have changed.
 |0.2.8|Jan. 22, 2019|**Tab numbering** in config options now starts at 0 to match Lovelace URLs.
