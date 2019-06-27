@@ -123,7 +123,7 @@ function run() {
       }
     }
 
-    if (cchConfig.conditional_styles && firstRun) {
+    if (firstRun) {
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
           if (!editMode && huiRoot()) conditionalStyling(buttons, tabs);
@@ -690,6 +690,7 @@ let condState = [];
 let prevColor = {};
 let prevState = [];
 function conditionalStyling(buttons, tabs) {
+  if (!cchConfig.conditional_styles) return;
   let _hass = document.querySelector("home-assistant").hass;
   const conditional_styles = cchConfig.conditional_styles;
   let tabContainer = tabs[0] ? tabs[0].parentNode : "";
