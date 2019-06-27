@@ -60,3 +60,6 @@ resources:
 |1.0.2b9|Apr. 6, 2019|**“background _image”** and **“background_color”** have been replaced with just “background”.
 |1.0.0b0|Feb. 10, 2019|Complete rewrite. Now **"type: module"** and most config options have changed.
 |0.2.8|Jan. 22, 2019|**Tab numbering** in config options now starts at 0 to match Lovelace URLs.
+
+<br>
+**A big "Thank you!" to bramkragten, Ludeeus, iantrich, RomRider, thomasloven, balloob, and the community!**
