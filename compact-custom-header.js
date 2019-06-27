@@ -151,7 +151,7 @@ function run() {
 
     window.dispatchEvent(new Event("resize"));
   }
-  if (firstRun && !disable && !urlDisable) monitorElements(tabs);
+  if (firstRun && !disable) monitorElements(tabs, urlDisable);
   firstRun = false;
 }
 
@@ -204,12 +204,12 @@ function buildConfig() {
   }
 }
 
-function monitorElements(tabs) {
+function monitorElements(tabs, urlDisable) {
   const callback = function(mutations) {
     mutations.forEach(mutation => {
       if (mutation.target.className == "empty") {
         notifications = mutation.target.style.display == "none" ? true : false;
-        if (!editMode && !firstRun && huiRoot()) {
+        if (!editMode && !firstRun && huiRoot() && !urlDisable) {
           conditionalStyling(getButtonElements(), tabs);
         }
         return;
@@ -224,7 +224,9 @@ function monitorElements(tabs) {
           ? root.querySelector("ha-app-layout").querySelector("editor")
           : null;
         if (editor) root.querySelector("ha-app-layout").removeChild(editor);
-        if (!editMode) conditionalStyling(getButtonElements(), tabs);
+        if (!editMode && !urlDisable) {
+          conditionalStyling(getButtonElements(), tabs);
+        }
       }
     });
   };
