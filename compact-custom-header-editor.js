@@ -19,7 +19,7 @@ export class CompactCustomHeaderEditor extends LitElement {
   }
 
   firstUpdated() {
-    this._config = deepcopy(lovelace.config.cch)
+    this._config = deepcopy(lovelace.config.cch);
   }
 
   render() {
@@ -123,7 +123,9 @@ export class CompactCustomHeaderEditor extends LitElement {
           <mwc-button raised @click="${this._save}">Save and Reload</mwc-button>
         `
       : html`
-          <paper-button raised @click="${this._save}">Save and Reload</paper-button>
+          <paper-button raised @click="${this._save}"
+            >Save and Reload</paper-button
+          >
         `;
   }
   get _cancel_button() {
@@ -1143,17 +1145,18 @@ export class CchConditionsEditor extends LitElement {
 customElements.define("cch-conditions-editor", CchConditionsEditor);
 
 function deepcopy(value) {
-  if (!(!!value && typeof value == 'object')) {
+  if (!(!!value && typeof value == "object")) {
     return value;
   }
-  if (Object.prototype.toString.call(value) == '[object Date]') {
+  if (Object.prototype.toString.call(value) == "[object Date]") {
     return new Date(value.getTime());
   }
   if (Array.isArray(value)) {
     return value.map(deepcopy);
   }
   var result = {};
-  Object.keys(value).forEach(
-    function(key) { result[key] = deepcopy(value[key]); });
+  Object.keys(value).forEach(function(key) {
+    result[key] = deepcopy(value[key]);
+  });
   return result;
 }
