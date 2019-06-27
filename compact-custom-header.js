@@ -88,12 +88,6 @@ if (
 buildConfig();
 run();
 
-if (lovelace.mode == "storage" && firstRun) {
-  import("./compact-custom-header-editor.js").then(() => {
-    document.createElement("compact-custom-header-editor");
-  });
-}
-
 function run() {
   const disable = cchConfig.disable;
   const urlDisable = window.location.href.includes("disable_cch");
