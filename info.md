@@ -21,3 +21,10 @@ I've made a [quick guide](https://maykar.github.io/compact-custom-header/1_1_0_u
 
 ### See the <a href="https://maykar.github.io/compact-custom-header/" target="_blank">Docs for installation and configuration</a>.<br>Follow the <a href="https://maykar.github.io/compact-custom-header/Troubleshooting/" target="_blank">troubleshooting guide</a> before submitting issues to github or on the forums.<br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
+
+## Important Notes
+
+* Hiding the header or the options button will remove your ability to edit from the UI.
+* You can disable CCH by adding "?disable_cch" to the end of your URL.
+* After using the raw config editor you will need to refresh the page to restore CCH.
+* While in edit mode select "Show All Tabs" in the options menu to display hidden tabs. 
