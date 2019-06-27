@@ -19,9 +19,7 @@ export class CompactCustomHeaderEditor extends LitElement {
   }
 
   firstUpdated() {
-    this._config = lovelace.config.cch
-      ? JSON.parse(JSON.stringify(lovelace.config.cch))
-      : {};
+    this._config = deepcopy(lovelace.config.cch)
   }
 
   render() {
@@ -1143,3 +1141,19 @@ export class CchConditionsEditor extends LitElement {
 }
 
 customElements.define("cch-conditions-editor", CchConditionsEditor);
+
+function deepcopy(value) {
+  if (!(!!value && typeof value == 'object')) {
+    return value;
+  }
+  if (Object.prototype.toString.call(value) == '[object Date]') {
+    return new Date(value.getTime());
+  }
+  if (Array.isArray(value)) {
+    return value.map(deepcopy);
+  }
+  var result = {};
+  Object.keys(value).forEach(
+    function(key) { result[key] = deepcopy(value[key]); });
+  return result;
+}
