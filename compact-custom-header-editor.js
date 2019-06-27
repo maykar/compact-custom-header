@@ -33,7 +33,7 @@ export class CompactCustomHeaderEditor extends LitElement {
       );
       this.parentNode.parentNode.parentNode.removeChild(editor);
     };
-    
+
     const save = () => {
       for (var key in this._config) {
         if (this._config[key] == defaultConfig[key]) {
@@ -346,6 +346,23 @@ export class CchConfigEditor extends LitElement {
                 Forums</a
               >
             </h4>
+            ${this.getConfig("warning")
+              ? html`
+                  <br />
+                  <div class="warning">
+                    Modifying options marked with a
+                    <iron-icon
+                      icon="hass:alert"
+                      style="width:20px;margin-top:-6px;"
+                    ></iron-icon
+                    >or hiding the options button will remove your ability to
+                    edit from the UI. You can disable CCH by adding
+                    "?disable_cch" to the end of your URL to temporarily restore
+                    the default header.
+                  </div>
+                  <br />
+                `
+              : ""}
           `
         : ""}
       ${this.renderStyle()}
@@ -372,17 +389,27 @@ export class CchConfigEditor extends LitElement {
           title="Turn off to hide the header completely."
         >
           Display Header
+          ${this.getConfig("warning")
+            ? html`
+                <iron-icon icon="hass:alert" class="alert"></iron-icon>
+              `
+            : ""}
         </paper-toggle-button>
         <paper-toggle-button
-          class="${this.exception && this.config.chevrons === undefined
+          class="${this.exception && this.config.kiosk_mode === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this.getConfig("chevrons") !== false}"
-          .configValue="${"chevrons"}"
+          ?checked="${this.getConfig("kiosk_mode") !== false}"
+          .configValue="${"kiosk_mode"}"
           @change="${this._valueChanged}"
-          title="Tab/view scrolling controls in header."
+          title="Hide the header, close the sidebar, and disable sidebar swipe."
         >
-          Display Tab Chevrons
+          Kiosk Mode
+          ${this.getConfig("warning")
+            ? html`
+                <iron-icon icon="hass:alert" class="alert"></iron-icon>
+              `
+            : ""}
         </paper-toggle-button>
         <paper-toggle-button
           class="${this.exception && this.config.redirect === undefined
@@ -396,15 +423,15 @@ export class CchConfigEditor extends LitElement {
           Hidden Tab Redirect
         </paper-toggle-button>
         <paper-toggle-button
-          class="${this.exception && this.config.kiosk_mode === undefined
+          class="${this.exception && this.config.chevrons === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this.getConfig("kiosk_mode") !== false}"
-          .configValue="${"kiosk_mode"}"
+          ?checked="${this.getConfig("chevrons") !== false}"
+          .configValue="${"chevrons"}"
           @change="${this._valueChanged}"
-          title="Hide the header, close the sidebar, and disable sidebar swipe."
+          title="Tab/view scrolling controls in header."
         >
-          Kiosk Mode
+          Display Tab Chevrons
         </paper-toggle-button>
         <paper-toggle-button
           class="${this.exception && this.config.hide_help === undefined
@@ -415,7 +442,7 @@ export class CchConfigEditor extends LitElement {
           @change="${this._valueChanged}"
           title='Hide "Help" in options menu.'
         >
-          Hide Help
+          Hide "Help"
         </paper-toggle-button>
         <paper-toggle-button
           class="${this.exception && this.config.sidebar_closed === undefined
@@ -430,6 +457,22 @@ export class CchConfigEditor extends LitElement {
           Close Sidebar
         </paper-toggle-button>
         <paper-toggle-button
+          class="${this.exception && this.config.hide_config === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this.getConfig("hide_config") !== false}"
+          .configValue="${"hide_config"}"
+          @change="${this._valueChanged}"
+          title='Hide "Configure UI" in options menu.'
+        >
+          Hide "Configure UI"
+          ${this.getConfig("warning")
+            ? html`
+                <iron-icon icon="hass:alert" class="alert"></iron-icon>
+              `
+            : ""}
+        </paper-toggle-button>
+        <paper-toggle-button
           class="${this.exception && this.config.sidebar_swipe === undefined
             ? "inherited"
             : ""}"
@@ -441,6 +484,21 @@ export class CchConfigEditor extends LitElement {
         >
           Swipe Open Sidebar
         </paper-toggle-button>
+        ${!this.exception
+          ? html`
+              <paper-toggle-button
+                class="${this.exception && this.config.warning === undefined
+                  ? "inherited"
+                  : ""}"
+                ?checked="${this.getConfig("warning") !== false}"
+                .configValue="${"warning"}"
+                @change="${this._valueChanged}"
+                title="Toggle warnings in this editor."
+              >
+                Display CCH Warnings
+              </paper-toggle-button>
+            `
+          : ""}
       </div>
 
       <h4 class="underline">Buttons</h4>
@@ -852,11 +910,9 @@ export class CchConfigEditor extends LitElement {
           border-radius: 5px;
         }
         .alert {
-          margin-top: 5px;
-          background-color: #eb5f59;
-          padding: 10px;
-          color: #fff;
-          border-radius: 5px;
+          color: #ffcd4c;
+          width: 20px;
+          margin-top: -6px;
         }
         [closed] {
           overflow: hidden;
