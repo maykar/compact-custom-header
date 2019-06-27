@@ -19,5 +19,5 @@ I've made a [quick guide](https://maykar.github.io/compact-custom-header/1_1_0_u
 ### Before and After:
 <img src="https://github.com/maykar/compact-custom-header/blob/master/example.gif?raw=true" width="400px">
 
-### See the <a href="https://github.com/maykar/compact-custom-header/wiki" target="_blank">Wiki for installation and configuration</a>.<br>Follow the <a href="https://github.com/maykar/compact-custom-header/wiki/Troubleshooting" target="_blank">troubleshooting guide</a> before submitting issues to github or on the forums.<br><br>
+### See the <a href="https://maykar.github.io/compact-custom-header/" target="_blank">Docs for installation and configuration</a>.<br>Follow the <a href="https://maykar.github.io/compact-custom-header/Troubleshooting/" target="_blank">troubleshooting guide</a> before submitting issues to github or on the forums.<br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
