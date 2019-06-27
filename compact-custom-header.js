@@ -51,7 +51,6 @@ export const defaultConfig = {
   warning: true
 };
 
-
 let ll = document.querySelector("home-assistant");
 ll = ll && ll.shadowRoot;
 ll = ll && ll.querySelector("home-assistant-main");
@@ -62,15 +61,14 @@ ll = ll && ll.querySelector("ha-panel-lovelace");
 ll = ll && ll.shadowRoot;
 const huiRoot = ll && ll.querySelector("hui-root");
 
-
 export const hass = document.querySelector("home-assistant").hass;
 export const lovelace = huiRoot.lovelace;
 const root = huiRoot.shadowRoot;
 const config = lovelace.config.cch || {};
 const header = root.querySelector("app-header");
 const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
-const notifDrawer = huiRoot
-  .shadowRoot.querySelector("hui-notification-drawer")
+const notifDrawer = huiRoot.shadowRoot
+  .querySelector("hui-notification-drawer")
   .shadowRoot.querySelector(".notifications");
 let notifications = notifDrawer.querySelectorAll(".notification").length;
 let editMode, cchConfig;
@@ -79,13 +77,14 @@ let sidebarClosed = false;
 let firstRun = true;
 
 if (
+  firstRun &&
   lovelace.config.cch == undefined &&
   JSON.stringify(lovelace.config.views).includes("custom:compact-custom-header")
 ) {
   breakingChangeNotification();
 }
 
-buildConfig();
+if (firstRun) buildConfig();
 run();
 
 function run() {
@@ -143,7 +142,6 @@ function run() {
         }
       });
     }
-
     window.dispatchEvent(new Event("resize"));
   }
   if (firstRun && !disable) monitorElements(tabs, urlDisable);
