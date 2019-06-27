@@ -3,18 +3,13 @@ import {
   html,
   fireEvent,
   defaultConfig,
-  huiRoot,
+  lovelace,
   hass
 } from "./compact-custom-header.js";
 
-const lovelace = huiRoot().lovelace;
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
 const swipeAnimation = ["none", "swipe", "fade", "flip"];
-const previousConfig = JSON.parse(JSON.stringify(lovelace.config));
-const cchConfig = lovelace.config.cch
-  ? JSON.parse(JSON.stringify(lovelace.config.cch))
-  : {};
 
 export class CompactCustomHeaderEditor extends LitElement {
   static get properties() {
@@ -23,60 +18,14 @@ export class CompactCustomHeaderEditor extends LitElement {
     };
   }
 
+  firstUpdated() {
+    this._config = deepcopy(lovelace.config.cch);
+  }
+
   render() {
-    if (this._config == undefined) this._config = cchConfig;
-    const mwc_button = customElements.get("mwc-button") ? true : false;
-
-    const close = () => {
-      let editor = this.parentNode.parentNode.parentNode.querySelector(
-        "editor"
-      );
-      this.parentNode.parentNode.parentNode.removeChild(editor);
-    };
-
-    const save = () => {
-      for (var key in this._config) {
-        if (this._config[key] == defaultConfig[key]) {
-          delete this._config[key];
-        }
-      }
-      let newConfig = {
-        ...lovelace.config,
-        ...{ cch: this._config }
-      };
-      if (previousConfig.resources) {
-        try {
-          lovelace.saveConfig(newConfig).then(() => {
-            if (huiRoot().lovelace.config != newConfig) {
-              console.log("Save failed, reverting.");
-              lovelace.saveConfig(previousConfig);
-            } else {
-              location.reload(true);
-            }
-          });
-        } catch (e) {
-          console.log("Save failed: " + e);
-        }
-      }
-    };
-
-    const save_button = mwc_button
-      ? html`
-          <mwc-button raised @click="${save}">Save and Reload</mwc-button>
-        `
-      : html`
-          <paper-button raised @click="${save}">Save and Reload</paper-button>
-        `;
-    const cancel_button = mwc_button
-      ? html`
-          <mwc-button raised @click="${close}">Cancel</mwc-button>
-        `
-      : html`
-          <paper-button raised @click="${close}">Cancel</paper-button>
-        `;
-
+    if (!this._config) return html``;
     return html`
-      <div @click="${close}" class="title_control">
+      <div @click="${this._close}" class="title_control">
         X
       </div>
       ${this.renderStyle()}
@@ -103,7 +52,7 @@ export class CompactCustomHeaderEditor extends LitElement {
           })
         : ""}
       <br />
-      ${mwc_button
+      ${this._mwc_button
         ? html`
             <mwc-button @click="${this._addException}"
               >Add Exception
@@ -128,16 +77,65 @@ export class CompactCustomHeaderEditor extends LitElement {
       >
         ${!this.exception
           ? html`
-              ${save_button}
+              ${this._save_button}
             `
           : ""}
         ${!this.exception
           ? html`
-              ${cancel_button}
+              ${this._cancel_button}
             `
           : ""}
       </h4>
     `;
+  }
+
+  get _mwc_button() {
+    return customElements.get("mwc-button") ? true : false;
+  }
+
+  _close = () => {
+    let editor = this.parentNode.parentNode.parentNode.querySelector("editor");
+    this.parentNode.parentNode.parentNode.removeChild(editor);
+  };
+
+  _save = () => {
+    for (var key in this._config) {
+      if (this._config[key] == defaultConfig[key]) {
+        delete this._config[key];
+      }
+    }
+    let newConfig = {
+      ...lovelace.config,
+      ...{ cch: this._config }
+    };
+    try {
+      lovelace.saveConfig(newConfig).then(() => {
+        location.reload(true);
+      });
+    } catch (e) {
+      alert("Save failed: " + e);
+    }
+  };
+
+  get _save_button() {
+    return this._mwc_button
+      ? html`
+          <mwc-button raised @click="${this._save}">Save and Reload</mwc-button>
+        `
+      : html`
+          <paper-button raised @click="${this._save}"
+            >Save and Reload</paper-button
+          >
+        `;
+  }
+  get _cancel_button() {
+    return this._mwc_button
+      ? html`
+          <mwc-button raised @click="${this._close}">Cancel</mwc-button>
+        `
+      : html`
+          <paper-button raised @click="${this._close}">Cancel</paper-button>
+        `;
   }
 
   _addException() {
@@ -1145,3 +1143,20 @@ export class CchConditionsEditor extends LitElement {
 }
 
 customElements.define("cch-conditions-editor", CchConditionsEditor);
+
+function deepcopy(value) {
+  if (!(!!value && typeof value == "object")) {
+    return value;
+  }
+  if (Object.prototype.toString.call(value) == "[object Date]") {
+    return new Date(value.getTime());
+  }
+  if (Array.isArray(value)) {
+    return value.map(deepcopy);
+  }
+  var result = {};
+  Object.keys(value).forEach(function(key) {
+    result[key] = deepcopy(value[key]);
+  });
+  return result;
+}
