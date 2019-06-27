@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://maykar.github.io/compact-custom-header/Main-Config-Options/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Main Configuration - Compact Custom Header</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/purebasic.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">Compact Custom Header</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Home</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuration <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li class="active">
+    <a href="./">Main Configuration</a>
+</li>
+                                    
+<li >
+    <a href="../Exception-Config/">User/Device Exceptions</a>
+</li>
+                                    
+<li >
+    <a href="../Styling-Config/">Header Styling</a>
+</li>
+                                    
+<li >
+    <a href="../Conditional-Styling-Config/">Conditional Styling</a>
+</li>
+                                </ul>
+                            </li>
+                            <li >
+                                <a href="../Troubleshooting/">Troubleshooting</a>
+                            </li>
+                            <li >
+                                <a href="https://github.com/maykar/compact-custom-header/issues">Issues</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                            <li >
+                                <a rel="next" href="..">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../Exception-Config/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/maykar/compact-custom-header/edit/master/docs/Main-Config-Options.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#main-configuration">MAIN CONFIGURATION</a></li>
+            <li><a href="#configuration-with-the-ui">Configuration with the UI</a></li>
+            <li><a href="#configuration-with-yaml">Configuration with YAML</a></li>
+            <li><a href="#button-config">Button Config</a></li>
+            <li><a href="#swipe-navigation-config">Swipe Navigation Config</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="main-configuration"><strong>MAIN CONFIGURATION</strong><a class="headerlink" href="#main-configuration" title="Permanent link">&para;</a></h1>
+<p><br></p>
+<h2 id="configuration-with-the-ui"><u>Configuration with the UI</u><a class="headerlink" href="#configuration-with-the-ui" title="Permanent link">&para;</a></h2>
+<p>After installing CCH, select "Configure UI" from the options menu. There will be a new item in the options menu, "CCH Settings". With the exception of styling, everything in CCH can be configured using this UI. This editor is not available when using Lovelace in YAML Mode.<br><br>
+<img src="https://i.imgur.com/Toe4qDl.gif" width="514px"><br>
+<br><br></p>
+<h2 id="configuration-with-yaml"><u>Configuration with YAML</u><a class="headerlink" href="#configuration-with-yaml" title="Permanent link">&para;</a></h2>
+<p>Configuration for CCH happens in the root of your Lovelace config. You may put it wherever you like, but <strong>DO NOT</strong> place it inside views, resources, or anything else.<br><br>
+<p style="color: green"><b>Like this:</b></p></p>
+<pre><code class="yaml">resources:
+  - url: /community_plugin/compact-custom-header/compact-custom-header.js
+    type: module
+cch:
+  hide_tabs: '4,5,6,7,8'
+  options: clock
+views:
+</code></pre>
+
+<p><br><p style="color: red"><b>NEVER like this:</b></p></p>
+<pre><code>resources:
+  - url: /community_plugin/compact-custom-header/compact-custom-header.js
+    type: module
+views:
+  cch:
+    hide_tabs: '4,5,6,7,8'
+    options: clock
+</code></pre>
+
+<p><br></p>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>TYPE</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>disable</td>
+<td>boolean</td>
+<td>false</td>
+<td>Disable Compact Custom Header. Useful to use default header on a certain user agent.</td>
+</tr>
+<tr>
+<td>header</td>
+<td>boolean</td>
+<td>true</td>
+<td>Display or hide the header.</td>
+</tr>
+<tr>
+<td>default_tab</td>
+<td>number</td>
+<td></td>
+<td>Tab number to start on when navigating to <code>/lovelace/</code> for the first time.</td>
+</tr>
+<tr>
+<td>kiosk_mode</td>
+<td>boolean</td>
+<td>false</td>
+<td>Turns off <code>sidebar_swipe</code>, turns on <code>sidebar_closed</code>, and hides the header.</td>
+</tr>
+<tr>
+<td>sidebar_swipe</td>
+<td>boolean</td>
+<td>true</td>
+<td>Toggle ability to swipe open sidebar on mobile.</td>
+</tr>
+<tr>
+<td>sidebar_closed</td>
+<td>boolean</td>
+<td>false</td>
+<td>If sidebar was previously open, close on load.</td>
+</tr>
+<tr>
+<td>hide_tabs</td>
+<td>string</td>
+<td></td>
+<td>Comma-seperated list of tab numbers to hide. Do not use with show_tabs.<br>e.g.,<code>5,6,7,8,13,15</code> Can also use ranges like this <code>5 to 8,13,15</code></td>
+</tr>
+<tr>
+<td>show_tabs</td>
+<td>string</td>
+<td></td>
+<td>Comma-seperated list of tab numbers to show, all others hidden. Do not use with hide_tabs.<br>e.g.,<code>5,6,7,8,13,15</code> Can also use ranges like this <code>5 to 8,13,15</code></td>
+</tr>
+<tr>
+<td>redirect</td>
+<td>boolean</td>
+<td>true</td>
+<td>Toggles auto redirecting from a hidden tab to a visible tab.</td>
+</tr>
+<tr>
+<td>chevrons</td>
+<td>boolean</td>
+<td>false</td>
+<td>Hide or show the tab's navigation chevrons.</td>
+</tr>
+<tr>
+<td>hide_help</td>
+<td>boolean</td>
+<td>false</td>
+<td>Removes "Help" item from options menu.</td>
+</tr>
+<tr>
+<td>exception</td>
+<td></td>
+<td></td>
+<td>Allows for different configs when exceptions are met, see <a href="../Exception-Config/">Exception Config</a>.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<h2 id="button-config"><u>Button Config</u><a class="headerlink" href="#button-config" title="Permanent link">&para;</a></h2>
+<p>Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". Each button except for the options button can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the option button's drop-down menu.
+<br><br></p>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>TYPE</th>
+<th>DEFAULT</th>
+<th>ICON</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>menu</td>
+<td>string</td>
+<td>show</td>
+<td><img src="https://github.com/google/material-design-icons/blob/master/navigation/2x_web/ic_menu_black_18dp.png?raw=true"></td>
+<td>Can be "show", "hide", "clock", or "overflow".</td>
+</tr>
+<tr>
+<td>notifications</td>
+<td>string</td>
+<td>show</td>
+<td><img src="https://github.com/google/material-design-icons/blob/master/social/2x_web/ic_notifications_black_18dp.png?raw=true"></td>
+<td>Can be "show", "hide", "clock", or "overflow".</td>
+</tr>
+<tr>
+<td>voice</td>
+<td>string</td>
+<td>show</td>
+<td><img src="https://github.com/google/material-design-icons/blob/master/av/2x_web/ic_mic_black_18dp.png?raw=true"></td>
+<td>Can be "show", "hide", "clock", or "overflow".</td>
+</tr>
+<tr>
+<td>options</td>
+<td>string</td>
+<td>show</td>
+<td><img src="https://github.com/google/material-design-icons/blob/master/navigation/ios/ic_more_vert_36pt.imageset/ic_more_vert_36pt.png?raw=true"></td>
+<td>Can be "show", "hide" or "clock".</td>
+</tr>
+<tr>
+<td>clock_format</td>
+<td>number</td>
+<td>12</td>
+<td></td>
+<td>12 or 24 hour clock format. Choices are 12 or 24.</td>
+</tr>
+<tr>
+<td>clock_am_pm</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+<td>Display or hide the AM/PM indicator on 12 hour clock.</td>
+</tr>
+<tr>
+<td>clock_date</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+<td>Adds a date below the clock.</td>
+</tr>
+<tr>
+<td>date_locale</td>
+<td>string</td>
+<td></td>
+<td></td>
+<td>By default the date format/language is set to your HA preference, this option allows you to override that with <a href="http://download1.parallels.com/SiteBuilder/Windows/docs/3.2/en_US/sitebulder-3.2-win-sdk-localization-pack-creation-guide/30801.htm">locale codes</a>.</td>
+</tr>
+<tr>
+<td><br></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="swipe-navigation-config"><u>Swipe Navigation Config</u><a class="headerlink" href="#swipe-navigation-config" title="Permanent link">&para;</a></h2>
+<p>Enable swipe navigation between Lovelace views.<br><br>
+<img src="https://github.com/maykar/lovelace-swipe-navigation/blob/master/example.gif?raw=true" width="438px"><br><br><br></p>
+<table>
+<thead>
+<tr>
+<th>NAME</th>
+<th>TYPE</th>
+<th>DEFAULT</th>
+<th>DESCRIPTION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>swipe</td>
+<td>boolean</td>
+<td>false</td>
+<td>Toggle swiping on or off.</td>
+</tr>
+<tr>
+<td>swipe_amount</td>
+<td>number</td>
+<td>15</td>
+<td>Percent of the screen required for a swipe.</td>
+</tr>
+<tr>
+<td>swipe_animate</td>
+<td>string</td>
+<td>none</td>
+<td>Animation to use between swipes. Can be <code>none</code>, <code>swipe</code>, <code>fade</code>, or <code>flip</code></td>
+</tr>
+<tr>
+<td>swipe_skip</td>
+<td>list</td>
+<td></td>
+<td>Comma seperated list of tabs to skip.<br>e.g.,<code>5,6,7,8,13,15</code> Can also use ranges like this <code>5 to 8,13,15</code><br> Tabs hidden with <code>hide_tabs</code> or <code>show_tabs</code> are automatically skipped.</td>
+</tr>
+<tr>
+<td>swipe_wrap</td>
+<td>boolean</td>
+<td>true</td>
+<td>Toggle wrapping from first view to last and vice versa.</td>
+</tr>
+<tr>
+<td>swipe_prevent_default</td>
+<td>boolean</td>
+<td>false</td>
+<td>Toggle the prevention of the browsers default horizontal swipe actions. Some swipe actions, like swiping from screen edge in iOS/Safari, cannot be prevented.</td>
+</tr>
+</tbody>
+</table></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
