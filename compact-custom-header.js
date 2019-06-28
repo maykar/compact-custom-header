@@ -51,26 +51,24 @@ export const defaultConfig = {
   warning: true
 };
 
-const huiRoot = () => {
-  let ll = document.querySelector("home-assistant");
-  ll = ll && ll.shadowRoot;
-  ll = ll && ll.querySelector("home-assistant-main");
-  ll = ll && ll.shadowRoot;
-  ll = ll && ll.querySelector("app-drawer-layout partial-panel-resolver");
-  ll = (ll && ll.shadowRoot) || ll;
-  ll = ll && ll.querySelector("ha-panel-lovelace");
-  ll = ll && ll.shadowRoot;
-  return ll && ll.querySelector("hui-root");
-};
+let ll = document.querySelector("home-assistant");
+ll = ll && ll.shadowRoot;
+ll = ll && ll.querySelector("home-assistant-main");
+ll = ll && ll.shadowRoot;
+ll = ll && ll.querySelector("app-drawer-layout partial-panel-resolver");
+ll = (ll && ll.shadowRoot) || ll;
+ll = ll && ll.querySelector("ha-panel-lovelace");
+ll = ll && ll.shadowRoot;
+const huiRoot = ll && ll.querySelector("hui-root");
 
 export const hass = document.querySelector("home-assistant").hass;
-export const lovelace = huiRoot().lovelace;
-const root = huiRoot().shadowRoot;
+export const lovelace = huiRoot.lovelace;
+const root = huiRoot.shadowRoot;
 const config = lovelace.config.cch || {};
 const header = root.querySelector("app-header");
 const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
-const notifDrawer = huiRoot()
-  .shadowRoot.querySelector("hui-notification-drawer")
+const notifDrawer = huiRoot.shadowRoot
+  .querySelector("hui-notification-drawer")
   .shadowRoot.querySelector(".notifications");
 let notifications = notifDrawer.querySelectorAll(".notification").length;
 let editMode, cchConfig;
@@ -78,16 +76,22 @@ let redirectedToDefaultTab = false;
 let sidebarClosed = false;
 let firstRun = true;
 
+if (lovelace.mode == "storage") {
+  import("./compact-custom-header-editor.js").then(() => {
+    document.createElement("compact-custom-header-editor");
+  });
+}
+
 if (
-  firstRun &&
   lovelace.config.cch == undefined &&
   JSON.stringify(lovelace.config.views).includes("custom:compact-custom-header")
 ) {
   breakingChangeNotification();
 }
 
-if (firstRun) buildConfig();
+buildConfig();
 run();
+console.log("CCH dev branch");
 
 function run() {
   const disable = cchConfig.disable;
@@ -124,7 +128,9 @@ function run() {
     if (firstRun && !disable && !urlDisable) {
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
-          if (!editMode && huiRoot()) conditionalStyling(buttons, tabs);
+          if (!editMode && huiRoot) {
+            conditionalStyling(getButtonElements(), tabs);
+          }
         };
       });
     }
@@ -204,13 +210,13 @@ function monitorElements(tabs, urlDisable) {
     mutations.forEach(mutation => {
       if (mutation.target.className == "empty") {
         notifications = mutation.target.style.display == "none" ? true : false;
-        if (!editMode && !firstRun && huiRoot() && !urlDisable) {
+        if (!editMode && !firstRun && huiRoot && !urlDisable) {
           conditionalStyling(getButtonElements(), tabs);
         }
         return;
       } else if (mutation.attributeName === "class") {
         editMode = mutation.target.className == "edit-mode";
-        if (huiRoot()) run();
+        if (huiRoot) run();
       } else if (mutation.addedNodes.length) {
         if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") {
           return;
@@ -502,7 +508,7 @@ function getTranslation(button) {
 }
 
 function defaultTab(tabs, tabContainer) {
-  if (cchConfig.default_tab && !redirectedToDefaultTab) {
+  if (cchConfig.default_tab && !redirectedToDefaultTab && tabContainer) {
     let default_tab = cchConfig.default_tab;
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
     if (
@@ -569,7 +575,7 @@ function hideTabs(tabContainer, tabs) {
     tabs[tab].style.display = "none";
   }
 
-  if (cchConfig.redirect) {
+  if (cchConfig.redirect && tabContainer) {
     const activeTab = tabContainer.querySelector("paper-tab.iron-selected");
     const activeTabIndex = tabs.indexOf(activeTab);
     // Is the current tab hidden and is there at least one tab is visible.
@@ -917,9 +923,6 @@ function buildRanges(array) {
 
 function showEditor() {
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
-    import("./compact-custom-header-editor.js").then(() => {
-      document.createElement("compact-custom-header-editor");
-    });
     const container = document.createElement("editor");
     const nest = document.createElement("div");
     const cchEditor = document.createElement("compact-custom-header-editor");
