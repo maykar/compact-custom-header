@@ -75,6 +75,7 @@ let editMode, cchConfig;
 let redirectedToDefaultTab = false;
 let sidebarClosed = false;
 let firstRun = true;
+let overflowButtons = [];
 
 if (lovelace.mode == "storage") {
   import("./compact-custom-header-editor.js").then(() => {
@@ -96,7 +97,7 @@ console.log("CCH dev branch");
 function run() {
   const disable = cchConfig.disable;
   const urlDisable = window.location.href.includes("disable_cch");
-  const buttons = getButtonElements();
+  let buttons = getButtonElements();
   const tabContainer = root.querySelector("paper-tabs");
   const tabs = tabContainer
     ? Array.from(tabContainer.querySelectorAll("paper-tab"))
@@ -129,7 +130,7 @@ function run() {
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
           if (!editMode && huiRoot) {
-            conditionalStyling(getButtonElements(), tabs);
+            conditionalStyling(buttons, tabs);
           }
         };
       });
@@ -152,7 +153,7 @@ function run() {
     }
     window.dispatchEvent(new Event("resize"));
   }
-  if (firstRun && !disable) monitorElements(tabs, urlDisable);
+  if (firstRun && !disable) monitorElements(buttons, tabs, urlDisable);
   firstRun = false;
 }
 
@@ -205,13 +206,13 @@ function buildConfig() {
   }
 }
 
-function monitorElements(tabs, urlDisable) {
+function monitorElements(buttons, tabs, urlDisable) {
   const callback = function(mutations) {
     mutations.forEach(mutation => {
       if (mutation.target.className == "empty") {
         notifications = mutation.target.style.display == "none" ? true : false;
         if (!editMode && !firstRun && huiRoot && !urlDisable) {
-          conditionalStyling(getButtonElements(), tabs);
+          conditionalStyling(buttons, tabs);
         }
         return;
       } else if (mutation.attributeName === "class") {
@@ -226,7 +227,7 @@ function monitorElements(tabs, urlDisable) {
           : null;
         if (editor) root.querySelector("ha-app-layout").removeChild(editor);
         if (!editMode && !urlDisable) {
-          conditionalStyling(getButtonElements(), tabs);
+          conditionalStyling(buttons, tabs);
         }
       }
     });
@@ -423,13 +424,19 @@ function styleButtons(buttons, tabs) {
               ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
             `;
     } else if (cchConfig[button] == "overflow") {
+      const menu_items = buttons.options.querySelector("paper-listbox");
+      if (overflowButtons.length) {
+        for (var i = 0; i < overflowButtons.length; i++) {
+          insertMenuItem(menu_items, overflowButtons[i]);
+        }
+        continue;
+      }
       const paperIconButton = buttons[button].querySelector("paper-icon-button")
         ? buttons[button].querySelector("paper-icon-button")
         : buttons[button].shadowRoot.querySelector("paper-icon-button");
       if (paperIconButton.hasAttribute("hidden")) {
         continue;
       }
-      const menu_items = buttons.options.querySelector("paper-listbox");
       const id = `menu_item_${button}`;
       if (!menu_items.querySelector(`[id="${id}"]`)) {
         const wrapper = document.createElement("paper-item");
@@ -441,6 +448,7 @@ function styleButtons(buttons, tabs) {
         });
         paperIconButton.style.pointerEvents = "none";
         insertMenuItem(menu_items, wrapper);
+        overflowButtons.push(wrapper.cloneNode(true));
         if (button == "notifications") {
           let style = document.createElement("style");
           style.innerHTML = `
