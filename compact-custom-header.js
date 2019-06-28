@@ -123,7 +123,7 @@ function run() {
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
           if (!editMode && huiRoot) {
-            conditionalStyling(buttons, tabs);
+            conditionalStyling(getButtonElements(), tabs);
           }
         };
       });
@@ -146,7 +146,7 @@ function run() {
     }
     window.dispatchEvent(new Event("resize"));
   }
-  if (firstRun && !disable) monitorElements(buttons, tabs, urlDisable);
+  if (!disable) monitorElements(tabs, urlDisable);
   firstRun = false;
 }
 
@@ -199,13 +199,13 @@ function buildConfig() {
   }
 }
 
-function monitorElements(buttons, tabs, urlDisable) {
+function monitorElements(tabs, urlDisable) {
   const callback = function(mutations) {
     mutations.forEach(mutation => {
       if (mutation.target.className == "empty") {
         notifications = mutation.target.style.display == "none" ? true : false;
         if (!editMode && !firstRun && huiRoot && !urlDisable) {
-          conditionalStyling(buttons, tabs);
+          conditionalStyling(getButtonElements(), tabs);
         }
         return;
       } else if (mutation.attributeName === "class") {
@@ -220,7 +220,7 @@ function monitorElements(buttons, tabs, urlDisable) {
           : null;
         if (editor) root.querySelector("ha-app-layout").removeChild(editor);
         if (!editMode && !urlDisable) {
-          conditionalStyling(buttons, tabs);
+          conditionalStyling(getButtonElements(), tabs);
         }
       }
     });
@@ -418,15 +418,15 @@ function styleButtons(buttons, tabs) {
             `;
     } else if (cchConfig[button] == "overflow") {
       const menu_items = buttons.options.querySelector("paper-listbox");
-      if (overflowButtons.length) {
-        for (var i = 0; i < overflowButtons.length; i++) {
-          insertMenuItem(menu_items, overflowButtons[i]);
-        }
-        continue;
-      }
       const paperIconButton = buttons[button].querySelector("paper-icon-button")
         ? buttons[button].querySelector("paper-icon-button")
         : buttons[button].shadowRoot.querySelector("paper-icon-button");
+      if (!paperIconButton) {
+        setTimeout(function() {
+          styleButtons(buttons, tabs);
+        }, 500);
+        break;
+      }
       if (paperIconButton.hasAttribute("hidden")) {
         continue;
       }
@@ -441,7 +441,6 @@ function styleButtons(buttons, tabs) {
         });
         paperIconButton.style.pointerEvents = "none";
         insertMenuItem(menu_items, wrapper);
-        overflowButtons.push(wrapper.cloneNode(true));
         if (button == "notifications") {
           let style = document.createElement("style");
           style.innerHTML = `
