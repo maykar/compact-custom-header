@@ -406,6 +406,7 @@ function styleHeader(tabContainer, tabs) {
 
 function styleButtons(buttons, tabs) {
   let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
+  let iteration = 0;
   for (const button in buttons) {
     if (button == "options" && cchConfig[button] == "overflow") {
       cchConfig[button] = "show";
@@ -421,11 +422,14 @@ function styleButtons(buttons, tabs) {
       const paperIconButton = buttons[button].querySelector("paper-icon-button")
         ? buttons[button].querySelector("paper-icon-button")
         : buttons[button].shadowRoot.querySelector("paper-icon-button");
-      if (!paperIconButton) {
+      if (!paperIconButton && iteration < 10) {
         setTimeout(function() {
           styleButtons(buttons, tabs);
         }, 500);
+        iteration++
         break;
+      } else if (!paperIconButton) {
+        throw new Error("CCH: Cannot find button element.");
       }
       if (paperIconButton.hasAttribute("hidden")) {
         continue;
