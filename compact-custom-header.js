@@ -76,6 +76,7 @@ let redirectedToDefaultTab = false;
 let sidebarClosed = false;
 let firstRun = true;
 let overflowButtons = [];
+let iteration = 0;
 
 if (
   lovelace.config.cch == undefined &&
@@ -406,7 +407,6 @@ function styleHeader(tabContainer, tabs) {
 
 function styleButtons(buttons, tabs) {
   let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
-  let iteration = 0;
   for (const button in buttons) {
     if (button == "options" && cchConfig[button] == "overflow") {
       cchConfig[button] = "show";
