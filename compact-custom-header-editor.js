@@ -93,12 +93,12 @@ export class CompactCustomHeaderEditor extends LitElement {
     return customElements.get("mwc-button") ? true : false;
   }
 
-  _close = () => {
+  _close() {
     let editor = this.parentNode.parentNode.parentNode.querySelector("editor");
     this.parentNode.parentNode.parentNode.removeChild(editor);
-  };
+  }
 
-  _save = () => {
+  _save() {
     for (var key in this._config) {
       if (this._config[key] == defaultConfig[key]) {
         delete this._config[key];
@@ -115,7 +115,7 @@ export class CompactCustomHeaderEditor extends LitElement {
     } catch (e) {
       alert("Save failed: " + e);
     }
-  };
+  }
 
   get _save_button() {
     return this._mwc_button
@@ -427,7 +427,7 @@ export class CchConfigEditor extends LitElement {
           ?checked="${this.getConfig("chevrons") !== false}"
           .configValue="${"chevrons"}"
           @change="${this._valueChanged}"
-          title="Tab/view scrolling controls in header."
+          title="View scrolling controls in header."
         >
           Display Tab Chevrons
         </paper-toggle-button>
