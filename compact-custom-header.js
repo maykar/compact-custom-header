@@ -77,12 +77,6 @@ let sidebarClosed = false;
 let firstRun = true;
 let overflowButtons = [];
 
-if (lovelace.mode == "storage") {
-  import("./compact-custom-header-editor.js").then(() => {
-    document.createElement("compact-custom-header-editor");
-  });
-}
-
 if (
   lovelace.config.cch == undefined &&
   JSON.stringify(lovelace.config.views).includes("custom:compact-custom-header")
@@ -92,7 +86,6 @@ if (
 
 buildConfig();
 run();
-console.log("CCH dev branch");
 
 function run() {
   const disable = cchConfig.disable;
@@ -930,6 +923,9 @@ function buildRanges(array) {
 }
 
 function showEditor() {
+  import("./compact-custom-header-editor.js?v=1.1.7").then(() => {
+    document.createElement("compact-custom-header-editor");
+  });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
     const container = document.createElement("editor");
     const nest = document.createElement("div");
