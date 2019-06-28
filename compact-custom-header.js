@@ -89,12 +89,6 @@ if (
 if (firstRun) buildConfig();
 run();
 
-if (lovelace.mode == "storage" && firstRun) {
-  import("./compact-custom-header-editor.js").then(() => {
-    document.createElement("compact-custom-header-editor");
-  });
-}
-
 function run() {
   const disable = cchConfig.disable;
   const urlDisable = window.location.href.includes("disable_cch");
@@ -923,6 +917,9 @@ function buildRanges(array) {
 
 function showEditor() {
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
+    import("./compact-custom-header-editor.js").then(() => {
+      document.createElement("compact-custom-header-editor");
+    });
     const container = document.createElement("editor");
     const nest = document.createElement("div");
     const cchEditor = document.createElement("compact-custom-header-editor");
