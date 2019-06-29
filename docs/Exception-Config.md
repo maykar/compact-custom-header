@@ -11,8 +11,8 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 You can have different settings depending on username, user agent, and media query. You can use any combination as well.
 
 * **user:** This is the Home Assistant user's name, **not username** (if they're different). You can look to the bottom of the editor to see which to use. This option is case sensitive.
-* **user_agent:** A matching word or phrase from the devices user agent. You can find this at the bottom of the CCH settings or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question. This option is case sensitive.
-* **media_query:** A valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp).
+* **user_agent:** A matching word or phrase from the devices user agent. You can find this at the bottom of the CCH settings or by [googling "what's my user agent"](http://www.google.com/search?q=whats+my+user+agent) on the device in question. This option is case sensitive, enclose in quotes if including special characters and not using editor..
+* **media_query:** A valid [CSS media query](https://www.w3schools.com/css/css_rwd_mediaqueries.asp). Enclose in quotes if not using editor.
 
 
 ## <u>Example</U>
@@ -35,7 +35,7 @@ cch:
     - conditions:
         user: maykar
         user_agent: Mobile
-        media_query: (max-width: 600px)
+        media_query: "(max-width: 600px)"
       config:
         options: clock
         clock_format: 12
