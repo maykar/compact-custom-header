@@ -78,6 +78,7 @@ let sidebarClosed = false;
 let firstRun = true;
 let waitForButtons = 0;
 
+
 if (
   lovelace.config.cch == undefined &&
   JSON.stringify(lovelace.config.views).includes("custom:compact-custom-header")
