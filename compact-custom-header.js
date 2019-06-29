@@ -71,11 +71,12 @@ const notifDrawer = huiRoot.shadowRoot
   .querySelector("hui-notification-drawer")
   .shadowRoot.querySelector(".notifications");
 let notifications = notifDrawer.querySelectorAll(".notification").length;
-let editMode, cchConfig;
+let editMode;
+let cchConfig = buildConfig();
 let redirectedToDefaultTab = false;
 let sidebarClosed = false;
 let firstRun = true;
-let overflowButtons = [];
+let waitForButtons = 0;
 
 if (
   lovelace.config.cch == undefined &&
@@ -84,7 +85,6 @@ if (
   breakingChangeNotification();
 }
 
-buildConfig();
 run();
 
 function run() {
@@ -146,7 +146,9 @@ function run() {
     }
     window.dispatchEvent(new Event("resize"));
   }
-  if (!disable) monitorElements(tabs, urlDisable);
+  if (!disable && firstRun) {
+    monitorElements(tabs, urlDisable);
+  }
   firstRun = false;
 }
 
@@ -179,7 +181,7 @@ function buildConfig() {
     delete config.hide_tabs;
   }
 
-  cchConfig = { ...defaultConfig, ...config, ...exceptionConfig };
+  return { ...defaultConfig, ...config, ...exceptionConfig };
 
   function countMatches(conditions) {
     const userVars = { user: hass.user.name, user_agent: navigator.userAgent };
@@ -210,7 +212,7 @@ function monitorElements(tabs, urlDisable) {
         return;
       } else if (mutation.attributeName === "class") {
         editMode = mutation.target.className == "edit-mode";
-        if (huiRoot) run();
+        run();
       } else if (mutation.addedNodes.length) {
         if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") {
           return;
@@ -406,7 +408,6 @@ function styleHeader(tabContainer, tabs) {
 
 function styleButtons(buttons, tabs) {
   let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
-  let iteration = 0;
   for (const button in buttons) {
     if (button == "options" && cchConfig[button] == "overflow") {
       cchConfig[button] = "show";
@@ -422,11 +423,11 @@ function styleButtons(buttons, tabs) {
       const paperIconButton = buttons[button].querySelector("paper-icon-button")
         ? buttons[button].querySelector("paper-icon-button")
         : buttons[button].shadowRoot.querySelector("paper-icon-button");
-      if (!paperIconButton && iteration < 10) {
+      if (!paperIconButton && waitForButtons < 10) {
         setTimeout(function() {
           styleButtons(buttons, tabs);
         }, 500);
-        iteration++
+        waitForButtons++;
         break;
       } else if (!paperIconButton) {
         throw new Error("CCH: Cannot find button element.");
@@ -932,6 +933,9 @@ function showEditor() {
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
     const container = document.createElement("editor");
     const nest = document.createElement("div");
+    const loader = document.createElement("div");
+    loader.classList.add("lds-ring");
+    loader.innerHTML = "<div></div><div></div><div></div><div></div>";
     const cchEditor = document.createElement("compact-custom-header-editor");
     nest.style.cssText = `
       padding: 20px;
@@ -949,8 +953,50 @@ function showEditor() {
       z-index: 1;
       padding: 5px;
     `;
+    nest.innerHTML += `
+      <style>
+      .lds-ring {
+        left: 50%;
+        margin-left: -32px;
+        display: inline-block;
+        position: relative;
+        width: 64px;
+        height: 64px;
+      }
+      .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 51px;
+        height: 51px;
+        margin: 6px;
+        border: 6px solid #fff;
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: var(--primary-color) transparent transparent transparent;
+      }
+      .lds-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .lds-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .lds-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+      @keyframes lds-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      </style>
+      `;
     root.querySelector("ha-app-layout").insertBefore(container, view);
     container.appendChild(nest);
+    nest.appendChild(loader);
     nest.appendChild(cchEditor);
   }
 }
