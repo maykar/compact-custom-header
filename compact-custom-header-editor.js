@@ -19,7 +19,11 @@ export class CompactCustomHeaderEditor extends LitElement {
   }
 
   firstUpdated() {
-    this._config = deepcopy(lovelace.config.cch);
+    let loader = this.parentNode.querySelector(".lds-ring")
+    loader.parentNode.removeChild(loader)
+    this._config = lovelace.config.cch
+      ? deepcopy(lovelace.config.cch)
+      : {};
   }
 
   render() {
