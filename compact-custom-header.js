@@ -958,6 +958,7 @@ function showEditor() {
 function breakingChangeNotification() {
   hass.callService("persistent_notification", "create", {
     title: "CCH Breaking Change",
+    notification_id: "CCH_Breaking_Change",
     message:
       "Compact-Custom-Header's configuration method has changed. You are " +
       "receiving this notification because you have updated CCH, but are " +
