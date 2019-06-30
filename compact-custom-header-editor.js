@@ -19,11 +19,9 @@ export class CompactCustomHeaderEditor extends LitElement {
   }
 
   firstUpdated() {
-    let loader = this.parentNode.querySelector(".lds-ring")
-    loader.parentNode.removeChild(loader)
-    this._config = lovelace.config.cch
-      ? deepcopy(lovelace.config.cch)
-      : {};
+    let loader = this.parentNode.querySelector(".lds-ring");
+    loader.parentNode.removeChild(loader);
+    this._config = lovelace.config.cch ? deepcopy(lovelace.config.cch) : {};
   }
 
   render() {
@@ -282,10 +280,10 @@ export class CchConfigEditor extends LitElement {
 
   get _clock() {
     return (
-      this._menu == "clock" ||
-      this._voice == "clock" ||
-      this._notifications == "clock" ||
-      this._options == "clock"
+      this.getConfig("menu") == "clock" ||
+      this.getConfig("voice") == "clock" ||
+      this.getConfig("notifications") == "clock" ||
+      this.getConfig("options") == "clock"
     );
   }
 
