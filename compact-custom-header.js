@@ -78,7 +78,6 @@ let sidebarClosed = false;
 let firstRun = true;
 let waitForButtons = 0;
 
-
 if (
   lovelace.config.cch == undefined &&
   JSON.stringify(lovelace.config.views).includes("custom:compact-custom-header")
@@ -97,10 +96,8 @@ function run() {
     ? Array.from(tabContainer.querySelectorAll("paper-tab"))
     : [];
 
-  if (editMode) {
-    if (!disable) removeStyles(tabContainer, tabs);
+  if (!disable && !urlDisable) {
     insertEditMenu(buttons, tabs);
-  } else if (!disable && !urlDisable) {
     styleButtons(buttons, tabs);
     styleHeader(tabContainer, tabs);
     restoreTabs(tabs, hideTabs(tabContainer, tabs));
@@ -123,7 +120,13 @@ function run() {
     if (firstRun && !disable && !urlDisable) {
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
+          let i = 0;
           if (!editMode && huiRoot) {
+            let notif = notifDrawer.querySelectorAll(".notification");
+            [].forEach.call(notif, function(item) {
+              if (item.style.display !== "none") i++;
+            });
+            notifications = i;
             conditionalStyling(getButtonElements(), tabs);
           }
         };
@@ -148,7 +151,7 @@ function run() {
     window.dispatchEvent(new Event("resize"));
   }
   if (!disable && firstRun) {
-    monitorElements(tabs, urlDisable);
+    monitorElements(tabContainer, tabs, urlDisable);
   }
   firstRun = false;
 }
@@ -202,18 +205,17 @@ function buildConfig() {
   }
 }
 
-function monitorElements(tabs, urlDisable) {
+function monitorElements(tabContainer, tabs, urlDisable) {
   const callback = function(mutations) {
     mutations.forEach(mutation => {
-      if (mutation.target.className == "empty") {
-        notifications = mutation.target.style.display == "none" ? true : false;
-        if (!editMode && !firstRun && huiRoot && !urlDisable) {
-          conditionalStyling(getButtonElements(), tabs);
-        }
-        return;
-      } else if (mutation.attributeName === "class") {
+      if (mutation.attributeName === "class") {
         editMode = mutation.target.className == "edit-mode";
-        run();
+        if (editMode) {
+          if (!cchConfig.disable) removeStyles(tabContainer, tabs);
+          insertEditMenu(getButtonElements(), tabs);
+        } else {
+          run();
+        }
       } else if (mutation.addedNodes.length) {
         if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") {
           return;
@@ -229,10 +231,6 @@ function monitorElements(tabs, urlDisable) {
     });
   };
   new MutationObserver(callback).observe(view, { childList: true });
-  new MutationObserver(callback).observe(notifDrawer.querySelector(".empty"), {
-    attributes: true,
-    attributeFilter: ["style"]
-  });
   new MutationObserver(callback).observe(header, {
     attributes: true,
     attributeFilter: ["class"]
@@ -264,15 +262,7 @@ function tabContainerMargin(buttons, tabContainer) {
 }
 
 function insertEditMenu(buttons, tabs) {
-  if (cchConfig.hide_tabs && buttons.options) {
-    let editor = document.createElement("paper-item");
-    editor.setAttribute("id", "cch_settings");
-    editor.addEventListener("click", () => {
-      showEditor();
-    });
-    editor.innerHTML = "CCH Settings";
-    insertMenuItem(buttons.options.querySelector("paper-listbox"), editor);
-
+  if (cchConfig.hide_tabs && buttons.options && editMode) {
     let show_tabs = document.createElement("paper-item");
     show_tabs.setAttribute("id", "show_tabs");
     show_tabs.addEventListener("click", () => {
@@ -282,6 +272,14 @@ function insertEditMenu(buttons, tabs) {
     });
     show_tabs.innerHTML = "Show all tabs";
     insertMenuItem(buttons.options.querySelector("paper-listbox"), show_tabs);
+  } else if (buttons.options && !editMode) {
+    let editor = document.createElement("paper-item");
+    editor.setAttribute("id", "cch_settings");
+    editor.addEventListener("click", () => {
+      showEditor();
+    });
+    editor.innerHTML = "CCH Settings";
+    insertMenuItem(buttons.options.querySelector("paper-listbox"), editor);
   }
 }
 
@@ -426,7 +424,7 @@ function styleButtons(buttons, tabs) {
         : buttons[button].shadowRoot.querySelector("paper-icon-button");
       if (!paperIconButton && waitForButtons < 10) {
         setTimeout(function() {
-          styleButtons(buttons, tabs);
+          styleButtons(getButtonElements(), tabs);
         }, 500);
         waitForButtons++;
         break;
@@ -613,7 +611,7 @@ function insertClock(buttons, clock_button) {
   const clockWidth =
     (cchConfig.clock_format == 12 && cchConfig.clock_am_pm) ||
     cchConfig.clock_date
-      ? 90
+      ? 110
       : 80;
 
   if (
@@ -928,6 +926,7 @@ function buildRanges(array) {
 }
 
 function showEditor() {
+  window.scrollTo(0, 0);
   import("./compact-custom-header-editor.js?v=1.1.7").then(() => {
     document.createElement("compact-custom-header-editor");
   });
