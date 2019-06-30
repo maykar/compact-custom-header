@@ -272,7 +272,7 @@ function insertEditMenu(buttons, tabs) {
     });
     show_tabs.innerHTML = "Show all tabs";
     insertMenuItem(buttons.options.querySelector("paper-listbox"), show_tabs);
-  } else if (buttons.options && !editMode) {
+  } else if (buttons.options && !editMode && lovelace.mode == "storage") {
     let editor = document.createElement("paper-item");
     editor.setAttribute("id", "cch_settings");
     editor.addEventListener("click", () => {
