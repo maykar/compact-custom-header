@@ -407,6 +407,7 @@ function styleHeader(tabContainer, tabs) {
 
 function styleButtons(buttons, tabs) {
   let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
+  buttons = reverseObject(buttons)
   for (const button in buttons) {
     if (button == "options" && cchConfig[button] == "overflow") {
       cchConfig[button] = "show";
@@ -999,6 +1000,17 @@ function showEditor() {
     nest.appendChild(loader);
     nest.appendChild(cchEditor);
   }
+}
+
+function reverseObject(object) {
+  let newObject = {};
+  let keys = [];
+  for (let key in object) keys.push(key);
+  for (let i = keys.length - 1; i >= 0; i--) {
+    let value = object[keys[i]];
+    newObject[keys[i]]= value;
+  }       
+  return newObject;
 }
 
 function breakingChangeNotification() {
