@@ -1,8 +1,7 @@
 # **MAIN CONFIGURATION**
 <br>
 ## <u>Configuration with the UI</u>
-After installing CCH, select "Configure UI" from the options menu. There will be a new item in the options menu, "CCH Settings". With the exception of styling, everything in CCH can be configured using this UI. This editor is not available when using Lovelace in YAML Mode.<br><br>
-<img src="https://i.imgur.com/Toe4qDl.gif" width="514px"><br>
+After installing CCH there will be a new item in the options menu (top right icon) named "CCH Settings". With the exception of styling, everything in CCH can be configured using this UI. This editor is not available when using Lovelace in YAML Mode.
 <br><br>
 ## <u>Configuration with YAML</u>
 Configuration for CCH happens in the root of your Lovelace config. You may put it wherever you like, but **DO NOT** place it inside views, resources, or anything else.<br><br>

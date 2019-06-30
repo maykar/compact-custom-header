@@ -121,8 +121,8 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 <p>You can have different settings depending on username, user agent, and media query. You can use any combination as well.</p>
 <ul>
 <li><strong>user:</strong> This is the Home Assistant user's name, <strong>not username</strong> (if they're different). You can look to the bottom of the editor to see which to use. This option is case sensitive.</li>
-<li><strong>user_agent:</strong> A matching word or phrase from the devices user agent. You can find this at the bottom of the CCH settings or by <a href="http://www.google.com/search?q=whats+my+user+agent">googling "what's my user agent"</a> on the device in question. This option is case sensitive.</li>
-<li><strong>media_query:</strong> A valid <a href="https://www.w3schools.com/css/css_rwd_mediaqueries.asp">CSS media query</a>.</li>
+<li><strong>user_agent:</strong> A matching word or phrase from the devices user agent. You can find this at the bottom of the CCH settings or by <a href="http://www.google.com/search?q=whats+my+user+agent">googling "what's my user agent"</a> on the device in question. This option is case sensitive, enclose in quotes if including special characters and not using editor..</li>
+<li><strong>media_query:</strong> A valid <a href="https://www.w3schools.com/css/css_rwd_mediaqueries.asp">CSS media query</a>. Enclose in quotes if not using editor.</li>
 </ul>
 <h2 id="example"><u>Example</U><a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>Under exceptions set your conditions and then set up their config below that. If a config item is left out of an exception's config the main config's value is used.</p>
@@ -141,7 +141,7 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
     - conditions:
         user: maykar
         user_agent: Mobile
-        media_query: (max-width: 600px)
+        media_query: &quot;(max-width: 600px)&quot;
       config:
         options: clock
         clock_format: 12
