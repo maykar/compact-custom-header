@@ -91,13 +91,14 @@ if (
 run();
 
 function run() {
+  if (firstRun) buttons = getButtonElements();
+  if (!buttons.notifications) return;
   const disable = cchConfig.disable;
   const urlDisable = window.location.href.includes("disable_cch");
   const tabContainer = root.querySelector("paper-tabs");
   const tabs = tabContainer
     ? Array.from(tabContainer.querySelectorAll("paper-tab"))
     : [];
-  if (firstRun) buttons = getButtonElements();
 
   if (!disable && !urlDisable) {
     insertEditMenu(buttons, tabs);
