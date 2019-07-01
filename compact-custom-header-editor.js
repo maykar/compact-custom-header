@@ -3,13 +3,13 @@ import {
   html,
   fireEvent,
   defaultConfig,
-  lovelace,
   hass
 } from "./compact-custom-header.js";
 
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
 const swipeAnimation = ["none", "swipe", "fade", "flip"];
+let lovelace;
 
 export class CompactCustomHeaderEditor extends LitElement {
   static get properties() {
@@ -19,13 +19,23 @@ export class CompactCustomHeaderEditor extends LitElement {
   }
 
   firstUpdated() {
+    let ll = document.querySelector("home-assistant");
+    ll = ll && ll.shadowRoot;
+    ll = ll && ll.querySelector("home-assistant-main");
+    ll = ll && ll.shadowRoot;
+    ll = ll && ll.querySelector("app-drawer-layout partial-panel-resolver");
+    ll = (ll && ll.shadowRoot) || ll;
+    ll = ll && ll.querySelector("ha-panel-lovelace");
+    ll = ll && ll.shadowRoot;
+    lovelace = ll && ll.querySelector("hui-root").lovelace;
+
     let loader = this.parentNode.querySelector(".lds-ring");
     loader.parentNode.removeChild(loader);
     this._config = lovelace.config.cch ? deepcopy(lovelace.config.cch) : {};
   }
 
   render() {
-    if (!this._config) return html``;
+    if (!this._config || !lovelace) return html``;
     return html`
       <div @click="${this._close}" class="title_control">
         X
