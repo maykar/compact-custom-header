@@ -222,7 +222,7 @@ function monitorElements(tabContainer, tabs, urlDisable) {
         insertEditMenu(buttons, tabs);
       } else if (mutation.target.nodeName == "APP-HEADER") {
         editMode = false;
-        buttons.options = root.querySelector("paper-menu-button");
+        buttons = getButtonElements()
         run();
       } else if (mutation.addedNodes.length) {
         if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") return;
