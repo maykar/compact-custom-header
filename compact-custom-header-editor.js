@@ -627,7 +627,7 @@ export class CchConfigEditor extends LitElement {
             <div class="side-by-side">
               <paper-dropdown-menu
                 class="${this.exception &&
-                this.config.getConfig("clock_format") === undefined
+                this.getConfig("clock_format") === undefined
                   ? "inherited"
                   : ""}"
                 label="Clock format"
