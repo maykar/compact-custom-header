@@ -93,11 +93,11 @@ run();
 function run() {
   const disable = cchConfig.disable;
   const urlDisable = window.location.href.includes("disable_cch");
-  if (firstRun) buttons = getButtonElements();
   const tabContainer = root.querySelector("paper-tabs");
   const tabs = tabContainer
     ? Array.from(tabContainer.querySelectorAll("paper-tab"))
     : [];
+  if (firstRun) buttons = getButtonElements();
 
   if (!disable && !urlDisable) {
     insertEditMenu(buttons, tabs);
@@ -136,7 +136,10 @@ function run() {
       [].forEach.call(menuItems, function(item) {
         if (item.innerHTML.includes("Help") && cchConfig.hide_help) {
           item.parentNode.removeChild(item);
-        } else if (item.innerHTML.includes("Unused entities") && cchConfig.hide_unused) {
+        } else if (
+          item.innerHTML.includes("Unused entities") &&
+          cchConfig.hide_unused
+        ) {
           item.parentNode.removeChild(item);
         } else if (
           item.innerHTML.includes("Configure UI") &&
@@ -221,12 +224,19 @@ function monitorElements(tabContainer, tabs, urlDisable) {
         buttons.options = root.querySelector("paper-menu-button");
         insertEditMenu(buttons, tabs);
       } else if (mutation.target.nodeName == "APP-HEADER") {
-        editMode = false;
-        buttons = getButtonElements()
-        run();
+        [].forEach.call(mutation.addedNodes, function(item) {
+          if (item.nodeName == "APP-TOOLBAR") {
+            editMode = false;
+            buttons = getButtonElements();
+            run();
+            return;
+          }
+        });
       } else if (mutation.addedNodes.length) {
         if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") return;
-        let editor = root.querySelector("ha-app-layout").querySelector("editor");
+        let editor = root
+          .querySelector("ha-app-layout")
+          .querySelector("editor");
         if (editor) root.querySelector("ha-app-layout").removeChild(editor);
         if (!editMode && !urlDisable && cchConfig.conditional_styles) {
           conditionalStyling(buttons, tabs);
@@ -916,7 +926,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.1.9b2").then(() => {
+  import("./compact-custom-header-editor.js?v=1.1.9b3").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
