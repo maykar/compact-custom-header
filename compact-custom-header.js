@@ -62,7 +62,7 @@ ll = ll && ll.shadowRoot;
 
 const huiRoot = ll && ll.querySelector("hui-root");
 export const hass = document.querySelector("home-assistant").hass;
-export const lovelace = huiRoot.lovelace;
+const lovelace = huiRoot.lovelace;
 const root = huiRoot.shadowRoot;
 const config = lovelace.config.cch || {};
 const header = root.querySelector("app-header");
