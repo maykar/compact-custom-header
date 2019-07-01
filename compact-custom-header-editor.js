@@ -434,17 +434,6 @@ export class CchConfigEditor extends LitElement {
           Display Tab Chevrons
         </paper-toggle-button>
         <paper-toggle-button
-          class="${this.exception && this.config.hide_help === undefined
-            ? "inherited"
-            : ""}"
-          ?checked="${this.getConfig("hide_help") !== false}"
-          .configValue="${"hide_help"}"
-          @change="${this._valueChanged}"
-          title='Hide "Help" in options menu.'
-        >
-          Hide "Help"
-        </paper-toggle-button>
-        <paper-toggle-button
           class="${this.exception && this.config.sidebar_closed === undefined
             ? "inherited"
             : ""}"
@@ -455,22 +444,6 @@ export class CchConfigEditor extends LitElement {
           title="Closes the sidebar on opening Lovelace."
         >
           Close Sidebar
-        </paper-toggle-button>
-        <paper-toggle-button
-          class="${this.exception && this.config.hide_config === undefined
-            ? "inherited"
-            : ""}"
-          ?checked="${this.getConfig("hide_config") !== false}"
-          .configValue="${"hide_config"}"
-          @change="${this._valueChanged}"
-          title='Hide "Configure UI" in options menu.'
-        >
-          Hide "Configure UI"
-          ${this.getConfig("warning")
-            ? html`
-                <iron-icon icon="hass:alert" class="alert"></iron-icon>
-              `
-            : ""}
         </paper-toggle-button>
         <paper-toggle-button
           class="${this.exception && this.config.sidebar_swipe === undefined
@@ -500,7 +473,47 @@ export class CchConfigEditor extends LitElement {
             `
           : ""}
       </div>
-
+      <h4 class="underline">Menu Items</h4>
+      <div class="side-by-side">
+        <paper-toggle-button
+          class="${this.exception && this.config.hide_config === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this.getConfig("hide_config") !== false}"
+          .configValue="${"hide_config"}"
+          @change="${this._valueChanged}"
+          title='Hide "Configure UI" in options menu.'
+        >
+          Hide "Configure UI"
+          ${this.getConfig("warning")
+            ? html`
+                <iron-icon icon="hass:alert" class="alert"></iron-icon>
+              `
+            : ""}
+        </paper-toggle-button>
+        <paper-toggle-button
+          class="${this.exception && this.config.hide_help === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this.getConfig("hide_help") !== false}"
+          .configValue="${"hide_help"}"
+          @change="${this._valueChanged}"
+          title='Hide "Help" in options menu.'
+        >
+          Hide "Help"
+        </paper-toggle-button>
+        <paper-toggle-button
+          class="${this.exception && this.config.hide_unused === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this.getConfig("hide_unused") !== false}"
+          .configValue="${"hide_unused"}"
+          @change="${this._valueChanged}"
+          title='Hide "Help" in options menu.'
+        >
+          Hide "Unused Entities"
+        </paper-toggle-button>
+      </div>
       <h4 class="underline">Buttons</h4>
       <div class="buttons side-by-side">
         <div
