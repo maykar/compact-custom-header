@@ -424,39 +424,41 @@ function styleButtons(buttons, tabs) {
       let paperIconButton = buttons[button].querySelector("paper-icon-button")
         ? buttons[button].querySelector("paper-icon-button")
         : buttons[button].shadowRoot.querySelector("paper-icon-button");
-      if (paperIconButton.hasAttribute("hidden")) {
-        continue;
-      }
-      const id = `menu_item_${button}`;
-      if (!menu_items.querySelector(`[id="${id}"]`)) {
-        const wrapper = document.createElement("paper-item");
-        wrapper.setAttribute("id", id);
-        wrapper.innerText = getTranslation(button);
-        wrapper.appendChild(buttons[button]);
-        wrapper.addEventListener("click", () => {
-          paperIconButton.click();
-        });
-        paperIconButton.style.pointerEvents = "none";
-        insertMenuItem(menu_items, wrapper);
-        if (button == "notifications") {
-          let style = document.createElement("style");
-          style.innerHTML = `
-                .indicator {
-                  top: 5px;
-                  right: 0px;
-                  width: 10px;
-                  height: 10px;
-                  ${
-                    cchConfig.notify_indicator_color
-                      ? `background-color:${cchConfig.notify_indicator_color}`
-                      : ""
+      if (paperIconButton) {
+        if (paperIconButton.hasAttribute("hidden")) {
+          continue;
+        }
+        const id = `menu_item_${button}`;
+        if (!menu_items.querySelector(`[id="${id}"]`)) {
+          const wrapper = document.createElement("paper-item");
+          wrapper.setAttribute("id", id);
+          wrapper.innerText = getTranslation(button);
+          wrapper.appendChild(buttons[button]);
+          wrapper.addEventListener("click", () => {
+            paperIconButton.click();
+          });
+          paperIconButton.style.pointerEvents = "none";
+          insertMenuItem(menu_items, wrapper);
+          if (button == "notifications") {
+            let style = document.createElement("style");
+            style.innerHTML = `
+                  .indicator {
+                    top: 5px;
+                    right: 0px;
+                    width: 10px;
+                    height: 10px;
+                    ${
+                      cchConfig.notify_indicator_color
+                        ? `background-color:${cchConfig.notify_indicator_color}`
+                        : ""
+                    }
                   }
-                }
-                .indicator > div{
-                  display:none;
-                }
-              `;
-          paperIconButton.parentNode.appendChild(style);
+                  .indicator > div{
+                    display:none;
+                  }
+                `;
+            paperIconButton.parentNode.appendChild(style);
+          }
         }
       }
     } else if (cchConfig[button] == "hide") {
@@ -916,7 +918,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.1.9b2").then(() => {
+  import("./compact-custom-header-editor.js?v=1.1.7").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
