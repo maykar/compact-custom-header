@@ -18,6 +18,10 @@ export class CompactCustomHeaderEditor extends LitElement {
     };
   }
 
+  showDialog(params) {
+
+  }
+
   firstUpdated() {
     let ll = document.querySelector("home-assistant");
     ll = ll && ll.shadowRoot;
@@ -37,6 +41,7 @@ export class CompactCustomHeaderEditor extends LitElement {
   render() {
     if (!this._config || !lovelace) return html``;
     return html`
+    <paper-dialog>
       <div @click="${this._close}" class="title_control">
         X
       </div>
@@ -98,6 +103,7 @@ export class CompactCustomHeaderEditor extends LitElement {
             `
           : ""}
       </h4>
+      </paper-dialog>
     `;
   }
 
