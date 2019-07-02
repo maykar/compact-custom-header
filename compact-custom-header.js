@@ -40,6 +40,7 @@ export const defaultConfig = {
   button_color: {},
   hide_help: false,
   hide_config: false,
+  hide_unused: false,
   swipe: false,
   swipe_amount: "15",
   swipe_animate: "none",
@@ -75,12 +76,12 @@ let cchConfig = buildConfig();
 let redirectedToDefaultTab = false;
 let sidebarClosed = false;
 let firstRun = true;
-let buttons = {};
 let editMode = false;
 let condState = [];
 let prevColor = {};
 let prevState = [];
 
+// Persistant notification of breaking changes if old config method used.
 if (
   lovelace.config.cch == undefined &&
   JSON.stringify(lovelace.config.views).includes("custom:compact-custom-header")
@@ -91,7 +92,8 @@ if (
 run();
 
 function run() {
-  if (firstRun) buttons = getButtonElements();
+  let buttons;
+  if (firstRun || buttons == undefined) buttons = getButtonElements();
   if (!buttons.notifications) return;
   const disable = cchConfig.disable;
   const urlDisable = window.location.href.includes("disable_cch");
@@ -107,63 +109,25 @@ function run() {
     restoreTabs(tabs, hideTabs(tabContainer, tabs));
     defaultTab(tabs, tabContainer);
     sidebarMod(buttons);
+    hideMenuItems(buttons);
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
     if (!editMode) tabContainerMargin(buttons, tabContainer);
-
     for (const button in buttons) {
-      if (cchConfig[button] == "clock") {
-        insertClock(
-          buttons,
-          buttons[button].querySelector("paper-icon-button")
-            ? buttons[button]
-            : buttons[button].shadowRoot
-        );
-      }
+      if (cchConfig[button] == "clock") insertClock(buttons, button);
     }
-
-    if (firstRun && !disable && !urlDisable) {
-      window.hassConnection.then(({ conn }) => {
-        conn.socket.onmessage = () => {
-          notifications = notificationCount();
-          if (cchConfig.conditional_styles) conditionalStyling(buttons, tabs);
-        };
-      });
-    }
-
-    if (cchConfig.hide_help || cchConfig.hide_config) {
-      let menuItems = buttons.options
-        .querySelector("paper-listbox")
-        .querySelectorAll("paper-item");
-      [].forEach.call(menuItems, function(item) {
-        if (item.innerHTML.includes("Help") && cchConfig.hide_help) {
-          item.parentNode.removeChild(item);
-        } else if (
-          item.innerHTML.includes("Unused entities") &&
-          cchConfig.hide_unused
-        ) {
-          item.parentNode.removeChild(item);
-        } else if (
-          item.innerHTML.includes("Configure UI") &&
-          cchConfig.hide_config
-        ) {
-          item.parentNode.removeChild(item);
-        }
-      });
-    }
-    window.dispatchEvent(new Event("resize"));
   }
   if (!disable && firstRun) {
-    monitorElements(tabContainer, tabs, urlDisable);
+    monitorElements(tabContainer, tabs, urlDisable, buttons);
   }
   firstRun = false;
+  window.dispatchEvent(new Event("resize"));
 }
 
 function notificationCount() {
   let i = 0;
-  let notif = notifDrawer.querySelectorAll(".notification");
-  [].forEach.call(notif, function(item) {
-    if (item.style.display !== "none") i++;
-  });
+  for (let notification of notifDrawer.querySelectorAll(".notification")) {
+    if (notification.style.display !== "none") i++;
+  }
   return i;
 }
 
@@ -216,7 +180,7 @@ function buildConfig() {
   }
 }
 
-function monitorElements(tabContainer, tabs, urlDisable) {
+function monitorElements(tabContainer, tabs, urlDisable, buttons) {
   const callback = function(mutations) {
     mutations.forEach(mutation => {
       if (mutation.target.className == "edit-mode") {
@@ -225,14 +189,14 @@ function monitorElements(tabContainer, tabs, urlDisable) {
         buttons.options = root.querySelector("paper-menu-button");
         insertEditMenu(buttons, tabs);
       } else if (mutation.target.nodeName == "APP-HEADER") {
-        [].forEach.call(mutation.addedNodes, function(item) {
-          if (item.nodeName == "APP-TOOLBAR") {
+        for (let node of mutation.addedNodes) {
+          if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
             buttons = getButtonElements();
             run();
             return;
           }
-        });
+        }
       } else if (mutation.addedNodes.length) {
         if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") return;
         let editor = root
@@ -249,6 +213,17 @@ function monitorElements(tabContainer, tabs, urlDisable) {
   new MutationObserver(callback).observe(root.querySelector("app-header"), {
     childList: true
   });
+
+  if (!urlDisable) {
+    window.hassConnection.then(({ conn }) => {
+      conn.socket.onmessage = () => {
+        notifications = notificationCount();
+        if (cchConfig.conditional_styles && !editMode) {
+          conditionalStyling(buttons, tabs);
+        }
+      };
+    });
+  }
 }
 
 function tabContainerMargin(buttons, tabContainer) {
@@ -272,6 +247,28 @@ function tabContainerMargin(buttons, tabContainer) {
   if (tabContainer) {
     tabContainer.style.marginRight = marginRight + "px";
     tabContainer.style.marginLeft = marginLeft + "px";
+  }
+}
+function hideMenuItems(buttons) {
+  if (cchConfig.hide_help || cchConfig.hide_config) {
+    let menuItems = buttons.options
+      .querySelector("paper-listbox")
+      .querySelectorAll("paper-item");
+    for (let item of menuItems) {
+      if (item.innerHTML.includes("Help") && cchConfig.hide_help) {
+        item.parentNode.removeChild(item);
+      } else if (
+        item.innerHTML.includes("Unused entities") &&
+        cchConfig.hide_unused
+      ) {
+        item.parentNode.removeChild(item);
+      } else if (
+        item.innerHTML.includes("Configure UI") &&
+        cchConfig.hide_config
+      ) {
+        item.parentNode.removeChild(item);
+      }
+    }
   }
 }
 
@@ -298,6 +295,7 @@ function insertEditMenu(buttons, tabs) {
 }
 
 function getButtonElements() {
+  let buttons = {};
   buttons.options = root.querySelector("paper-menu-button");
   if (!editMode) {
     buttons.menu = root.querySelector("ha-menu-button");
@@ -609,7 +607,10 @@ function insertMenuItem(menu_items, element) {
   }
 }
 
-function insertClock(buttons, clock_button) {
+function insertClock(buttons, button) {
+  const clock_button = buttons[button].querySelector("paper-icon-button")
+    ? buttons[button]
+    : buttons[button].shadowRoot;
   const clockIcon = clock_button.querySelector("paper-icon-button");
   const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
   const clockWidth =
@@ -927,7 +928,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.1.9b3").then(() => {
+  import("./compact-custom-header-editor.js?v=1.1.9b5").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
