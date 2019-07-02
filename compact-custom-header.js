@@ -81,6 +81,24 @@ let condState = [];
 let prevColor = {};
 let prevState = [];
 
+const dialogShowEvent = "show-cch-settings";
+const dialogTag = "dialog-cch-config";
+let registeredDialog = false;
+export const showCchSettings= (
+  element
+) => {
+  if (!registeredDialog) {
+    registeredDialog = true;
+    fireEvent(element, "register-dialog", {
+      dialogShowEvent,
+      dialogTag,
+      dialogImport: () =>
+        import("./compact-custom-header-editor.js?v=1.1.9b5"),
+    });
+  }
+  fireEvent(element, dialogShowEvent);
+};
+
 if (
   lovelace.config.cch == undefined &&
   JSON.stringify(lovelace.config.views).includes("custom:compact-custom-header")
@@ -125,7 +143,9 @@ function run() {
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
           notifications = notificationCount();
-          if (cchConfig.conditional_styles) conditionalStyling(buttons, tabs);
+          if (cchConfig.conditional_styles && !editMode) {
+            conditionalStyling(buttons, tabs);
+          }
         };
       });
     }
@@ -290,7 +310,7 @@ function insertEditMenu(buttons, tabs) {
     let cchSettings = document.createElement("paper-item");
     cchSettings.setAttribute("id", "cch_settings");
     cchSettings.addEventListener("click", () => {
-      showEditor();
+      showCchSettings(view)
     });
     cchSettings.innerHTML = "CCH Settings";
     insertMenuItem(buttons.options.querySelector("paper-listbox"), cchSettings);
@@ -927,7 +947,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.1.9b3").then(() => {
+  import("./compact-custom-header-editor.js?v=1.1.9b5").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
