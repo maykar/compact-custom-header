@@ -39,7 +39,7 @@ I've made a [quick guide](https://maykar.github.io/compact-custom-header/1_1_0_u
 This card requires `type: module`. More info in the [installation instructions](https://maykar.github.io/compact-custom-header/)
 ```yaml
 resources:
-  - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js
+  - url: /local/custom-lovelace/compact-custom-header/compact-custom-header.js?v=0.0.1
     type: module
 ```
 
