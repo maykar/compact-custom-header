@@ -942,7 +942,7 @@ function showEditor() {
       box-sizing: border-box;
       position: absolute;
       background: var(--background-color, grey);
-      z-index: 1;
+      z-index: 2;
       padding: 5px;
     `;
     nest.innerHTML += `
