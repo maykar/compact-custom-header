@@ -328,6 +328,10 @@ function styleHeader(tabContainer, tabs, header) {
     );
     header.style.background =
       cchConfig.background || cchThemeBg || "var(--primary-color)";
+    if (!tabContainer) {
+      header.querySelector("app-toolbar").style.background =
+        cchConfig.background || cchThemeBg || "var(--primary-color)";
+    }
   }
 
   let indicator = cchConfig.tab_indicator_color;
