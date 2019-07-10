@@ -105,7 +105,7 @@ function run() {
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
   }
   if (!disable && firstRun) observers(tabContainer, tabs, urlDisable, header);
-  window.dispatchEvent(new Event("resize"));
+  fireEvent(header, "iron-resize");
   firstRun = false;
 }
 
@@ -834,7 +834,6 @@ function conditionalStyling(tabs, header) {
     }
   }
   tabContainerMargin(tabContainer);
-  window.dispatchEvent(new Event("resize"));
 }
 
 function templates(template, tabs, _hass, header) {
@@ -923,7 +922,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.2.0").then(() => {
+  import("./compact-custom-header-editor.js?v=1.2.2").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
