@@ -210,11 +210,14 @@ function observers(tabContainer, tabs, urlDisable, header) {
 
 function notificationCount() {
   if (newSidebar) {
-    return parseInt(
-      main.shadowRoot
-        .querySelector("ha-sidebar")
-        .shadowRoot.querySelector("span.notification-badge").innerHTML
-    );
+    let badge = main.shadowRoot
+      .querySelector("ha-sidebar")
+      .shadowRoot.querySelector("span.notification-badge");
+    if (!badge) {
+      return 0;
+    } else {
+      return parseInt(badge.innerHTML);
+    }
   }
   let i = 0;
   let drawer = root
@@ -455,7 +458,7 @@ function styleButtons(tabs) {
         });
         paperIconButton.style.pointerEvents = "none";
         insertMenuItem(menu_items, wrapper);
-        if (button == "notifications") {
+        if (button == "notifications" && !newSidebar) {
           let style = document.createElement("style");
           style.innerHTML = `
                 .indicator {
@@ -478,6 +481,9 @@ function styleButtons(tabs) {
       }
     } else if (cchConfig[button] == "hide") {
       buttons[button].style.display = "none";
+    }
+    if (newSidebar && (cchConfig.kiosk_mode || cchConfig.disable_sidebar)) {
+      buttons.menu.style.display = "none";
     }
   }
 
@@ -554,16 +560,14 @@ function sidebarMod() {
     newSidebar &&
     (cchConfig.disable_sidebar || cchConfig.kiosk_mode)
   ) {
-    if (cchConfig.kiosk_mode) {
-      sidebar.style.display = "none";
-      sidebar.addEventListener(
-        "mouseenter",
-        function(event) {
-          event.stopPropagation();
-        },
-        true
-      );
-    }
+    sidebar.style.display = "none";
+    sidebar.addEventListener(
+      "mouseenter",
+      function(event) {
+        event.stopPropagation();
+      },
+      true
+    );
     let style = document.createElement("style");
     style.type = "text/css";
     style.appendChild(
@@ -823,6 +827,7 @@ function conditionalStyling(tabs, header) {
               .getPropertyValue("background");
           }
         } else if (obj == "button") {
+          if (newSidebar && key == "notifications") continue;
           getElements(key, buttons, i, obj, styling);
           if (key == "menu") {
             iconElem = elem
@@ -922,6 +927,7 @@ function templates(template, tabs, _hass, header) {
       }
     } else if (condition == "button") {
       for (const button in template[condition]) {
+        if (newSidebar && button == "notifications") continue;
         for (let i = 0; i < template[condition][button].length; i++) {
           let buttonName = Object.keys(template[condition]);
           let styleTarget = Object.keys(template[condition][button][i]);
