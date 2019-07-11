@@ -334,7 +334,7 @@ function removeStyles(tabContainer, tabs, header) {
 function styleHeader(tabContainer, tabs, header) {
   if ((!cchConfig.header && !editMode) || cchConfig.kiosk_mode) {
     header.style.display = "none";
-    view.style.minHeight = "100vh";
+    if (newSidebar) view.style.minHeight = "100vh";
   } else if (!editMode) {
     view.style.minHeight = "100vh";
     view.style.marginTop = "-48.5px";
