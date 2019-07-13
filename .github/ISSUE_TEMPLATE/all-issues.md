@@ -16,7 +16,8 @@ assignees: ''
 <!-- A clear and concise description of your issue. -->
 
 ## Config YAML:
-<!-- Paste your CCH config after this line -->```yaml
+<!-- Paste your CCH config after the next line -->
+```yaml
 
 ```
 ## HA and/or Browser Error:
