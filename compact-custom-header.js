@@ -901,9 +901,6 @@ function templates(template, tabs, _hass, header) {
   for (const condition in template) {
     if (condition == "tab") {
       for (const tab in template[condition]) {
-        if (!template[condition][tab].length) {
-          template[condition][tab] = [template[condition][tab]];
-        }
         for (let i = 0; i < template[condition][tab].length; i++) {
           let tabIndex = parseInt(Object.keys(template[condition]));
           let styleTarget = Object.keys(template[condition][tab][i]);
@@ -923,9 +920,6 @@ function templates(template, tabs, _hass, header) {
       }
     } else if (condition == "button") {
       for (const button in template[condition]) {
-        if (!template[condition][button].length) {
-          template[condition][button] = [template[condition][button]];
-        }
         for (let i = 0; i < template[condition][button].length; i++) {
           let buttonName = Object.keys(template[condition])[0];
           if (newSidebar && buttonName == "notifications") continue;
