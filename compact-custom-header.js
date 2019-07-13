@@ -351,6 +351,10 @@ function styleHeader(tabContainer, tabs, header) {
     }
   }
 
+  if (newSidebar)
+    main.shadowRoot
+      .querySelector("ha-sidebar")
+      .shadowRoot.querySelector(".menu").style = "height:49px;";
   let indicator = cchConfig.tab_indicator_color;
   if (
     indicator &&
@@ -436,11 +440,22 @@ function styleButtons(tabs) {
       cchConfig[button] = "show";
     }
     if (cchConfig[button] == "show" || cchConfig[button] == "clock") {
-      buttons[button].style.cssText = `
+      if (button == "menu") {
+        let paperIconButton = buttons[button].querySelector("paper-icon-button")
+          ? buttons[button].querySelector("paper-icon-button")
+          : buttons[button].shadowRoot.querySelector("paper-icon-button");
+        paperIconButton.style.cssText = `
+          z-index:1;
+          ${topMargin}
+          ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
+        `;
+      } else {
+        buttons[button].style.cssText = `
               z-index:1;
               ${topMargin}
               ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
             `;
+      }
     } else if (cchConfig[button] == "overflow") {
       const menu_items = buttons.options.querySelector("paper-listbox");
       let paperIconButton = buttons[button].querySelector("paper-icon-button")
@@ -927,7 +942,7 @@ function templates(template, tabs, _hass, header) {
           let buttonElem = buttons[buttonName];
           let iconTarget = buttonElem.querySelector("paper-icon-button")
             ? buttonElem.querySelector("paper-icon-button")
-            : buttonElem.shadowRoot.querySelector("paper-icon-button")
+            : buttonElem.shadowRoot.querySelector("paper-icon-button");
           let target = iconTarget.shadowRoot.querySelector("iron-icon");
           let tempCond = template[condition][button][i][styleTarget];
           if (styleTarget == "icon") {
@@ -967,7 +982,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.2.6").then(() => {
+  import("./compact-custom-header-editor.js?v=1.2.7").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
