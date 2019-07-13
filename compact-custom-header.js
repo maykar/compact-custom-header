@@ -901,24 +901,32 @@ function templates(template, tabs, _hass, header) {
   for (const condition in template) {
     if (condition == "tab") {
       for (const tab in template[condition]) {
-        let tabIndex = parseInt(Object.keys(template[condition]));
-        let styleTarget = Object.keys(template[condition][tab]);
-        let tempCond = template[condition][tab][styleTarget];
-        if (styleTarget == "icon") {
-          tabs[tabIndex]
-            .querySelector("ha-icon")
-            .setAttribute("icon", templateEval(tempCond, entity));
-        } else if (styleTarget == "color") {
-          tabs[tabIndex].style.color = templateEval(tempCond, entity);
-        } else if (styleTarget == "display") {
-          templateEval(tempCond, entity) == "show"
-            ? (tabs[tabIndex].style.display = "")
-            : (tabs[tabIndex].style.display = "none");
+        if (!template[condition][tab].length) {
+          template[condition][tab] = [template[condition][tab]];
+        }
+        for (let i = 0; i < template[condition][tab].length; i++) {
+          let tabIndex = parseInt(Object.keys(template[condition]));
+          let styleTarget = Object.keys(template[condition][tab][i]);
+          let tempCond = template[condition][tab][i][styleTarget];
+          if (styleTarget == "icon") {
+            tabs[tabIndex]
+              .querySelector("ha-icon")
+              .setAttribute("icon", templateEval(tempCond, entity));
+          } else if (styleTarget == "color") {
+            tabs[tabIndex].style.color = templateEval(tempCond, entity);
+          } else if (styleTarget == "display") {
+            templateEval(tempCond, entity) == "show"
+              ? (tabs[tabIndex].style.display = "")
+              : (tabs[tabIndex].style.display = "none");
+          }
         }
       }
     } else if (condition == "button") {
       for (const button in template[condition]) {
         if (newSidebar && button == "notifications") continue;
+        if (!template[condition][button].length) {
+          template[condition][button] = [template[condition][button]];
+        }
         for (let i = 0; i < template[condition][button].length; i++) {
           let buttonName = Object.keys(template[condition]);
           let styleTarget = Object.keys(template[condition][button][i]);
@@ -965,7 +973,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.2.4").then(() => {
+  import("./compact-custom-header-editor.js?v=1.2.5").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
