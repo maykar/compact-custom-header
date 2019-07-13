@@ -923,17 +923,17 @@ function templates(template, tabs, _hass, header) {
       }
     } else if (condition == "button") {
       for (const button in template[condition]) {
-        if (newSidebar && button == "notifications") continue;
         if (!template[condition][button].length) {
           template[condition][button] = [template[condition][button]];
         }
         for (let i = 0; i < template[condition][button].length; i++) {
-          let buttonName = Object.keys(template[condition]);
-          let styleTarget = Object.keys(template[condition][button][i]);
+          let buttonName = Object.keys(template[condition])[0];
+          if (newSidebar && buttonName == "notifications") continue;
+          let styleTarget = Object.keys(template[condition][button][i])[0];
           let buttonElem = buttons[buttonName];
-          let iconTarget = buttonElem.shadowRoot
-            ? buttonElem.shadowRoot.querySelector("paper-icon-button")
-            : buttonElem.querySelector("paper-icon-button");
+          let iconTarget = buttonElem.querySelector("paper-icon-button")
+            ? buttonElem.querySelector("paper-icon-button")
+            : buttonElem.shadowRoot.querySelector("paper-icon-button")
           let target = iconTarget.shadowRoot.querySelector("iron-icon");
           let tempCond = template[condition][button][i][styleTarget];
           if (styleTarget == "icon") {
@@ -973,7 +973,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.2.5").then(() => {
+  import("./compact-custom-header-editor.js?v=1.2.6").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
