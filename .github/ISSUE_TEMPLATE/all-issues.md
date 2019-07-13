@@ -1,8 +1,8 @@
 ---
 name: All Issues
-about: Failure to use the template will result in an issue's closing. Don't post until
-  you read the readme, searched existing/closed issues, & cleared your browser & CCH
-  cache. Continue if the issue persists
+about: Failure to use the template will result in the issue being automatically closed.
+  Don't post until you read the readme, searched existing/closed issues, & cleared
+  your browser's cache.
 title: ''
 labels: ''
 assignees: ''
@@ -10,22 +10,24 @@ assignees: ''
 ---
 
 <!-- Failure to use the template will result in an issue's closing. -->
-<!-- Fill out as many items as you can and do not remove ## Headers. -->
+<!-- Fill out as many items as you can and do not remove anything in this template. -->
 
-## Describe the bug:
-<!-- A clear and concise description of what the bug is. -->
+## Describe the issue:
+<!-- A clear and concise description of your issue. -->
 
 ## Config YAML:
-```yaml
-<!-- Paste your lovelace code for the card after this line -->
+<!-- Paste your CCH config after this line -->```yaml
 
 ```
 ## HA and/or Browser Error:
-<!-- HA log errors & browser Dev-Tools errors (F12). Please explain if card is functional despite error message. -->
+<!-- HA log errors & browser Dev-Tools errors (F12). -->
+<!-- Please explain if CCH is functional despite error message. -->
 
-## HA, Card, and Browser Versions:
-<!-- Please include all of the following: Version of this card, Home Assistant version, browser type and version, as well as, if you use YAML or Storage Mode -->
+## Versions and Browser:
+<!-- Please include all of the following: -->
+<!-- Version of CCH & Home Assistant -->
+<!-- Browser you are using -->
+<!-- YAML or Storage Mode -->
 
-<!-- If applicable, add screenshots to help explain your problem. -->
-
-<!-- Please include any other information that you think may be helpful. -->
+<!-- If applicable, add screenshots to help explain your problem -->
+<!-- and any other information that you think may be helpful. -->
