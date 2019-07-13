@@ -4,10 +4,10 @@ comment: |
   Please open a new issue providing the nessesarry information and do not modify the template.
 issueConfigs:
 - content:
-  - "Describe the bug"
+  - "Describe the issue"
   - "Config YAML"
   - "HA and/or Browser Error"
-  - "HA, Card, and Browser Versions"
+  - "Versions and Browser"
 - content:
   - "feature request"
   - "Describe the solution"
