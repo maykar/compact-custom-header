@@ -1,7 +1,7 @@
 
 comment: |
   As described in the issue template, issues missing the required info will be closed.
-  Please open a new issue providing the nessesarry information and do not modify the template.
+  Please open a new issue, fill in as much as you can, and do not remove anything in the template.
 issueConfigs:
 - content:
   - "Describe the issue"
