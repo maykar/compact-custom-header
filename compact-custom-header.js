@@ -916,6 +916,9 @@ function templates(template, tabs, _hass, header) {
   for (const condition in template) {
     if (condition == "tab") {
       for (const tab in template[condition]) {
+        if (!template[condition][tab].length) {
+          template[condition][tab] = [template[condition][tab]];
+        }
         for (let i = 0; i < template[condition][tab].length; i++) {
           let tabIndex = parseInt(Object.keys(template[condition]));
           let styleTarget = Object.keys(template[condition][tab][i]);
@@ -935,6 +938,9 @@ function templates(template, tabs, _hass, header) {
       }
     } else if (condition == "button") {
       for (const button in template[condition]) {
+        if (!template[condition][button].length) {
+          template[condition][tab] = [template[condition][button]];
+        }
         for (let i = 0; i < template[condition][button].length; i++) {
           let buttonName = Object.keys(template[condition])[0];
           if (newSidebar && buttonName == "notifications") continue;
@@ -982,7 +988,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.2.7").then(() => {
+  import("./compact-custom-header-editor.js?v=1.2.8").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
