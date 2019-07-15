@@ -239,6 +239,15 @@ function getButtonElements() {
       buttons.notifications = root.querySelector("hui-notifications-button");
     }
   }
+  if (buttons.menu) {
+    new MutationObserver(() => {
+      if (buttons.menu.style.visibility == "hidden") {
+        buttons.menu.style.display = "none";
+      } else {
+        buttons.menu.style.display = "";
+      }
+    }).observe(buttons.menu, { attributeFilter: ["style"] });
+  }
   return buttons;
 }
 
@@ -801,92 +810,92 @@ function conditionalStyling(tabs, header) {
     let template = styling[i].template;
     if (template) {
       if (!template.length) template = [template];
-      for (let x = 0; x < template.length; x++) {
-        templates(template[x], tabs, _hass, header);
+      template.forEach(template => {
+        templates(template, tabs, _hass, header);
+      });
+    } else {
+      let entity = styling[i].entity;
+      if (_hass.states[entity] == undefined && entity !== "notifications") {
+        console.log(`CCH conditional styling: ${entity} does not exist.`);
+        continue;
       }
-      continue;
-    }
-    let entity = styling[i].entity;
-    if (_hass.states[entity] == undefined && entity !== "notifications") {
-      console.log(`CCH conditional styling: ${entity} does not exist.`);
-      continue;
-    }
-    if (entity == "notifications") condState[i] = notifications;
-    else condState[i] = _hass.states[entity].state;
+      if (entity == "notifications") condState[i] = notifications;
+      else condState[i] = _hass.states[entity].state;
 
-    if (condState[i] !== prevState[i] || !condState.length) {
-      prevState[i] = condState[i];
-      let above = styling[i].condition.above;
-      let below = styling[i].condition.below;
+      if (condState[i] !== prevState[i] || !condState.length) {
+        prevState[i] = condState[i];
+        let above = styling[i].condition.above;
+        let below = styling[i].condition.below;
 
-      for (const obj in styling[i]) {
-        let key;
-        if (styling[i][obj]) {
-          key = Object.keys(styling[i][obj])[0];
-        }
-        if (obj == "background") {
-          elem = "background";
-          color = styling[i][obj].color;
-          bg = styling[i][obj];
-          iconElem = false;
-          if (!prevColor[obj]) {
-            prevColor[obj] = window
-              .getComputedStyle(header, null)
-              .getPropertyValue("background");
+        for (const obj in styling[i]) {
+          let key;
+          if (styling[i][obj]) {
+            key = Object.keys(styling[i][obj])[0];
           }
-        } else if (obj == "button") {
-          if (newSidebar && key == "notifications") continue;
-          getElements(key, buttons, i, obj, styling);
-          if (key == "menu") {
-            iconElem = elem
-              .querySelector("paper-icon-button")
-              .shadowRoot.querySelector("iron-icon");
-          } else {
-            iconElem = elem.shadowRoot
-              .querySelector("paper-icon-button")
-              .shadowRoot.querySelector("iron-icon");
+          if (obj == "background") {
+            elem = "background";
+            color = styling[i][obj].color;
+            bg = styling[i][obj];
+            iconElem = false;
+            if (!prevColor[obj]) {
+              prevColor[obj] = window
+                .getComputedStyle(header, null)
+                .getPropertyValue("background");
+            }
+          } else if (obj == "button") {
+            if (newSidebar && key == "notifications") continue;
+            getElements(key, buttons, i, obj, styling);
+            if (key == "menu") {
+              iconElem = elem
+                .querySelector("paper-icon-button")
+                .shadowRoot.querySelector("iron-icon");
+            } else {
+              iconElem = elem.shadowRoot
+                .querySelector("paper-icon-button")
+                .shadowRoot.querySelector("iron-icon");
+            }
+          } else if (obj == "tab") {
+            getElements(key, tabs, i, obj, styling);
+            iconElem = elem.querySelector("ha-icon");
           }
-        } else if (obj == "tab") {
-          getElements(key, tabs, i, obj, styling);
-          iconElem = elem.querySelector("ha-icon");
-        }
 
-        if (condState[i] == styling[i].condition.state) {
-          styleElements();
-        } else if (
-          above !== undefined &&
-          below !== undefined &&
-          condState[i] > above &&
-          condState[i] < below
-        ) {
-          styleElements();
-        } else if (
-          above !== undefined &&
-          below == undefined &&
-          condState[i] > above
-        ) {
-          styleElements();
-        } else if (
-          above == undefined &&
-          below !== undefined &&
-          condState[i] < below
-        ) {
-          styleElements();
-        } else {
-          if (elem !== "background" && hide && elem.style.display == "none") {
-            elem.style.display = "";
-          }
-          if (bg && elem == "background") {
-            header.style.background = prevColor[obj];
+          if (condState[i] == styling[i].condition.state) {
+            styleElements();
           } else if (
-            obj !== "background" &&
-            obj !== "entity" &&
-            obj !== "condition"
+            above !== undefined &&
+            below !== undefined &&
+            condState[i] > above &&
+            condState[i] < below
           ) {
-            elem.style.color = prevColor[key];
-          }
-          if (onIcon && offIcon) {
-            iconElem.setAttribute("icon", offIcon);
+            styleElements();
+          } else if (
+            above !== undefined &&
+            below == undefined &&
+            condState[i] > above
+          ) {
+            styleElements();
+          } else if (
+            above == undefined &&
+            below !== undefined &&
+            condState[i] < below
+          ) {
+            styleElements();
+          } else {
+            if (elem !== "background" && hide && elem.style.display == "none") {
+              elem.style.display = "";
+            }
+            if (bg && elem == "background") {
+              header.style.background = prevColor[obj];
+            } else if (
+              obj !== "background" &&
+              obj !== "entity" &&
+              obj !== "condition"
+            ) {
+              elem.style.color = prevColor[key];
+            }
+            if (onIcon && offIcon) {
+              iconElem.setAttribute("icon", offIcon);
+            }
           }
         }
       }
@@ -916,51 +925,51 @@ function templates(template, tabs, _hass, header) {
   for (const condition in template) {
     if (condition == "tab") {
       for (const tab in template[condition]) {
-        if (!template[condition][tab].length) {
-          template[condition][tab] = [template[condition][tab]];
-        }
-        for (let i = 0; i < template[condition][tab].length; i++) {
+        let tempCond = template[condition][tab];
+        if (!tempCond.length) tempCond = [tempCond];
+        tempCond.forEach(templateObj => {
           let tabIndex = parseInt(Object.keys(template[condition]));
-          let styleTarget = Object.keys(template[condition][tab][i]);
-          let tempCond = template[condition][tab][i][styleTarget];
+          let styleTarget = Object.keys(templateObj);
+          let tabTemplate = templateObj[styleTarget];
+          let tabElement = tabs[tabIndex];
           if (styleTarget == "icon") {
-            tabs[tabIndex]
+            tabElement
               .querySelector("ha-icon")
-              .setAttribute("icon", templateEval(tempCond, entity));
+              .setAttribute("icon", templateEval(tabTemplate, entity));
           } else if (styleTarget == "color") {
-            tabs[tabIndex].style.color = templateEval(tempCond, entity);
+            tabElement.style.color = templateEval(tabTemplate, entity);
           } else if (styleTarget == "display") {
-            templateEval(tempCond, entity) == "show"
-              ? (tabs[tabIndex].style.display = "")
-              : (tabs[tabIndex].style.display = "none");
+            templateEval(tabTemplate, entity) == "show"
+              ? (tabElement.style.display = "")
+              : (tabElement.style.display = "none");
           }
-        }
+        });
       }
     } else if (condition == "button") {
       for (const button in template[condition]) {
-        if (!template[condition][button].length) {
-          template[condition][tab] = [template[condition][button]];
-        }
-        for (let i = 0; i < template[condition][button].length; i++) {
-          let buttonName = Object.keys(template[condition])[0];
-          if (newSidebar && buttonName == "notifications") continue;
-          let styleTarget = Object.keys(template[condition][button][i])[0];
+        let tempCond = template[condition][button];
+        if (!tempCond.length) tempCond = [tempCond];
+        tempCond.forEach(templateObj => {
+          let buttonName = Object.keys(template[condition]);
+          if (newSidebar && buttonName == "notifications") return;
+          let styleTarget = Object.keys(templateObj);
           let buttonElem = buttons[buttonName];
+          let tempCond = templateObj[styleTarget];
           let iconTarget = buttonElem.querySelector("paper-icon-button")
             ? buttonElem.querySelector("paper-icon-button")
             : buttonElem.shadowRoot.querySelector("paper-icon-button");
-          let target = iconTarget.shadowRoot.querySelector("iron-icon");
-          let tempCond = template[condition][button][i][styleTarget];
           if (styleTarget == "icon") {
             iconTarget.setAttribute("icon", templateEval(tempCond, entity));
           } else if (styleTarget == "color") {
-            target.style.color = templateEval(tempCond, entity);
+            iconTarget.shadowRoot.querySelector(
+              "iron-icon"
+            ).style.color = templateEval(tempCond, entity);
           } else if (styleTarget == "display") {
             templateEval(tempCond, entity) == "show"
-              ? (buttons[buttonName].style.display = "")
-              : (buttons[buttonName].style.display = "none");
+              ? (buttonElem.style.display = "")
+              : (buttonElem.style.display = "none");
           }
-        }
+        });
       }
     } else if (condition == "background") {
       header.style.background = templateEval(template[condition], entity);
@@ -988,7 +997,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.2.8").then(() => {
+  import("./compact-custom-header-editor.js?v=1.2.9").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
