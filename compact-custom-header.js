@@ -85,14 +85,16 @@ run();
 breakingChangeNotification();
 
 function run() {
-  if (firstRun || buttons == undefined) buttons = getButtonElements();
-  if (!buttons.menu) return;
   const disable = cchConfig.disable;
   const urlDisable = window.location.href.includes("disable_cch");
   const tabContainer = root.querySelector("paper-tabs");
   const tabs = tabContainer
     ? Array.from(tabContainer.querySelectorAll("paper-tab"))
     : [];
+  if (firstRun || buttons == undefined) {
+    buttons = getButtonElements(tabContainer);
+  }
+  if (!buttons.menu) return;
 
   if (!disable && !urlDisable) {
     insertEditMenu(tabs);
@@ -174,7 +176,7 @@ function observers(tabContainer, tabs, urlDisable, header) {
         for (let node of mutation.addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
-            buttons = getButtonElements();
+            buttons = getButtonElements(tabContainer);
             run();
             return;
           }
@@ -229,7 +231,7 @@ function notificationCount() {
   return i;
 }
 
-function getButtonElements() {
+function getButtonElements(tabContainer) {
   let buttons = {};
   buttons.options = root.querySelector("paper-menu-button");
   if (!editMode) {
@@ -239,13 +241,14 @@ function getButtonElements() {
       buttons.notifications = root.querySelector("hui-notifications-button");
     }
   }
-  if (buttons.menu) {
+  if (buttons.menu && newSidebar) {
     new MutationObserver(() => {
       if (buttons.menu.style.visibility == "hidden") {
         buttons.menu.style.display = "none";
       } else {
         buttons.menu.style.display = "";
       }
+      tabContainerMargin(tabContainer);
     }).observe(buttons.menu, { attributeFilter: ["style"] });
   }
   return buttons;
