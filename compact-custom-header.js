@@ -107,7 +107,7 @@ function run() {
     if (firstRun) sidebarMod();
     hideMenuItems();
     for (const button in buttons) {
-      if (cchConfig[button] == "clock") insertClock(button, tabs);
+      if (cchConfig[button] == "clock") insertClock(button);
     }
     if (!editMode) tabContainerMargin(tabContainer);
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
@@ -458,6 +458,7 @@ function styleButtons(tabs) {
         let paperIconButton = buttons[button].querySelector("paper-icon-button")
           ? buttons[button].querySelector("paper-icon-button")
           : buttons[button].shadowRoot.querySelector("paper-icon-button");
+        if (!paperIconButton) return;
         paperIconButton.style.cssText = `
           z-index:1;
           ${topMargin}
@@ -672,7 +673,7 @@ function insertMenuItem(menu_items, element) {
   }
 }
 
-function insertClock(button, tabs) {
+function insertClock(button) {
   const clock_button = buttons[button].querySelector("paper-icon-button")
     ? buttons[button]
     : buttons[button].shadowRoot;
@@ -714,15 +715,16 @@ function insertClock(button, tabs) {
   }
 
   let clockElement = clockIronIcon.parentNode.getElementById("cch_clock");
-  let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
+  if (cchConfig.menu == "clock") {
+    buttons.menu.style.marginTop = "111px";
+    buttons.menu.style.zIndex = "1";
+  }
   if (!clockElement) {
     clockIcon.style.cssText = `
               margin-right:-5px;
               width:${clockWidth}px;
               text-align: center;
-              ${topMargin}
             `;
-
     clockElement = document.createElement("p");
     clockElement.setAttribute("id", "cch_clock");
     let clockAlign = "center";
