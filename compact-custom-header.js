@@ -94,7 +94,9 @@ function run() {
   if (firstRun || buttons == undefined) {
     buttons = getButtonElements(tabContainer);
   }
-  if (!buttons.menu || !buttons.options) return;
+  if (!buttons.menu || !buttons.options || header.className == "edit-mode") {
+    return;
+  }
 
   if (!disable && !urlDisable) {
     insertEditMenu(tabs);
