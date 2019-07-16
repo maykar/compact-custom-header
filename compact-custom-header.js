@@ -74,7 +74,7 @@ const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
 
 let defaultTabRedirect = false;
 let sidebarClosed = false;
-let editMode = false;
+let editMode = header.className == "edit-mode";
 let firstRun = true;
 let condState = [];
 let prevColor = {};
@@ -105,7 +105,7 @@ function run() {
     if (firstRun) sidebarMod();
     hideMenuItems();
     for (const button in buttons) {
-      if (cchConfig[button] == "clock") insertClock(button);
+      if (cchConfig[button] == "clock") insertClock(button, tabs);
     }
     if (!editMode) tabContainerMargin(tabContainer);
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
@@ -346,7 +346,7 @@ function removeStyles(tabContainer, tabs, header) {
 function styleHeader(tabContainer, tabs, header) {
   if ((!cchConfig.header && !editMode) || cchConfig.kiosk_mode) {
     header.style.display = "none";
-    if (newSidebar) view.style.minHeight = "100vh";
+    view.style.minHeight = "100vh";
   } else if (!editMode) {
     view.style.minHeight = "100vh";
     view.style.marginTop = "-48.5px";
@@ -670,7 +670,7 @@ function insertMenuItem(menu_items, element) {
   }
 }
 
-function insertClock(button) {
+function insertClock(button, tabs) {
   const clock_button = buttons[button].querySelector("paper-icon-button")
     ? buttons[button]
     : buttons[button].shadowRoot;
@@ -712,11 +712,13 @@ function insertClock(button) {
   }
 
   let clockElement = clockIronIcon.parentNode.getElementById("cch_clock");
+  let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
   if (!clockElement) {
     clockIcon.style.cssText = `
               margin-right:-5px;
               width:${clockWidth}px;
               text-align: center;
+              ${topMargin}
             `;
 
     clockElement = document.createElement("p");
@@ -1000,7 +1002,7 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  import("./compact-custom-header-editor.js?v=1.2.9").then(() => {
+  import("./compact-custom-header-editor.js?v=1.3.0").then(() => {
     document.createElement("compact-custom-header-editor");
   });
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
