@@ -94,7 +94,7 @@ function run() {
   if (firstRun || buttons == undefined) {
     buttons = getButtonElements(tabContainer);
   }
-  if (!buttons.menu) return;
+  if (!buttons.menu || !buttons.options) return;
 
   if (!disable && !urlDisable) {
     insertEditMenu(tabs);
@@ -458,7 +458,6 @@ function styleButtons(tabs) {
         let paperIconButton = buttons[button].querySelector("paper-icon-button")
           ? buttons[button].querySelector("paper-icon-button")
           : buttons[button].shadowRoot.querySelector("paper-icon-button");
-        if (!paperIconButton) return;
         paperIconButton.style.cssText = `
           z-index:1;
           ${topMargin}
