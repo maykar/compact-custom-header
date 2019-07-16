@@ -98,10 +98,12 @@ function run() {
 
   if (!disable && !urlDisable) {
     insertEditMenu(tabs);
-    styleButtons(tabs);
-    styleHeader(tabContainer, tabs, header);
-    hideTabs(tabContainer, tabs);
-    defaultTab(tabs, tabContainer);
+    if (!editMode) {
+      styleButtons(tabs);
+      styleHeader(tabContainer, tabs, header);
+      hideTabs(tabContainer, tabs);
+      defaultTab(tabs, tabContainer);
+    }
     if (firstRun) sidebarMod();
     hideMenuItems();
     for (const button in buttons) {
@@ -344,10 +346,10 @@ function removeStyles(tabContainer, tabs, header) {
 }
 
 function styleHeader(tabContainer, tabs, header) {
-  if ((!cchConfig.header && !editMode) || cchConfig.kiosk_mode) {
+  if (!cchConfig.header || cchConfig.kiosk_mode) {
     header.style.display = "none";
     view.style.minHeight = "100vh";
-  } else if (!editMode) {
+  } else {
     view.style.minHeight = "100vh";
     view.style.marginTop = "-48.5px";
     view.style.paddingTop = "48.5px";
