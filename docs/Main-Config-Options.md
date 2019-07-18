@@ -36,7 +36,7 @@ views:
 |header|boolean|true|Display or hide the header.|
 |default_tab|number||Tab number to start on when navigating to `/lovelace/` for the first time.
 |kiosk_mode|boolean|false|Hides the header and turns on `disable_sidebar` for HA 0.96.0 and above. On HA versions lower than 0.96.0 this hides the header, turns off `sidebar_swipe`, and turns on `sidebar_closed`.
-|disable_sidebar|boolean|false|Disable sidebar and menu button completely.
+|disable_sidebar|boolean|false|Disable sidebar and menu button completely, only available on HA 0.96.0 and above.
 |sidebar_swipe|boolean|true|Not available on HA 0.96.0 and above. Toggle ability to swipe open sidebar on mobile.
 |sidebar_closed|boolean|false|Not available on HA 0.96.0 and above. If sidebar was previously open, close on load.
 |hide_tabs|string||Comma-seperated list of tab numbers to hide. Do not use with show_tabs.<br>e.g.,`5,6,7,8,13,15` Can also use ranges like this `5 to 8,13,15`|
