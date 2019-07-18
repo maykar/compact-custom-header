@@ -113,7 +113,7 @@
 <h1 id="main-configuration"><strong>MAIN CONFIGURATION</strong><a class="headerlink" href="#main-configuration" title="Permanent link">&para;</a></h1>
 <p><br></p>
 <h2 id="configuration-with-the-ui"><u>Configuration with the UI</u><a class="headerlink" href="#configuration-with-the-ui" title="Permanent link">&para;</a></h2>
-<p>Enable Compact Custom Header by adding <code>cch:</code> to your existing Lovelace UI Config through the Lovelace Raw Config Editor.</p>
+<p>Enable Compact Custom Header by adding <code>cch:</code> to your existing Lovelace UI Config through the Lovelace Raw Config Editor (see examples below).</p>
 <p>After installing and enabling CCH there will be a new item in the options menu (top right icon after selecting "Configure UI") named "CCH Settings". With the exception of styling, everything in CCH can be configured using this UI. This editor is not available when using Lovelace in YAML Mode.
 <br><br></p>
 <h2 id="configuration-with-yaml"><u>Configuration with YAML</u><a class="headerlink" href="#configuration-with-yaml" title="Permanent link">&para;</a></h2>
@@ -171,19 +171,25 @@ views:
 <td>kiosk_mode</td>
 <td>boolean</td>
 <td>false</td>
-<td>Turns off <code>sidebar_swipe</code>, turns on <code>sidebar_closed</code>, and hides the header.</td>
+<td>Hides the header and turns on <code>disable_sidebar</code> for HA 0.96.0 and above. On HA versions lower than 0.96.0 this hides the header, turns off <code>sidebar_swipe</code>, and turns on <code>sidebar_closed</code>.</td>
+</tr>
+<tr>
+<td>disable_sidebar</td>
+<td>boolean</td>
+<td>false</td>
+<td>Disable sidebar and menu button completely.</td>
 </tr>
 <tr>
 <td>sidebar_swipe</td>
 <td>boolean</td>
 <td>true</td>
-<td>Toggle ability to swipe open sidebar on mobile.</td>
+<td>Not available on HA 0.96.0 and above. Toggle ability to swipe open sidebar on mobile.</td>
 </tr>
 <tr>
 <td>sidebar_closed</td>
 <td>boolean</td>
 <td>false</td>
-<td>If sidebar was previously open, close on load.</td>
+<td>Not available on HA 0.96.0 and above. If sidebar was previously open, close on load.</td>
 </tr>
 <tr>
 <td>hide_tabs</td>
@@ -225,6 +231,7 @@ views:
 </table>
 <p><br></p>
 <h2 id="button-config"><u>Button Config</u><a class="headerlink" href="#button-config" title="Permanent link">&para;</a></h2>
+<p>Note: On HA 0.96.0 and above it is no longer possible to modify the notifications button using CCH.</p>
 <p>Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". Each button except for the options button can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the option button's drop-down menu.
 <br><br></p>
 <table>
