@@ -18,6 +18,7 @@ Style configuration can be done in yaml, raw edit mode, or from your [HA theme](
 <br>
 <b>Notes on styling config:</b>
 
+* On HA 0.96.0 and above it is no longer possible to modify the notifications button using CCH.
 * If using hex colors `#ffffff` be sure to enclose in quotes `"#ffffff"`.
 * You may use any [valid CSS for colors](https://www.w3schools.com/cssref/pr_text_color.asp).
 * You can use styling in your exceptions as well and have different themes per user/device.

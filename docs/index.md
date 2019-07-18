@@ -56,6 +56,7 @@ resources:
 
 |Version|Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<dot style="color: #fff">.</dot>|Breaking Change|
 |:-|:-|:-|
+|1.3.0|July 16, 2019|On HA 0.96.0 and above it is no longer possible to modify the notifications button using CCH, `sidebar_closed` and `sidebar_swipe` options have been removed.
 |1.1.0|Jun. 26, 2019| Configuration has changed. No longer required to use CCH as a card. [More info here](1_1_0_upgrade.md).
 |1.0.2b9|Apr. 6, 2019|**“background _image”** and **“background_color”** have been replaced with just “background”.
 |1.0.0b0|Feb. 10, 2019|Complete rewrite. Now **"type: module"** and most config options have changed.

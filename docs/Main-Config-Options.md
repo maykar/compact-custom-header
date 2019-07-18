@@ -2,7 +2,7 @@
 <br>
 ## <u>Configuration with the UI</u>
 
-Enable Compact Custom Header by adding `cch:` to your existing Lovelace UI Config through the Lovelace Raw Config Editor.
+Enable Compact Custom Header by adding `cch:` to your existing Lovelace UI Config through the Lovelace Raw Config Editor (see examples below).
 
 After installing and enabling CCH there will be a new item in the options menu (top right icon after selecting "Configure UI") named "CCH Settings". With the exception of styling, everything in CCH can be configured using this UI. This editor is not available when using Lovelace in YAML Mode.
 <br><br>
@@ -35,9 +35,10 @@ views:
 |disable|boolean|false|Disable Compact Custom Header. Useful to use default header on a certain user agent.
 |header|boolean|true|Display or hide the header.|
 |default_tab|number||Tab number to start on when navigating to `/lovelace/` for the first time.
-|kiosk_mode|boolean|false|Turns off `sidebar_swipe`, turns on `sidebar_closed`, and hides the header.
-|sidebar_swipe|boolean|true|Toggle ability to swipe open sidebar on mobile.
-|sidebar_closed|boolean|false|If sidebar was previously open, close on load.
+|kiosk_mode|boolean|false|Hides the header and turns on `disable_sidebar` for HA 0.96.0 and above. On HA versions lower than 0.96.0 this hides the header, turns off `sidebar_swipe`, and turns on `sidebar_closed`.
+|disable_sidebar|boolean|false|Disable sidebar and menu button completely.
+|sidebar_swipe|boolean|true|Not available on HA 0.96.0 and above. Toggle ability to swipe open sidebar on mobile.
+|sidebar_closed|boolean|false|Not available on HA 0.96.0 and above. If sidebar was previously open, close on load.
 |hide_tabs|string||Comma-seperated list of tab numbers to hide. Do not use with show_tabs.<br>e.g.,`5,6,7,8,13,15` Can also use ranges like this `5 to 8,13,15`|
 |show_tabs|string||Comma-seperated list of tab numbers to show, all others hidden. Do not use with hide_tabs.<br>e.g.,`5,6,7,8,13,15` Can also use ranges like this `5 to 8,13,15`|
 |redirect|boolean|true|Toggles auto redirecting from a hidden tab to a visible tab.|
@@ -47,6 +48,8 @@ views:
 
 <br>
 ## <u>Button Config</u>
+
+Note: On HA 0.96.0 and above it is no longer possible to modify the notifications button using CCH.
 
 Each button (menu, notifications, voice, and options) can be set as "show", "hide", and "clock". Each button except for the options button can be set to "overflow" as well. The overflow option hides the button from the header and places it inside the option button's drop-down menu.
 <br><br>

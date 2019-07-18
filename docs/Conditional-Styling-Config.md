@@ -6,6 +6,7 @@ For more complex conditions (multiple conditions for one element, using entity a
 <br>
 <img src="https://community-home-assistant-assets.s3.dualstack.us-west-2.amazonaws.com/original/3X/c/c/cc931f63db80ac4afc4a7909bdeb02f43e3087c5.gif" width="500px"><br><br>
 
+* On HA 0.96.0 and above it is no longer possible to modify the notifications button using CCH.
 * After editing conditional styles you should always refresh the page or do a "hard refresh" (Ctrl + Shift + R)
 * Conditional styles may be used inside exceptions.
 * All conditional style configuration is done in yaml/raw edit mode.

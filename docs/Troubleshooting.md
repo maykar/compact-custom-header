@@ -10,7 +10,7 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 <br>
 **Many issues are solved by clearing your cache and refreshing the page.**
 
-**To be sure that CCH is the source of the issue, disabling it and checking if the issue persists. The easiest way to do is to remove or comment out CCH in `resources:`.**
+**To be sure that CCH is the source of the issue, disable it and see if the issue persists. The easiest way to do this is to remove or comment out CCH in `resources:`.**
 <br><br>
 Please, read through these docs and search the [HA forum thread](https://community.home-assistant.io/t/compact-custom-header) and [Github issues](https://github.com/maykar/compact-custom-header/issues?utf8=%E2%9C%93&q=is%3Aissue) (open and closed) before posting issues on the forums or Github.
 
