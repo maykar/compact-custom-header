@@ -452,6 +452,7 @@ function styleButtons(tabs) {
   let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
   buttons = reverseObject(buttons);
   for (const button in buttons) {
+    if (!buttons[button]) continue;
     if (button == "options" && cchConfig[button] == "overflow") {
       cchConfig[button] = "show";
     }
@@ -460,6 +461,7 @@ function styleButtons(tabs) {
         let paperIconButton = buttons[button].querySelector("paper-icon-button")
           ? buttons[button].querySelector("paper-icon-button")
           : buttons[button].shadowRoot.querySelector("paper-icon-button");
+        if (!paperIconButton) continue;
         paperIconButton.style.cssText = `
           z-index:1;
           ${topMargin}
