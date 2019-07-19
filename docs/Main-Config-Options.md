@@ -44,6 +44,8 @@ views:
 |redirect|boolean|true|Toggles auto redirecting from a hidden tab to a visible tab.|
 |chevrons|boolean|false|Hide or show the tab's navigation chevrons.|
 |hide_help|boolean|false|Removes "Help" item from options menu.
+|hide_config|boolean|false|Removes "Configure UI" item from options menu.
+|hide_unused|boolean|false|Removes "Unused Entities" item from options menu.
 |exception|||Allows for different configs when exceptions are met, see [Exception Config](Exception-Config.md).
 
 <br>
