@@ -1,0 +1,202 @@
+{
+    "data": {
+        "config": {
+            "cch": {
+                "voice": "clock"
+            },
+            "resources": [
+                {
+                    "type": "module",
+                    "url": "/local/compact-custom-header.js"
+                }
+            ],
+            "title": "Home",
+            "views": [
+                {
+                    "badges": [
+                        "binary_sensor.movement_backyard",
+                        "binary_sensor.basement_floor_wet",
+                        "person.root",
+                        "device_tracker.demo_paulus",
+                        "device_tracker.demo_anne_therese",
+                        "device_tracker.demo_home_boy",
+                        "mailbox.demomailbox",
+                        "sensor.outside_temperature",
+                        "sensor.outside_humidity",
+                        "sun.sun"
+                    ],
+                    "cards": [
+                        {
+                            "entities": [
+                                "air_quality.demo_air_quality_home",
+                                "air_quality.demo_air_quality_office"
+                            ],
+                            "title": "",
+                            "type": "entities"
+                        },
+                        {
+                            "entity": "alarm_control_panel.alarm",
+                            "type": "alarm-panel"
+                        },
+                        {
+                            "entities": [
+                                "calendar.calendar_1",
+                                "calendar.calendar_2"
+                            ],
+                            "title": "Calendar",
+                            "type": "entities"
+                        },
+                        {
+                            "entity": "camera.demo_camera",
+                            "type": "picture-entity"
+                        },
+                        {
+                            "entities": [
+                                "switch.ac",
+                                "switch.decorative_lights"
+                            ],
+                            "hours_to_show": 1,
+                            "refresh_interval": 60,
+                            "title": "Recent Switches",
+                            "type": "history-graph"
+                        },
+                        {
+                            "entities": [
+                                "image_processing.demo_face",
+                                "image_processing.demo_alpr"
+                            ],
+                            "title": "Image processing",
+                            "type": "entities"
+                        },
+                        {
+                            "entities": [
+                                "input_boolean.notify"
+                            ],
+                            "title": "Input boolean",
+                            "type": "entities"
+                        },
+                        {
+                            "entities": [
+                                "input_number.noise_allowance"
+                            ],
+                            "title": "Input number",
+                            "type": "entities"
+                        },
+                        {
+                            "entities": [
+                                "input_select.living_room_preset",
+                                "input_select.who_cooks"
+                            ],
+                            "title": "Input select",
+                            "type": "entities"
+                        },
+                        {
+                            "entities": [
+                                "light.bed_light",
+                                "light.kitchen_lights",
+                                "light.ceiling_lights"
+                            ],
+                            "title": "Light",
+                            "type": "entities"
+                        },
+                        {
+                            "entities": [
+                                "lock.front_door",
+                                "lock.kitchen_door",
+                                "lock.openable_lock"
+                            ],
+                            "title": "Lock",
+                            "type": "entities"
+                        },
+                        {
+                            "entity": "weather.home",
+                            "type": "weather-forecast"
+                        },
+                        {
+                            "entities": [
+                                {
+                                    "name": "Router",
+                                    "type": "weblink",
+                                    "url": "http://192.168.1.1"
+                                }
+                            ],
+                            "title": "Weblink",
+                            "type": "entities"
+                        }
+                    ],
+                    "path": "default_view",
+                    "title": "View 1"
+                },
+                {
+                    "badges": [],
+                    "cards": [
+                        {
+                            "entity": "media_player.living_room",
+                            "type": "media-control"
+                        },
+                        {
+                            "entity": "media_player.bedroom",
+                            "type": "media-control"
+                        },
+                        {
+                            "entity": "media_player.walkman",
+                            "type": "media-control"
+                        },
+                        {
+                            "entity": "media_player.lounge_room",
+                            "type": "media-control"
+                        },
+                        {
+                            "entities": [
+                                "scene.romantic_lights",
+                                "scene.switch_on_and_off"
+                            ],
+                            "title": "Scene",
+                            "type": "entities"
+                        }
+                    ],
+                    "icon": "mdi:death-star",
+                    "title": "View 2"
+                },
+                {
+                    "badges": [],
+                    "cards": [
+                        {
+                            "entity": "climate.heatpump",
+                            "type": "thermostat"
+                        },
+                        {
+                            "entity": "climate.hvac",
+                            "type": "thermostat"
+                        },
+                        {
+                            "entity": "climate.ecobee",
+                            "type": "thermostat"
+                        },
+                        {
+                            "entities": [
+                                "cover.hall_window",
+                                "cover.kitchen_window",
+                                "cover.living_room_window",
+                                "cover.garage_door"
+                            ],
+                            "title": "Cover",
+                            "type": "entities"
+                        },
+                        {
+                            "entities": [
+                                "fan.ceiling_fan",
+                                "fan.living_room_fan"
+                            ],
+                            "title": "Fan",
+                            "type": "entities"
+                        }
+                    ],
+                    "title": "View 3"
+                }
+            ]
+        }
+    },
+    "key": "lovelace",
+    "version": 1
+}
