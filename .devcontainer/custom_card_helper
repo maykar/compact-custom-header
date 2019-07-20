@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+function StartHomeAssistant {
+  echo "Copy configuration.yaml"
+  cp -f .devcontainer/configuration.yaml /config || echo ".devcontainer/configuration.yaml are missing!" exit 1
+
+  echo "Copy ui-lovelace.yaml"
+  cp -f .devcontainer/ui-lovelace.yaml /config || echo ".devcontainer/ui-lovelace.yaml are missing!" exit 1
+
+  echo "Copy ui-lovelace.yaml"
+  cp -f .devcontainer/.storage/lovelace /config/.storage || echo ".devcontainer/.storage/lovelace are missing!" exit 1
+
+  echo "Start Home Assistant"
+  hass -c /config
+}
+
+function UpdgradeHomeAssistantDev {
+  python -m pip install --upgrade git+git://github.com/home-assistant/home-assistant.git@dev
+}
+
+function SetHomeAssistantVersion {
+  read -p 'Version: ' version
+  python -m pip install --upgrade homeassistant==$version
+}
+
+function HomeAssistantConfigCheck {
+  hass -c /config --script check_config
+}

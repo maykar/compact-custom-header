@@ -169,7 +169,7 @@ function buildConfig(config) {
 }
 
 function observers(tabContainer, tabs, urlDisable, header) {
-  const callback = function(mutations) {
+  const callback = function (mutations) {
     mutations.forEach(mutation => {
       if (mutation.target.className == "edit-mode") {
         editMode = true;
@@ -269,7 +269,7 @@ function tabContainerMargin(tabContainer) {
     } else if (cchConfig[button] == "clock" && visible) {
       const clockWidth =
         (cchConfig.clock_format == 12 && cchConfig.clock_am_pm) ||
-        cchConfig.clock_date
+          cchConfig.clock_date
           ? 110
           : 80;
       if (button == "menu") marginLeft += clockWidth + 15;
@@ -382,10 +382,10 @@ function styleHeader(tabContainer, tabs, header) {
     style.innerHTML = `
           paper-tabs {
             ${
-              indicator
-                ? `--paper-tabs-selection-bar-color: ${indicator} !important`
-                : "var(--cch-tab-indicator-color) !important"
-            }
+      indicator
+        ? `--paper-tabs-selection-bar-color: ${indicator} !important`
+        : "var(--cch-tab-indicator-color) !important"
+      }
           }
         `;
     root.appendChild(style);
@@ -405,10 +405,10 @@ function styleHeader(tabContainer, tabs, header) {
     style.innerHTML = `
             .iron-selected {
               ${
-                cchConfig.active_tab_color
-                  ? `color: ${cchConfig.active_tab_color + " !important"}`
-                  : "var(--cch-active-tab-color)"
-              }
+      cchConfig.active_tab_color
+        ? `color: ${cchConfig.active_tab_color + " !important"}`
+        : "var(--cch-active-tab-color)"
+      }
             }
           `;
     tabContainer.appendChild(style);
@@ -502,10 +502,10 @@ function styleButtons(tabs) {
                   width: 10px;
                   height: 10px;
                   ${
-                    cchConfig.notify_indicator_color
-                      ? `background-color:${cchConfig.notify_indicator_color}`
-                      : ""
-                  }
+            cchConfig.notify_indicator_color
+              ? `background-color:${cchConfig.notify_indicator_color}`
+              : ""
+            }
                 }
                 .indicator > div{
                   display:none;
@@ -546,9 +546,9 @@ function styleButtons(tabs) {
     style.innerHTML = `
           .indicator {
             background-color:${cchConfig.notify_indicator_color ||
-              "var(--cch-notify-indicator-color)"} !important;
+      "var(--cch-notify-indicator-color)"} !important;
             color: ${cchConfig.notify_text_color ||
-              "var(--cch-notify-text-color), var(--primary-text-color)"};
+      "var(--cch-notify-text-color), var(--primary-text-color)"};
           }
         `;
     if (!newSidebar) buttons.notifications.shadowRoot.appendChild(style);
@@ -598,7 +598,7 @@ function sidebarMod() {
     sidebar.style.display = "none";
     sidebar.addEventListener(
       "mouseenter",
-      function(event) {
+      function (event) {
         event.stopPropagation();
       },
       true
@@ -624,13 +624,13 @@ function sidebarMod() {
 function hideTabs(tabContainer, tabs) {
   let hidden_tabs = String(cchConfig.hide_tabs).length
     ? String(cchConfig.hide_tabs)
-        .replace(/\s+/g, "")
-        .split(",")
+      .replace(/\s+/g, "")
+      .split(",")
     : null;
   let shown_tabs = String(cchConfig.show_tabs).length
     ? String(cchConfig.show_tabs)
-        .replace(/\s+/g, "")
-        .split(",")
+      .replace(/\s+/g, "")
+      .split(",")
     : null;
 
   // Set the tab config source.
@@ -684,7 +684,7 @@ function insertClock(button) {
   const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
   const clockWidth =
     (cchConfig.clock_format == 12 && cchConfig.clock_am_pm) ||
-    cchConfig.clock_date
+      cchConfig.clock_date
       ? 110
       : 80;
 
@@ -705,10 +705,10 @@ function insertClock(button) {
             height: 3px;
             border-radius: 0;
             ${
-              cchConfig.notify_indicator_color
-                ? `background-color:${cchConfig.notify_indicator_color}`
-                : ""
-            }
+      cchConfig.notify_indicator_color
+        ? `background-color:${cchConfig.notify_indicator_color}`
+        : ""
+      }
           }
           .indicator > div{
             display:none;
@@ -1181,7 +1181,7 @@ function swipeNavigation(tabs, tabContainer) {
       view.style.opacity = 0;
       view.style.transform = `translateX(${_in})`;
       view.style.transition = "transform 0.20s, opacity 0.20s";
-      setTimeout(function() {
+      setTimeout(function () {
         tabs[index].dispatchEvent(
           new MouseEvent("click", { bubbles: false, cancelable: true })
         );
@@ -1189,7 +1189,7 @@ function swipeNavigation(tabs, tabContainer) {
         view.style.transform = `translateX(${_out})`;
         view.style.transition = "transform 0s";
       }, 210);
-      setTimeout(function() {
+      setTimeout(function () {
         view.style.transitionDuration = "200ms";
         view.style.opacity = 1;
         view.style.transform = `translateX(0px)`;
@@ -1199,7 +1199,7 @@ function swipeNavigation(tabs, tabContainer) {
       view.style.transitionDuration = "200ms";
       view.style.transition = "opacity 0.20s";
       view.style.opacity = 0;
-      setTimeout(function() {
+      setTimeout(function () {
         tabs[index].dispatchEvent(
           new MouseEvent("click", { bubbles: false, cancelable: true })
         );
@@ -1207,7 +1207,7 @@ function swipeNavigation(tabs, tabContainer) {
         view.style.opacity = 0;
         view.style.transition = "opacity 0s";
       }, 210);
-      setTimeout(function() {
+      setTimeout(function () {
         view.style.transitionDuration = "200ms";
         view.style.transition = "opacity 0.20s";
         view.style.opacity = 1;
@@ -1217,12 +1217,12 @@ function swipeNavigation(tabs, tabContainer) {
       view.style.transform = "rotatey(90deg)";
       view.style.transition = "transform 0.20s, opacity 0.20s";
       view.style.opacity = 0.25;
-      setTimeout(function() {
+      setTimeout(function () {
         tabs[index].dispatchEvent(
           new MouseEvent("click", { bubbles: false, cancelable: true })
         );
       }, 210);
-      setTimeout(function() {
+      setTimeout(function () {
         view.style.transitionDuration = "200ms";
         view.style.transform = "rotatey(0deg)";
         view.style.transition = "transform 0.20s, opacity 0.20s";
