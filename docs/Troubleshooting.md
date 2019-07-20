@@ -9,6 +9,7 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 # **TROUBLESHOOTING**
 <br>
 **Many issues are solved by clearing your cache and refreshing the page.**
+
 **CCH may not function on some older/unsupported browsers (like Fire tablets using WebView).**
 
 **To be sure that CCH is the source of the issue, disable it and see if the issue persists. The easiest way to do this is to remove or comment out CCH in `resources:`.**
