@@ -9,6 +9,7 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 # **TROUBLESHOOTING**
 <br>
 **Many issues are solved by clearing your cache and refreshing the page.**
+**CCH may not function on some older/unsupported browsers (like Fire tablets using WebView).**
 
 **To be sure that CCH is the source of the issue, disable it and see if the issue persists. The easiest way to do this is to remove or comment out CCH in `resources:`.**
 <br><br>
@@ -17,8 +18,6 @@ Please, read through these docs and search the [HA forum thread](https://communi
 Be sure to read ["Important Notes"](https://maykar.github.io/compact-custom-header/#important-notes) and ["Breaking Changes"](https://maykar.github.io/compact-custom-header/#breaking-changes) for important info and changes you may have missed.
 
 [@thomasloven's lovelace guide](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins) is a great resource for installation of custom cards and solutions to common problems.
-
-CCH may not function on some older/unsupported browsers. @pjv maintains a version of CCH for those cases, found here: [Lovelace Compact Custom Header for old devices](https://gist.github.com/pjv/521073b982e37418339afbf420691310). **I do not offer support for this method**.
 
 When posting issues on Github or HA's forums always include:
 
