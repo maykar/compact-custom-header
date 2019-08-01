@@ -109,7 +109,10 @@ function run() {
     for (let button in buttons) {
       if (cchConfig[button] == "clock") insertClock(button);
     }
-    if (firstRun) sidebarMod();
+    if (firstRun) {
+      sidebarMod();
+      conditionalStyling(tabs, header);
+    }
     if (!editMode) tabContainerMargin(tabContainer);
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
   }
@@ -868,6 +871,15 @@ function conditionalStyling(tabs, header) {
                 .shadowRoot.querySelector("iron-icon");
             }
           } else if (obj == "tab") {
+            if (isNaN(key)) {
+              for (let view in lovelace.config.views) {
+                if (lovelace.config.views[view]["title"] == key) {
+                  styling[i][obj][view] = styling[i][obj][key]
+                  delete styling[i][obj][key]
+                  key = view;
+                }
+              }
+            }
             getElements(key, tabs, i, obj, styling);
             iconElem = elem.querySelector("ha-icon");
           }
@@ -941,7 +953,15 @@ function templates(template, tabs, _hass, header) {
         let tempCond = template[condition][tab];
         if (!tempCond.length) tempCond = [tempCond];
         tempCond.forEach(templateObj => {
-          let tabIndex = parseInt(Object.keys(template[condition]));
+          let tabIndex = Object.keys(template[condition]);
+          let views = lovelace.config.views;
+          if (isNaN(tabIndex)) {
+            for (let view in views) {
+              if (views[view]["title"] == tabIndex) tabIndex = view;
+            }
+          } else {
+            tabIndex = parseInt(tabIndex);
+          }
           let styleTarget = Object.keys(templateObj);
           let tabTemplate = templateObj[styleTarget];
           let tabElement = tabs[tabIndex];
@@ -1004,6 +1024,12 @@ function buildRanges(array) {
         ranges.push(range(parseInt(split[0]), parseInt(split[1])));
       } else {
         ranges.push(range(parseInt(split[1]), parseInt(split[0])));
+      }
+    } else if (isNaN(array[i])) {
+      for (let view in lovelace.config.views) {
+        if (lovelace.config.views[view]["title"] == array[i]) {
+          ranges.push(parseInt(view));
+        }
       }
     } else {
       ranges.push(parseInt(array[i]));
