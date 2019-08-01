@@ -464,6 +464,23 @@ function styleHeader(tabContainer, tabs, header) {
 function styleButtons(tabs) {
   let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
   buttons = reverseObject(buttons);
+  if (newSidebar && !buttons.menu.shadowRoot.querySelector('[id="cch_dot"]')) {
+    let indicator = cchConfig.notify_indicator_color;
+    let style = document.createElement("style");
+    style.setAttribute("id", "cch_dot");
+    style.innerHTML = `
+        .dot {
+          ${topMargin}
+          z-index: 2;
+          background: ${
+            indicator
+              ? `${indicator} !important`
+              : "var(--cch-tab-indicator-color) !important"
+          }
+        }
+    `;
+    buttons.menu.shadowRoot.appendChild(style);
+  }
   for (const button in buttons) {
     if (!buttons[button]) continue;
     if (button == "options" && cchConfig[button] == "overflow") {
@@ -1294,7 +1311,8 @@ function breakingChangeNotification() {
   }
 }
 
-// Editor
+// EDITOR //////////////////////////////////////////////////////////////////
+
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
 const swipeAnimation = ["none", "swipe", "fade", "flip"];
