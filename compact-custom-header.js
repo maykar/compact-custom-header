@@ -157,14 +157,23 @@ function buildConfig(config) {
     const userVars = { user: hass.user.name, user_agent: navigator.userAgent };
     let count = 0;
     for (const cond in conditions) {
-      if (
-        userVars[cond] == conditions[cond] ||
-        (cond == "user_agent" && userVars[cond].includes(conditions[cond])) ||
-        (cond == "media_query" && window.matchMedia(conditions[cond]).matches)
-      ) {
-        count++;
+      if (cond == "user" && conditions[cond].includes(",")) {
+        let userList = conditions[cond].split(/[ ,]+/);
+        for (let user in userList) {
+          if (userVars[cond] == userList[user]) {
+            count++;
+          }
+        }
       } else {
-        return 0;
+        if (
+          userVars[cond] == conditions[cond] ||
+          (cond == "user_agent" && userVars[cond].includes(conditions[cond])) ||
+          (cond == "media_query" && window.matchMedia(conditions[cond]).matches)
+        ) {
+          count++;
+        } else {
+          return 0;
+        }
       }
     }
     return count;
@@ -874,8 +883,8 @@ function conditionalStyling(tabs, header) {
             if (isNaN(key)) {
               for (let view in lovelace.config.views) {
                 if (lovelace.config.views[view]["title"] == key) {
-                  styling[i][obj][view] = styling[i][obj][key]
-                  delete styling[i][obj][key]
+                  styling[i][obj][view] = styling[i][obj][key];
+                  delete styling[i][obj][key];
                   key = view;
                 }
               }
