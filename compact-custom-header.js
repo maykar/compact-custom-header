@@ -2324,7 +2324,7 @@ export class CchExceptionEditor extends LitElement {
       <paper-card ?closed=${this._closed}>
         <div class="card-content">
           <div class="card-header">
-            ${Object.values(this.exception.conditions).join(", ") ||
+            ${Object.values(this.exception.conditions).join(", ").substring(0, 40) ||
               "New Exception"}
             <paper-icon-button
               icon="${this._closed ? "mdi:chevron-down" : "mdi:chevron-up"}"
