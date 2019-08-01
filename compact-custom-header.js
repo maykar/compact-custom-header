@@ -1066,14 +1066,9 @@ function buildRanges(array) {
 
 function showEditor() {
   window.scrollTo(0, 0);
-  document.createElement("compact-custom-header-editor");
   if (!root.querySelector("ha-app-layout").querySelector("editor")) {
     const container = document.createElement("editor");
     const nest = document.createElement("div");
-    const loader = document.createElement("div");
-    loader.classList.add("lds-ring");
-    loader.innerHTML = "<div></div><div></div><div></div><div></div>";
-    const cchEditor = document.createElement("compact-custom-header-editor");
     nest.style.cssText = `
       padding: 20px;
       max-width: 600px;
@@ -1090,51 +1085,9 @@ function showEditor() {
       z-index: 2;
       padding: 5px;
     `;
-    nest.innerHTML += `
-      <style>
-      .lds-ring {
-        left: 50%;
-        margin-left: -32px;
-        display: inline-block;
-        position: relative;
-        width: 64px;
-        height: 64px;
-      }
-      .lds-ring div {
-        box-sizing: border-box;
-        display: block;
-        position: absolute;
-        width: 51px;
-        height: 51px;
-        margin: 6px;
-        border: 6px solid #fff;
-        border-radius: 50%;
-        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        border-color: var(--primary-color) transparent transparent transparent;
-      }
-      .lds-ring div:nth-child(1) {
-        animation-delay: -0.45s;
-      }
-      .lds-ring div:nth-child(2) {
-        animation-delay: -0.3s;
-      }
-      .lds-ring div:nth-child(3) {
-        animation-delay: -0.15s;
-      }
-      @keyframes lds-ring {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      </style>
-      `;
     root.querySelector("ha-app-layout").insertBefore(container, view);
     container.appendChild(nest);
-    nest.appendChild(loader);
-    nest.appendChild(cchEditor);
+    nest.appendChild(document.createElement("compact-custom-header-editor"));
   }
 }
 
@@ -1336,8 +1289,6 @@ class CompactCustomHeaderEditor extends LitElement {
     ll = ll && ll.shadowRoot;
     _lovelace = ll && ll.querySelector("hui-root").lovelace;
 
-    let loader = this.parentNode.querySelector(".lds-ring");
-    loader.parentNode.removeChild(loader);
     this._config = _lovelace.config.cch ? deepcopy(_lovelace.config.cch) : {};
   }
 
@@ -2324,8 +2275,9 @@ export class CchExceptionEditor extends LitElement {
       <paper-card ?closed=${this._closed}>
         <div class="card-content">
           <div class="card-header">
-            ${Object.values(this.exception.conditions).join(", ").substring(0, 40) ||
-              "New Exception"}
+            ${Object.values(this.exception.conditions)
+              .join(", ")
+              .substring(0, 40) || "New Exception"}
             <paper-icon-button
               icon="${this._closed ? "mdi:chevron-down" : "mdi:chevron-up"}"
               @click="${this._toggleCard}"
