@@ -33,7 +33,7 @@ cch:
         options: clock
         clock_format: 24
     - conditions:
-        user: maykar
+        user: maykar, bramkragten, Ludeeus
         user_agent: Mobile
         media_query: "(max-width: 600px)"
       config:
