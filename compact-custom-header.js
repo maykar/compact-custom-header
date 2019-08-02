@@ -464,19 +464,22 @@ function styleHeader(tabContainer, tabs, header) {
 function styleButtons(tabs) {
   let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
   buttons = reverseObject(buttons);
-  if (newSidebar && !buttons.menu.shadowRoot.querySelector('[id="cch_dot"]')) {
-    let indicator = cchConfig.notify_indicator_color;
+  if (
+    newSidebar &&
+    cchConfig.menu != "hide" &&
+    !buttons.menu.shadowRoot.querySelector('[id="cch_dot"]')
+  ) {
     let style = document.createElement("style");
     style.setAttribute("id", "cch_dot");
+    let indicator =
+      cchConfig.notify_indicator_color ||
+      getComputedStyle(header).getPropertyValue("--cch-tab-indicator-color") ||
+      "";
     style.innerHTML = `
         .dot {
           ${topMargin}
           z-index: 2;
-          background: ${
-            indicator
-              ? `${indicator} !important`
-              : "var(--cch-tab-indicator-color) !important"
-          }
+          ${indicator ? `background: ${indicator} !important` : ""}
         }
     `;
     buttons.menu.shadowRoot.appendChild(style);
@@ -2488,7 +2491,7 @@ function deepcopy(value) {
 }
 
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.2     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.3     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
