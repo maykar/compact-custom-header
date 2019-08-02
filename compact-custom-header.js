@@ -898,8 +898,9 @@ function conditionalStyling(tabs, header) {
             }
           } else if (obj == "tab") {
             if (isNaN(key)) {
-              for (let view in lovelace.config.views) {
-                if (lovelace.config.views[view]["title"] == key) {
+              let views = lovelace.config.views;
+              for (let view in views) {
+                if (views[view]["title"] == key || views[view]["path"] == key) {
                   styling[i][obj][view] = styling[i][obj][key];
                   delete styling[i][obj][key];
                   key = view;
@@ -983,7 +984,12 @@ function templates(template, tabs, _hass, header) {
           let views = lovelace.config.views;
           if (isNaN(tabIndex)) {
             for (let view in views) {
-              if (views[view]["title"] == tabIndex) tabIndex = view;
+              if (
+                views[view]["title"] == tabIndex ||
+                views[view]["path"] == tabIndex
+              ) {
+                tabIndex = view;
+              }
             }
           } else {
             tabIndex = parseInt(tabIndex);
@@ -1052,8 +1058,12 @@ function buildRanges(array) {
         ranges.push(range(parseInt(split[1]), parseInt(split[0])));
       }
     } else if (isNaN(array[i])) {
-      for (let view in lovelace.config.views) {
-        if (lovelace.config.views[view]["title"] == array[i]) {
+      let views = lovelace.config.views;
+      for (let view in views) {
+        if (
+          views[view]["title"] == array[i] ||
+          views[view]["path"] == array[i]
+        ) {
           ranges.push(parseInt(view));
         }
       }
@@ -2400,7 +2410,7 @@ export class CchConditionsEditor extends LitElement {
     }
     return html`
       <paper-input
-        label="User"
+        label="User (Seperate multiple users with a comma.)"
         .value="${this._user}"
         .configValue="${"user"}"
         @value-changed="${this._valueChanged}"
