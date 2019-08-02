@@ -121,7 +121,7 @@ cch:
               if (states["device_tracker.galaxys8"].state == "home") "blue";
               else "#ffffff";
       - tab:
-          1:
+          'media':
             display: >  # Show or hide buttons or tabs.
               if (states["media_player.living_room"].state == "off") "hide";
               else if (states["media_player.living_room"].state == "playing") "show";
