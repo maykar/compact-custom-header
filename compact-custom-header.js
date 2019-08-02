@@ -103,8 +103,8 @@ function run() {
     insertEditMenu(tabs);
     styleButtons(tabs);
     styleHeader(tabContainer, tabs, header);
-    hideTabs(tabContainer, tabs);
     defaultTab(tabs, tabContainer);
+    hideTabs(tabContainer, tabs);
     hideMenuItems();
     for (let button in buttons) {
       if (cchConfig[button] == "clock") insertClock(button);
@@ -598,6 +598,17 @@ function defaultTab(tabs, tabContainer) {
   if (cchConfig.default_tab && !defaultTabRedirect && tabContainer) {
     let default_tab = cchConfig.default_tab;
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
+    if (isNaN(default_tab)) {
+      let views = lovelace.config.views;
+      for (let view in views) {
+        if (
+          views[view]["title"] == default_tab ||
+          views[view]["path"] == default_tab
+        ) {
+          default_tab = view;
+        }
+      }
+    }
     if (
       activeTab != default_tab &&
       activeTab == 0 &&
