@@ -1,12 +1,6 @@
 # Compact Custom Header
 Customize the Home Assistant header and much more!<br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
-## 1.1.0 Breaking changes:
-* CCH is no longer required to be a card and only needs added as a resource.
-* Configuration happens at the root of your lovelace config in `cch:` (see links below).
-* The UI editor can now be found in the options menu after selecting "Configure UI".
-
-I've made a [quick guide](https://maykar.github.io/compact-custom-header/1_1_0_upgrade/) for the upgrade process and [updated the docs](https://maykar.github.io/compact-custom-header/) quite a bit and they can now accept PR's, so please contribute if anything is unclear or missing.
 
 ### See the [Docs for installation and configuration.](https://maykar.github.io/compact-custom-header)<br>
 ### Follow the [troubleshooting guide](https://maykar.github.io/compact-custom-header/Troubleshooting/) before submitting issues here or on the forums.

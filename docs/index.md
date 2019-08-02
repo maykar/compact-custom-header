@@ -19,7 +19,7 @@ Customize the header and add enhancements to Lovelace.
 <br><br>
 #### **Manual installation**
 
-1. Install by copying [both .js files](https://github.com/maykar/compact-custom-header/) to `www/custom-lovelace/compact-custom-header/`. [Be sure you're using the raw files from github](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin).
+1. Install by copying [compact-custom-header.js](https://github.com/maykar/compact-custom-header/) to `www/custom-lovelace/compact-custom-header/`. [Be sure you're using the raw files from github](https://github.com/thomasloven/hass-config/wiki/Lovelace-Plugins#2-download-the-plugin).
 
 2. Add the code below to your resources and refresh the page.
 ```yaml
