@@ -2486,3 +2486,9 @@ function deepcopy(value) {
   });
   return result;
 }
+
+console.info(
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.2     `,
+  "color: orange; font-weight: bold; background: black",
+  "color: white; font-weight: bold; background: dimgray"
+);
