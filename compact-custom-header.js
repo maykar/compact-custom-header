@@ -101,11 +101,11 @@ function run() {
 
   if (!disable && !urlDisable) {
     insertEditMenu(tabs);
-    styleButtons(tabs);
+    hideMenuItems();
     styleHeader(tabContainer, tabs, header);
+    styleButtons(tabs);
     defaultTab(tabs, tabContainer);
     hideTabs(tabContainer, tabs);
-    hideMenuItems();
     for (let button in buttons) {
       if (cchConfig[button] == "clock") insertClock(button);
     }
@@ -295,20 +295,20 @@ function tabContainerMargin(tabContainer) {
 }
 
 function hideMenuItems() {
-  if (cchConfig.hide_help || cchConfig.hide_config) {
+  if (cchConfig.hide_help || cchConfig.hide_config || cchConfig.hide_unused) {
     let menuItems = buttons.options
       .querySelector("paper-listbox")
       .querySelectorAll("paper-item");
     for (let item of menuItems) {
-      if (item.innerHTML.includes("Help") && cchConfig.hide_help) {
+      if (item.getAttribute("aria-label") == "Help" && cchConfig.hide_help) {
         item.parentNode.removeChild(item);
       } else if (
-        item.innerHTML.includes("Unused entities") &&
+        item.getAttribute("aria-label") == "Unused entities" &&
         cchConfig.hide_unused
       ) {
         item.parentNode.removeChild(item);
       } else if (
-        item.innerHTML.includes("Configure UI") &&
+        item.getAttribute("aria-label") == "Configure UI" &&
         cchConfig.hide_config
       ) {
         item.parentNode.removeChild(item);
@@ -318,16 +318,18 @@ function hideMenuItems() {
 }
 
 function insertEditMenu(tabs) {
-  if (cchConfig.hide_tabs && buttons.options && editMode) {
-    let show_tabs = document.createElement("paper-item");
-    show_tabs.setAttribute("id", "show_tabs");
-    show_tabs.addEventListener("click", () => {
-      for (let i = 0; i < tabs.length; i++) {
-        tabs[i].style.removeProperty("display");
-      }
-    });
-    show_tabs.innerHTML = "Show all tabs";
-    insertMenuItem(buttons.options.querySelector("paper-listbox"), show_tabs);
+  if (buttons.options && editMode) {
+    if (cchConfig.hide_tabs) {
+      let show_tabs = document.createElement("paper-item");
+      show_tabs.setAttribute("id", "show_tabs");
+      show_tabs.addEventListener("click", () => {
+        for (let i = 0; i < tabs.length; i++) {
+          tabs[i].style.removeProperty("display");
+        }
+      });
+      show_tabs.innerHTML = "Show all tabs";
+      insertMenuItem(buttons.options.querySelector("paper-listbox"), show_tabs);
+    }
 
     let cchSettings = document.createElement("paper-item");
     cchSettings.setAttribute("id", "cch_settings");
@@ -480,6 +482,9 @@ function styleButtons(tabs) {
           ${topMargin}
           z-index: 2;
           ${indicator ? `background: ${indicator} !important` : ""}
+          border-color: ${getComputedStyle(header).getPropertyValue(
+            "background-color"
+          )} !important;
         }
     `;
     buttons.menu.shadowRoot.appendChild(style);
@@ -869,7 +874,7 @@ function conditionalStyling(tabs, header) {
       template.forEach(template => {
         templates(template, tabs, _hass, header);
       });
-    } else {
+    } else if (conditional_styles) {
       let entity = styling[i].entity;
       if (_hass.states[entity] == undefined && entity !== "notifications") {
         console.log(`CCH conditional styling: ${entity} does not exist.`);
@@ -2491,7 +2496,7 @@ function deepcopy(value) {
 }
 
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.3     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.4     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
