@@ -1,10 +1,10 @@
-export const LitElement = Object.getPrototypeOf(
+const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
 );
-export const html = LitElement.prototype.html;
-export const hass = document.querySelector("home-assistant").hass;
+const html = LitElement.prototype.html;
+const hass = document.querySelector("home-assistant").hass;
 
-export const fireEvent = (node, type, detail, options) => {
+const fireEvent = (node, type, detail, options) => {
   options = options || {};
   detail = detail === null || detail === undefined ? {} : detail;
   const event = new Event(type, {
@@ -17,7 +17,7 @@ export const fireEvent = (node, type, detail, options) => {
   return event;
 };
 
-export const defaultConfig = {
+const defaultConfig = {
   header: true,
   disable: false,
   menu: "show",
@@ -65,7 +65,7 @@ root = root && root.querySelector("hui-root");
 const lovelace = root.lovelace;
 root = root.shadowRoot;
 
-export const newSidebar = !root.querySelector("hui-notification-drawer");
+const newSidebar = !root.querySelector("hui-notification-drawer");
 
 let notifications = notificationCount();
 const header = root.querySelector("app-header");
@@ -1565,7 +1565,7 @@ customElements.define(
   CompactCustomHeaderEditor
 );
 
-export class CchConfigEditor extends LitElement {
+class CchConfigEditor extends LitElement {
   static get properties() {
     return {
       defaultConfig: {},
@@ -2269,7 +2269,7 @@ export class CchConfigEditor extends LitElement {
 
 customElements.define("cch-config-editor", CchConfigEditor);
 
-export class CchExceptionEditor extends LitElement {
+class CchExceptionEditor extends LitElement {
   static get properties() {
     return {
       config: {},
@@ -2404,7 +2404,7 @@ export class CchExceptionEditor extends LitElement {
 
 customElements.define("cch-exception-editor", CchExceptionEditor);
 
-export class CchConditionsEditor extends LitElement {
+class CchConditionsEditor extends LitElement {
   static get properties() {
     return {
       conditions: {}
