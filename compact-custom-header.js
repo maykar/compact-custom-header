@@ -2442,21 +2442,21 @@ class CchConditionsEditor extends LitElement {
       >
       </paper-input>
       <paper-input
-        label="User agent"
+        label="User Agent"
         .value="${this._user_agent}"
         .configValue="${"user_agent"}"
         @value-changed="${this._valueChanged}"
       >
       </paper-input>
       <paper-input
-        label="Media query"
+        label="Media Query"
         .value="${this._media_query}"
         .configValue="${"media_query"}"
         @value-changed="${this._valueChanged}"
       >
       </paper-input>
       <paper-input
-        label="Media query"
+        label="Query String"
         .value="${this._query_string}"
         .configValue="${"query_string"}"
         @value-changed="${this._valueChanged}"
