@@ -167,6 +167,8 @@ function buildConfig(config) {
       } else {
         if (
           userVars[cond] == conditions[cond] ||
+          (cond == "query_string" &&
+            window.location.search.includes(conditions[cond])) ||
           (cond == "user_agent" && userVars[cond].includes(conditions[cond])) ||
           (cond == "media_query" && window.matchMedia(conditions[cond]).matches)
         ) {
