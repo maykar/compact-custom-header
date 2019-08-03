@@ -49,7 +49,8 @@ const defaultConfig = {
   swipe_skip: "",
   swipe_wrap: true,
   swipe_prevent_default: false,
-  warning: true
+  warning: true,
+  compact_header: true
 };
 
 let root = document.querySelector("home-assistant");
@@ -150,7 +151,6 @@ function buildConfig(config) {
   ) {
     delete config.hide_tabs;
   }
-
   return { ...defaultConfig, ...config, ...exceptionConfig };
 
   function countMatches(conditions) {
@@ -372,15 +372,11 @@ function styleHeader(tabContainer, tabs, header) {
     view.style.marginTop = "-48.5px";
     view.style.paddingTop = "48.5px";
     view.style.boxSizing = "border-box";
-    let cchThemeBg = getComputedStyle(document.body).getPropertyValue(
-      "--cch-background"
-    );
     header.style.background =
-      cchConfig.background || cchThemeBg || "var(--primary-color)";
-    if (!tabContainer) {
-      header.querySelector("app-toolbar").style.background =
-        cchConfig.background || cchThemeBg || "var(--primary-color)";
-    }
+      cchConfig.background ||
+      getComputedStyle(document.body).getPropertyValue("--cch-background") ||
+      "var(--primary-color)";
+    header.querySelector("app-toolbar").style.background = "transparent";
   }
 
   if (newSidebar) {
@@ -442,7 +438,9 @@ function styleHeader(tabContainer, tabs, header) {
 
   if (tabContainer) {
     // Shift the header up to hide unused portion.
-    root.querySelector("app-toolbar").style.marginTop = "-64px";
+    root.querySelector("app-toolbar").style.marginTop = cchConfig.compact_header
+      ? "-64px"
+      : "";
 
     if (!cchConfig.chevrons) {
       // Hide chevrons.
@@ -466,7 +464,8 @@ function styleHeader(tabContainer, tabs, header) {
 }
 
 function styleButtons(tabs) {
-  let topMargin = tabs.length > 0 ? "margin-top:111px;" : "";
+  let topMargin =
+    tabs.length > 0 && cchConfig.compact_header ? "margin-top:111px;" : "";
   buttons = reverseObject(buttons);
   if (
     newSidebar &&
@@ -479,14 +478,19 @@ function styleButtons(tabs) {
       cchConfig.notify_indicator_color ||
       getComputedStyle(header).getPropertyValue("--cch-tab-indicator-color") ||
       "";
+    let border = getComputedStyle(header)
+      .getPropertyValue("background")
+      .includes("url")
+      ? "border-color: transparent !important"
+      : `border-color: ${getComputedStyle(header).getPropertyValue(
+          "background-color"
+        )} !important;`;
     style.innerHTML = `
         .dot {
           ${topMargin}
           z-index: 2;
           ${indicator ? `background: ${indicator} !important` : ""}
-          border-color: ${getComputedStyle(header).getPropertyValue(
-            "background-color"
-          )} !important;
+          ${border}
         }
     `;
     buttons.menu.shadowRoot.appendChild(style);
@@ -770,7 +774,7 @@ function insertClock(button) {
 
   let clockElement = clockIronIcon.parentNode.getElementById("cch_clock");
   if (cchConfig.menu == "clock") {
-    buttons.menu.style.marginTop = "111px";
+    buttons.menu.style.marginTop = cchConfig.compact_header ? "111px" : "";
     buttons.menu.style.zIndex = "1";
   }
   if (!clockElement) {
@@ -1678,21 +1682,15 @@ class CchConfigEditor extends LitElement {
           Disable CCH
         </paper-toggle-button>
         <paper-toggle-button
-          class="${this.exception && this.config.header === undefined
+          class="${this.exception && this.config.compact_header === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this.getConfig("header") !== false &&
-            this.getConfig("kiosk_mode") == false}"
-          .configValue="${"header"}"
+          ?checked="${this.getConfig("compact_header") !== false}"
+          .configValue="${"compact_header"}"
           @change="${this._valueChanged}"
-          title="Turn off to hide the header completely."
+          title="Make header compact."
         >
-          Display Header
-          ${this.getConfig("warning")
-            ? html`
-                <iron-icon icon="hass:alert" class="alert"></iron-icon>
-              `
-            : ""}
+          Compact Header
         </paper-toggle-button>
         <paper-toggle-button
           class="${this.exception && this.config.kiosk_mode === undefined
@@ -1711,15 +1709,21 @@ class CchConfigEditor extends LitElement {
             : ""}
         </paper-toggle-button>
         <paper-toggle-button
-          class="${this.exception && this.config.redirect === undefined
+          class="${this.exception && this.config.header === undefined
             ? "inherited"
             : ""}"
-          ?checked="${this.getConfig("redirect") !== false}"
-          .configValue="${"redirect"}"
+          ?checked="${this.getConfig("header") !== false &&
+            this.getConfig("kiosk_mode") == false}"
+          .configValue="${"header"}"
           @change="${this._valueChanged}"
-          title="Auto-redirect away from hidden tabs."
+          title="Turn off to hide the header completely."
         >
-          Hidden Tab Redirect
+          Display Header
+          ${this.getConfig("warning")
+            ? html`
+                <iron-icon icon="hass:alert" class="alert"></iron-icon>
+              `
+            : ""}
         </paper-toggle-button>
         <paper-toggle-button
           class="${this.exception && this.config.chevrons === undefined
@@ -1731,6 +1735,17 @@ class CchConfigEditor extends LitElement {
           title="View scrolling controls in header."
         >
           Display Tab Chevrons
+        </paper-toggle-button>
+        <paper-toggle-button
+          class="${this.exception && this.config.redirect === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this.getConfig("redirect") !== false}"
+          .configValue="${"redirect"}"
+          @change="${this._valueChanged}"
+          title="Auto-redirect away from hidden tabs."
+        >
+          Hidden Tab Redirect
         </paper-toggle-button>
         <paper-toggle-button
           style="${newSidebar ? "" : "display:none;"}"
@@ -1758,19 +1773,6 @@ class CchConfigEditor extends LitElement {
         >
           Close Sidebar
         </paper-toggle-button>
-        <paper-toggle-button
-          style="${newSidebar ? "display:none;" : ""}"
-          class="${this.exception && this.config.sidebar_swipe === undefined
-            ? "inherited"
-            : ""}"
-          ?checked="${this.getConfig("sidebar_swipe") !== false &&
-            this.getConfig("kiosk_mode") == false}"
-          .configValue="${"sidebar_swipe"}"
-          @change="${this._valueChanged}"
-          title="Swipe to open sidebar on mobile devices."
-        >
-          Swipe Open Sidebar
-        </paper-toggle-button>
         ${!this.exception
           ? html`
               <paper-toggle-button
@@ -1786,6 +1788,19 @@ class CchConfigEditor extends LitElement {
               </paper-toggle-button>
             `
           : ""}
+        <paper-toggle-button
+          style="${newSidebar ? "display:none;" : ""}"
+          class="${this.exception && this.config.sidebar_swipe === undefined
+            ? "inherited"
+            : ""}"
+          ?checked="${this.getConfig("sidebar_swipe") !== false &&
+            this.getConfig("kiosk_mode") == false}"
+          .configValue="${"sidebar_swipe"}"
+          @change="${this._valueChanged}"
+          title="Swipe to open sidebar on mobile devices."
+        >
+          Swipe Open Sidebar
+        </paper-toggle-button>
       </div>
       <h4 class="underline">Menu Items</h4>
       <div class="side-by-side">
