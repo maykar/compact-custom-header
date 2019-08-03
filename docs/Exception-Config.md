@@ -41,4 +41,8 @@ cch:
         options: clock
         clock_format: 12
         hide_tabs: 4,5,9
+    - conditions:
+        query_string: kiosk
+      config:
+        kiosk_mode: true
 ```
