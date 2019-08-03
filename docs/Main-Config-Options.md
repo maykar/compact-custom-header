@@ -33,6 +33,7 @@ views:
 |NAME|TYPE|DEFAULT|DESCRIPTION|
 |-|-|-|-|
 |disable|boolean|false|Disable Compact Custom Header. Useful to use default header on a certain user agent.
+|compact_header|boolean|true|Toggle the compacting header.
 |header|boolean|true|Display or hide the header.|
 |default_tab|number||Tab number, view's `title:`, or view's `path:` to start on when navigating to `/lovelace/` for the first time.
 |kiosk_mode|boolean|false|Hides the header and turns on `disable_sidebar` for HA 0.96.0 and above. On HA versions lower than 0.96.0 this hides the header, turns off `sidebar_swipe`, and turns on `sidebar_closed`.
