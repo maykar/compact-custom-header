@@ -2425,6 +2425,10 @@ class CchConditionsEditor extends LitElement {
     return this.conditions.media_query || "";
   }
 
+  get _query_string() {
+    return this.conditions.query_string || "";
+  }
+
   render() {
     if (!this.conditions) {
       return html``;
@@ -2448,6 +2452,13 @@ class CchConditionsEditor extends LitElement {
         label="Media query"
         .value="${this._media_query}"
         .configValue="${"media_query"}"
+        @value-changed="${this._valueChanged}"
+      >
+      </paper-input>
+      <paper-input
+        label="Media query"
+        .value="${this._query_string}"
+        .configValue="${"query_string"}"
         @value-changed="${this._valueChanged}"
       >
       </paper-input>
