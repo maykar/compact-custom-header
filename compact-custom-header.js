@@ -302,15 +302,21 @@ function hideMenuItems() {
       .querySelector("paper-listbox")
       .querySelectorAll("paper-item");
     for (let item of menuItems) {
-      if (item.getAttribute("aria-label") == "Help" && cchConfig.hide_help) {
+      if (
+        (item.innerHTML.includes("Help") ||
+          item.getAttribute("aria-label") == "Help") &&
+        cchConfig.hide_help
+      ) {
         item.parentNode.removeChild(item);
       } else if (
-        item.getAttribute("aria-label") == "Unused entities" &&
+        (item.innerHTML.includes("Unused entities") ||
+          item.getAttribute("aria-label") == "Unused entities") &&
         cchConfig.hide_unused
       ) {
         item.parentNode.removeChild(item);
       } else if (
-        item.getAttribute("aria-label") == "Configure UI" &&
+        (item.innerHTML.includes("Configure UI") ||
+          item.getAttribute("aria-label") == "Configure UI") &&
         cchConfig.hide_config
       ) {
         item.parentNode.removeChild(item);
@@ -379,7 +385,7 @@ function styleHeader(tabContainer, tabs, header) {
     header.querySelector("app-toolbar").style.background = "transparent";
   }
 
-  if (newSidebar) {
+  if (newSidebar && cchConfig.compact_header) {
     let sidebar = main.shadowRoot.querySelector("ha-sidebar").shadowRoot;
     sidebar.querySelector(".menu").style = "height:49px;";
     sidebar.querySelector("paper-listbox").style = "height:calc(100% - 180px);";
@@ -2524,7 +2530,7 @@ function deepcopy(value) {
 }
 
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.4     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.5     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
