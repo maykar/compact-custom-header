@@ -11,7 +11,7 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 **Many issues are solved by clearing your cache and refreshing the page.**
 
 **CCH may not function on some older or unsupported browsers/devices (like Fire tablets using WebView).<br>I maintain a version for these cases found here:**
-https://github.com/maykar/compact-custom-header/issues/185
+[CCH for legacy devices](https://github.com/maykar/compact-custom-header/issues/185)
 
 **To be sure that CCH is the source of the issue, disable it and see if the issue persists. The easiest way to do this is to remove or comment out CCH in `resources:`.**
 <br><br>
