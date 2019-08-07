@@ -104,7 +104,7 @@ function run() {
     insertEditMenu(tabs);
     hideMenuItems();
     styleHeader(tabContainer, tabs, header);
-    styleButtons(tabs);
+    styleButtons(tabs, tabContainer);
     defaultTab(tabs, tabContainer);
     hideTabs(tabContainer, tabs);
     for (let button in buttons) {
@@ -126,6 +126,8 @@ function run() {
 function buildConfig(config) {
   let exceptionConfig = {};
   let highestMatch = 0;
+
+  // Count number of matching conditions and choose config with most matches.
   if (config.exceptions) {
     config.exceptions.forEach(exception => {
       const matches = countMatches(exception.conditions);
@@ -136,6 +138,8 @@ function buildConfig(config) {
     });
   }
 
+  // If exception config uses hide_tabs and main config uses show_tabs,
+  // delete show_tabs and vice versa.
   if (
     exceptionConfig.hide_tabs &&
     config.show_tabs &&
@@ -151,6 +155,7 @@ function buildConfig(config) {
   ) {
     delete config.hide_tabs;
   }
+
   return { ...defaultConfig, ...config, ...exceptionConfig };
 
   function countMatches(conditions) {
@@ -194,13 +199,15 @@ function observers(tabContainer, tabs, urlDisable, header) {
         for (let node of mutation.addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
-            buttons = getButtonElements(tabContainer);
+            buttons = getButtonElements();
             run();
             return;
           }
         }
-      } else if (mutation.addedNodes.length) {
-        if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") return;
+      } else if (
+        mutation.addedNodes.length &&
+        !mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES"
+      ) {
         let editor = root
           .querySelector("ha-app-layout")
           .querySelector("editor");
@@ -249,7 +256,7 @@ function notificationCount() {
   return i;
 }
 
-function getButtonElements(tabContainer) {
+function getButtonElements() {
   let buttons = {};
   buttons.options = root.querySelector("paper-menu-button");
   if (!editMode) {
@@ -258,16 +265,6 @@ function getButtonElements(tabContainer) {
     if (!newSidebar) {
       buttons.notifications = root.querySelector("hui-notifications-button");
     }
-  }
-  if (buttons.menu && newSidebar) {
-    new MutationObserver(() => {
-      if (buttons.menu.style.visibility == "hidden") {
-        buttons.menu.style.display = "none";
-      } else {
-        buttons.menu.style.display = "";
-      }
-      tabContainerMargin(tabContainer);
-    }).observe(buttons.menu, { attributeFilter: ["style"] });
   }
   return buttons;
 }
@@ -327,6 +324,7 @@ function hideMenuItems() {
 
 function insertEditMenu(tabs) {
   if (buttons.options && editMode) {
+    // If any tabs are hidden, add "show all tabs" option.
     if (cchConfig.hide_tabs) {
       let show_tabs = document.createElement("paper-item");
       show_tabs.setAttribute("id", "show_tabs");
@@ -339,6 +337,7 @@ function insertEditMenu(tabs) {
       insertMenuItem(buttons.options.querySelector("paper-listbox"), show_tabs);
     }
 
+    // Add menu item to open CCH settings.
     let cchSettings = document.createElement("paper-item");
     cchSettings.setAttribute("id", "cch_settings");
     cchSettings.addEventListener("click", () => {
@@ -370,6 +369,20 @@ function removeStyles(tabContainer, tabs, header) {
 }
 
 function styleHeader(tabContainer, tabs, header) {
+  const headerBackground =
+    cchConfig.background ||
+    getComputedStyle(document.body).getPropertyValue("--cch-background") ||
+    "var(--primary-color)";
+
+  // Match mobile status bar color to header color.
+  const themeColor = document.querySelector('[name="theme-color"]');
+  themeColor.content = headerBackground;
+  themeColor.removeAttribute("default-content");
+  const defaultContent = document.createAttribute("default-content");
+  defaultContent.value = headerBackground;
+  themeColor.setAttributeNode(defaultContent);
+
+  // Adjust view size & padding for new header size.
   if (!cchConfig.header || cchConfig.kiosk_mode) {
     header.style.display = "none";
     view.style.minHeight = "100vh";
@@ -378,38 +391,18 @@ function styleHeader(tabContainer, tabs, header) {
     view.style.marginTop = "-48.5px";
     view.style.paddingTop = "48.5px";
     view.style.boxSizing = "border-box";
-    header.style.background =
-      cchConfig.background ||
-      getComputedStyle(document.body).getPropertyValue("--cch-background") ||
-      "var(--primary-color)";
+    header.style.background = headerBackground;
     header.querySelector("app-toolbar").style.background = "transparent";
   }
 
+  // Match sidebar elements to header's size.
   if (newSidebar && cchConfig.compact_header) {
     let sidebar = main.shadowRoot.querySelector("ha-sidebar").shadowRoot;
     sidebar.querySelector(".menu").style = "height:49px;";
     sidebar.querySelector("paper-listbox").style = "height:calc(100% - 180px);";
   }
-  let indicator = cchConfig.tab_indicator_color;
-  if (
-    indicator &&
-    !root.querySelector('[id="cch_header_colors"]') &&
-    !editMode
-  ) {
-    let style = document.createElement("style");
-    style.setAttribute("id", "cch_header_colors");
-    style.innerHTML = `
-          paper-tabs {
-            ${
-              indicator
-                ? `--paper-tabs-selection-bar-color: ${indicator} !important`
-                : "var(--cch-tab-indicator-color) !important"
-            }
-          }
-        `;
-    root.appendChild(style);
-  }
 
+  // Current tab icon color.
   let conditionalTabs = cchConfig.conditional_styles
     ? JSON.stringify(cchConfig.conditional_styles).includes("tab")
     : false;
@@ -432,6 +425,29 @@ function styleHeader(tabContainer, tabs, header) {
           `;
     tabContainer.appendChild(style);
   }
+
+  // Current tab indicator color.
+  let indicator = cchConfig.tab_indicator_color;
+  if (
+    indicator &&
+    !root.querySelector('[id="cch_header_colors"]') &&
+    !editMode
+  ) {
+    let style = document.createElement("style");
+    style.setAttribute("id", "cch_header_colors");
+    style.innerHTML = `
+          paper-tabs {
+            ${
+              indicator
+                ? `--paper-tabs-selection-bar-color: ${indicator} !important`
+                : "var(--cch-tab-indicator-color) !important"
+            }
+          }
+        `;
+    root.appendChild(style);
+  }
+
+  // Tab's icon color.
   let all_tabs_color = cchConfig.all_tabs_color || "var(--cch-all-tabs-color)";
   if (
     (cchConfig.tab_color && Object.keys(cchConfig.tab_color).length) ||
@@ -448,8 +464,8 @@ function styleHeader(tabContainer, tabs, header) {
       ? "-64px"
       : "";
 
+    // Show/hide tab navigation chevrons.
     if (!cchConfig.chevrons) {
-      // Hide chevrons.
       let chevron = tabContainer.shadowRoot.querySelectorAll(
         '[icon^="paper-tabs:chevron"]'
       );
@@ -469,38 +485,10 @@ function styleHeader(tabContainer, tabs, header) {
   }
 }
 
-function styleButtons(tabs) {
+function styleButtons(tabs, tabContainer) {
   let topMargin =
     tabs.length > 0 && cchConfig.compact_header ? "margin-top:111px;" : "";
   buttons = reverseObject(buttons);
-  if (
-    newSidebar &&
-    cchConfig.menu != "hide" &&
-    !buttons.menu.shadowRoot.querySelector('[id="cch_dot"]')
-  ) {
-    let style = document.createElement("style");
-    style.setAttribute("id", "cch_dot");
-    let indicator =
-      cchConfig.notify_indicator_color ||
-      getComputedStyle(header).getPropertyValue("--cch-tab-indicator-color") ||
-      "";
-    let border = getComputedStyle(header)
-      .getPropertyValue("background")
-      .includes("url")
-      ? "border-color: transparent !important"
-      : `border-color: ${getComputedStyle(header).getPropertyValue(
-          "background-color"
-        )} !important;`;
-    style.innerHTML = `
-        .dot {
-          ${topMargin}
-          z-index: 2;
-          ${indicator ? `background: ${indicator} !important` : ""}
-          ${border}
-        }
-    `;
-    buttons.menu.shadowRoot.appendChild(style);
-  }
   for (const button in buttons) {
     if (!buttons[button]) continue;
     if (button == "options" && cchConfig[button] == "overflow") {
@@ -567,9 +555,22 @@ function styleButtons(tabs) {
     } else if (cchConfig[button] == "hide") {
       buttons[button].style.display = "none";
     }
+    // Hide menu button if hiding the sidebar.
     if (newSidebar && (cchConfig.kiosk_mode || cchConfig.disable_sidebar)) {
       buttons.menu.style.display = "none";
     }
+  }
+
+  // Remove empty space taken up by hidden menu button.
+  if (buttons.menu && newSidebar) {
+    new MutationObserver(() => {
+      if (buttons.menu.style.visibility == "hidden") {
+        buttons.menu.style.display = "none";
+      } else {
+        buttons.menu.style.display = "";
+      }
+      tabContainerMargin(tabContainer);
+    }).observe(buttons.menu, { attributeFilter: ["style"] });
   }
 
   // Use color vars set in HA theme.
@@ -591,7 +592,42 @@ function styleButtons(tabs) {
     }
   }
 
-  if (cchConfig.notify_indicator_color && cchConfig.notifications == "show") {
+  // Notification indicator's color for HA 0.96 and above.
+  if (
+    newSidebar &&
+    cchConfig.menu != "hide" &&
+    !buttons.menu.shadowRoot.querySelector('[id="cch_dot"]')
+  ) {
+    let style = document.createElement("style");
+    style.setAttribute("id", "cch_dot");
+    let indicator =
+      cchConfig.notify_indicator_color ||
+      getComputedStyle(header).getPropertyValue("--cch-tab-indicator-color") ||
+      "";
+    let border = getComputedStyle(header)
+      .getPropertyValue("background")
+      .includes("url")
+      ? "border-color: transparent !important"
+      : `border-color: ${getComputedStyle(header).getPropertyValue(
+          "background-color"
+        )} !important;`;
+    style.innerHTML = `
+        .dot {
+          ${topMargin}
+          z-index: 2;
+          ${indicator ? `background: ${indicator} !important` : ""}
+          ${border}
+        }
+    `;
+    buttons.menu.shadowRoot.appendChild(style);
+  }
+
+  // Notification indicator's color for HA 0.95 and below.
+  if (
+    cchConfig.notify_indicator_color &&
+    cchConfig.notifications == "show" &&
+    !newSidebar
+  ) {
     let style = document.createElement("style");
     style.innerHTML = `
           .indicator {
@@ -601,7 +637,7 @@ function styleButtons(tabs) {
               "var(--cch-notify-text-color), var(--primary-text-color)"};
           }
         `;
-    if (!newSidebar) buttons.notifications.shadowRoot.appendChild(style);
+    buttons.notifications.shadowRoot.appendChild(style);
   }
 }
 
@@ -1305,7 +1341,7 @@ function breakingChangeNotification() {
   }
 }
 
-// EDITOR //////////////////////////////////////////////////////////////////
+// EDITOR //////////////////////////////////////////////////////////////////////
 
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
@@ -2530,7 +2566,7 @@ function deepcopy(value) {
 }
 
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.5     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.6     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
