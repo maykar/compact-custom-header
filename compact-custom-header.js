@@ -350,6 +350,29 @@ function insertEditMenu(tabs) {
 
 function removeStyles(tabContainer, tabs, header) {
   let header_colors = root.querySelector('[id="cch_header_colors"]');
+  let tabCss = cchConfig.tab_css;
+  if (tabCss) {
+    for (let [key, value] of Object.entries(tabCss)) {
+      if (isNaN(key)) {
+        let views = lovelace.config.views;
+        for (let view in views) {
+          if (views[view]["title"] == key || views[view]["path"] == key) {
+            key = view;
+          }
+        }
+      }
+      value = value.replace(/: /g, ":").replace(/; /g, ";");
+      let css = tabs[key].style.cssText.replace(/: /g, ":").replace(/; /g, ";");
+      console.log(value);
+      console.log(css);
+      tabs[key].style.cssText = css.replace(value, "");
+    }
+  }
+  if (cchConfig.header_css) {
+    let value = cchConfig.header_css.replace(/: /g, ":").replace(/; /g, ";");
+    let css = header.style.cssText.replace(/: /g, ":").replace(/; /g, ";");
+    header.style.cssText = css.replace(value, "");
+  }
   if (tabContainer) {
     tabContainer.style.marginLeft = "";
     tabContainer.style.marginRight = "";
@@ -426,7 +449,7 @@ function styleHeader(tabContainer, tabs, header) {
     tabContainer.appendChild(style);
   }
 
-  // Current tab indicator color.
+  // Style current tab indicator.
   let indicator = cchConfig.tab_indicator_color;
   if (
     indicator &&
@@ -458,11 +481,32 @@ function styleHeader(tabContainer, tabs, header) {
     }
   }
 
+  // Add header custom css.
+  if (cchConfig.header_css) header.style.cssText += cchConfig.header_css;
+
+  // Add tab custom css.
+  let tabCss = cchConfig.tab_css;
+  if (tabCss) {
+    for (let [key, value] of Object.entries(tabCss)) {
+      if (isNaN(key)) {
+        let views = lovelace.config.views;
+        for (let view in views) {
+          if (views[view]["title"] == key || views[view]["path"] == key) {
+            key = view;
+          }
+        }
+      }
+      if (tabs[key]) tabs[key].style.cssText += value;
+    }
+  }
+
   if (tabContainer) {
     // Shift the header up to hide unused portion.
     root.querySelector("app-toolbar").style.marginTop = cchConfig.compact_header
       ? "-64px"
       : "";
+
+    for (const tab in tabs) tabs[tab].style.marginTop = "-1px";
 
     // Show/hide tab navigation chevrons.
     if (!cchConfig.chevrons) {
@@ -494,23 +538,22 @@ function styleButtons(tabs, tabContainer) {
     if (button == "options" && cchConfig[button] == "overflow") {
       cchConfig[button] = "show";
     }
+    let buttonStyle = `
+      z-index:1;
+      ${button == "menu" ? "" : "padding: 4px;"}
+      ${topMargin}
+      ${button == "options" ? "margin-right:-5px;" : ""}
+    `;
+    if (button == "menu") buttons[button].style.padding = "4px";
     if (cchConfig[button] == "show" || cchConfig[button] == "clock") {
       if (button == "menu") {
         let paperIconButton = buttons[button].querySelector("paper-icon-button")
           ? buttons[button].querySelector("paper-icon-button")
           : buttons[button].shadowRoot.querySelector("paper-icon-button");
         if (!paperIconButton) continue;
-        paperIconButton.style.cssText = `
-          z-index:1;
-          ${topMargin}
-          ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
-        `;
+        paperIconButton.style.cssText = buttonStyle;
       } else {
-        buttons[button].style.cssText = `
-              z-index:1;
-              ${topMargin}
-              ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
-            `;
+        buttons[button].style.cssText = buttonStyle;
       }
     } else if (cchConfig[button] == "overflow") {
       const menu_items = buttons.options.querySelector("paper-listbox");
@@ -639,6 +682,18 @@ function styleButtons(tabs, tabContainer) {
         `;
     buttons.notifications.shadowRoot.appendChild(style);
   }
+
+  // Add buttons's custom css.
+  let buttonCss = cchConfig.button_css;
+  if (buttonCss) {
+    for (const [key, value] of Object.entries(buttonCss)) {
+      if (!buttons[key]) {
+        continue;
+      } else {
+        buttons[key].style.cssText += value;
+      }
+    }
+  }
 }
 
 function getTranslation(button) {
@@ -665,11 +720,7 @@ function defaultTab(tabs, tabContainer) {
         }
       }
     }
-    if (
-      activeTab != default_tab &&
-      activeTab == 0 &&
-      !cchConfig.hide_tabs.includes(default_tab)
-    ) {
+    if (activeTab != default_tab && activeTab == 0) {
       tabs[default_tab].click();
     }
     defaultTabRedirect = true;
