@@ -363,8 +363,6 @@ function removeStyles(tabContainer, tabs, header) {
       }
       value = value.replace(/: /g, ":").replace(/; /g, ";");
       let css = tabs[key].style.cssText.replace(/: /g, ":").replace(/; /g, ";");
-      console.log(value);
-      console.log(css);
       tabs[key].style.cssText = css.replace(value, "");
     }
   }
@@ -1234,6 +1232,7 @@ function swipeNavigation(tabs, tabContainer) {
   // To make it easier to update lovelace-swipe-navigation
   // keep this as close to the standalone lovelace addon as possible.
   let swipe_amount = cchConfig.swipe_amount || 15;
+  let swipe_groups = cchConfig.swipe_groups;
   let animate = cchConfig.swipe_animate || "none";
   let skip_tabs = cchConfig.swipe_skip
     ? buildRanges(cchConfig.swipe_skip.split(","))
@@ -1244,13 +1243,15 @@ function swipeNavigation(tabs, tabContainer) {
       ? cchConfig.swipe_prevent_default
       : false;
 
-  let groups = cchConfig.swipe_groups.replace(/, /g, ",").split(",");
   let leftStop = [];
   let rightStop = [];
-  for (let group in groups) {
-    let firstLast = groups[group].replace(/ /g, "").split("to");
-    leftStop.push(firstLast[0]);
-    rightStop.push(firstLast[1]);
+  if (swipe_groups) {
+    let groups = swipe_groups.replace(/, /g, ",").split(",");
+    for (let group in groups) {
+      let firstLast = groups[group].replace(/ /g, "").split("to");
+      leftStop.push(firstLast[0]);
+      rightStop.push(firstLast[1]);
+    }
   }
 
   swipe_amount /= Math.pow(10, 2);
@@ -1272,8 +1273,8 @@ function swipeNavigation(tabs, tabContainer) {
     }
     xDown = event.touches[0].clientX;
     yDown = event.touches[0].clientY;
-    if (!lastTab) filterTabs();
     activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
+    filterTabs();
   }
 
   function handleTouchMove(event) {
@@ -1293,12 +1294,29 @@ function swipeNavigation(tabs, tabContainer) {
     }
     if (xDiff > Math.abs(screen.width * swipe_amount)) {
       left = false;
-      if (!leftStop.includes(String(activeTab))) {
+      if (
+        (!rightStop.includes(String(activeTab)) &&
+          buildRanges(swipe_groups).includes(activeTab)) ||
+        (wrap && rightStop.includes(String(activeTab)))
+      ) {
+        activeTab == tabs.length - 1 ||
+        (lastTab != null && activeTab == lastTab)
+          ? click(firstTab)
+          : click(activeTab + 1);
+      } else if (!swipe_groups) {
         activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
       }
     } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
       left = true;
-      if (!rightStop.includes(String(activeTab))) {
+      if (
+        (!leftStop.includes(String(activeTab)) &&
+          buildRanges(swipe_groups).includes(activeTab)) ||
+        (wrap && leftStop.includes(String(activeTab)))
+      ) {
+        activeTab == 0 || (firstTab != null && activeTab == firstTab)
+          ? click(lastTab)
+          : click(activeTab - 1);
+      } else if (!swipe_groups) {
         activeTab == 0 ? click(lastTab) : click(activeTab - 1);
       }
     }
@@ -1314,6 +1332,16 @@ function swipeNavigation(tabs, tabContainer) {
     });
     firstTab = wrap ? 0 : null;
     lastTab = wrap ? tabs.length - 1 : null;
+    if (swipe_groups) {
+      let groups = swipe_groups.replace(/, /g, ",").split(",");
+      for (let group in groups) {
+        let firstLast = groups[group].replace(/ /g, "").split("to");
+        if (wrap && activeTab >= firstLast[0] && activeTab <= firstLast[1]) {
+          firstTab = parseInt(firstLast[0]);
+          lastTab = parseInt(firstLast[1]);
+        }
+      }
+    }
   }
 
   function click(index) {
