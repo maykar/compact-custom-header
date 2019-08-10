@@ -540,7 +540,7 @@ function styleButtons(tabs, tabContainer) {
     }
     let buttonStyle = `
       z-index:1;
-      ${button == "menu" ? "" : "padding: 4px;"}
+      ${button == "menu" ? "" : "padding: 4px;margin-top:-1px;"}
       ${topMargin}
       ${button == "options" ? "margin-right:-5px;" : ""}
     `;
@@ -1244,6 +1244,15 @@ function swipeNavigation(tabs, tabContainer) {
       ? cchConfig.swipe_prevent_default
       : false;
 
+  let groups = cchConfig.swipe_groups.replace(/, /g, ",").split(",");
+  let leftStop = [];
+  let rightStop = [];
+  for (let group in groups) {
+    let firstLast = groups[group].replace(/ /g, "").split("to");
+    leftStop.push(firstLast[0]);
+    rightStop.push(firstLast[1]);
+  }
+
   swipe_amount /= Math.pow(10, 2);
   const appLayout = root.querySelector("ha-app-layout");
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
@@ -1284,10 +1293,14 @@ function swipeNavigation(tabs, tabContainer) {
     }
     if (xDiff > Math.abs(screen.width * swipe_amount)) {
       left = false;
-      activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
+      if (!leftStop.includes(String(activeTab))) {
+        activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
+      }
     } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
       left = true;
-      activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+      if (!rightStop.includes(String(activeTab))) {
+        activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+      }
     }
     xDown = yDown = xDiff = yDiff = null;
   }
