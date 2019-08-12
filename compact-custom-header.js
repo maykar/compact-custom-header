@@ -1248,9 +1248,9 @@ function swipeNavigation(tabs, tabContainer) {
   if (swipe_groups) {
     let groups = swipe_groups.replace(/, /g, ",").split(",");
     for (let group in groups) {
-      let firstLast = groups[group].replace(/ /g, "").split("to");
-      leftStop.push(firstLast[0]);
-      rightStop.push(firstLast[1]);
+      let tabRange = groups[group].replace(/ /g, "").split("to");
+      leftStop.push(tabRange[0]);
+      rightStop.push(tabRange[1]);
     }
   }
 
@@ -1344,71 +1344,45 @@ function swipeNavigation(tabs, tabContainer) {
     }
   }
 
-  function click(index) {
-    if (
-      (activeTab == 0 && !wrap && left) ||
-      (activeTab == tabs.length - 1 && !wrap && !left)
-    ) {
-      return;
-    }
-    if (animate == "swipe") {
-      let _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
-      let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
-      view.style.transitionDuration = "200ms";
-      view.style.opacity = 0;
-      view.style.transform = `translateX(${_in})`;
-      view.style.transition = "transform 0.20s, opacity 0.20s";
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
-        view.style.transitionDuration = "0ms";
-        view.style.transform = `translateX(${_out})`;
-        view.style.transition = "transform 0s";
-      }, 210);
-      setTimeout(function() {
-        view.style.transitionDuration = "200ms";
-        view.style.opacity = 1;
-        view.style.transform = `translateX(0px)`;
-        view.style.transition = "transform 0.20s, opacity 0.20s";
-      }, 215);
-    } else if (animate == "fade") {
-      view.style.transitionDuration = "200ms";
-      view.style.transition = "opacity 0.20s";
-      view.style.opacity = 0;
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
-        view.style.transitionDuration = "0ms";
-        view.style.opacity = 0;
-        view.style.transition = "opacity 0s";
-      }, 210);
-      setTimeout(function() {
-        view.style.transitionDuration = "200ms";
-        view.style.transition = "opacity 0.20s";
-        view.style.opacity = 1;
-      }, 250);
-    } else if (animate == "flip") {
-      view.style.transitionDuration = "200ms";
-      view.style.transform = "rotatey(90deg)";
-      view.style.transition = "transform 0.20s, opacity 0.20s";
-      view.style.opacity = 0.25;
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
-      }, 210);
-      setTimeout(function() {
-        view.style.transitionDuration = "200ms";
-        view.style.transform = "rotatey(0deg)";
-        view.style.transition = "transform 0.20s, opacity 0.20s";
-        view.style.opacity = 1;
-      }, 250);
-    } else {
-      tabs[index].dispatchEvent(
+  function animation(secs, transform, opacity, timeout) {
+    setTimeout(() => {
+      view.style.transition = `transform ${secs}s, opacity ${secs}s`;
+      if (transform) view.style.transform = transform;
+      view.style.opacity = opacity;
+    }, timeout);
+  }
+
+  function navigate(tab, timeout) {
+    setTimeout(() => {
+      tab.dispatchEvent(
         new MouseEvent("click", { bubbles: false, cancelable: true })
       );
+    }, timeout);
+  }
+
+  function click(index) {
+    if (
+      !wrap &&
+      ((activeTab == firstTab && left) || (activeTab == lastTab && !left))
+    ) {
+      return;
+    } else if (animate == "swipe") {
+      let width = `${screen.width / 1.5}px`;
+      animation(0.16, `translateX(${left ? width : "-" + width})`, 0, 0);
+      navigate(tabs[index], 170);
+      animation(0, `translateX(${!left ? width : "-" + width})`, 0, 180);
+      animation(0.16, "translateX(0px)", 1, 220);
+    } else if (animate == "fade") {
+      animation(0.16, false, 0, 0);
+      navigate(tabs[index], 170);
+      animation(0.16, false, 0, 180);
+      animation(0.16, false, 1, 220);
+    } else if (animate == "flip") {
+      animation(0.25, "rotatey(90deg)", 0.25, 0);
+      navigate(tabs[index], 270);
+      animation(0.25, "rotatey(0deg)", 1, 300);
+    } else {
+      navigate(tabs[index], 0);
     }
   }
 }
