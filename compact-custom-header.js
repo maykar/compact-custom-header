@@ -296,7 +296,7 @@ function tabContainerMargin(tabContainer) {
 
 function hideMenuItems() {
   function localize(item) {
-    return hass.localize(`ui.panel.lovelace.menu.${item}`)
+    return hass.localize(`ui.panel.lovelace.menu.${item}`);
   }
   if (cchConfig.hide_help || cchConfig.hide_config || cchConfig.hide_unused) {
     let menuItems = buttons.options
@@ -394,12 +394,11 @@ function removeStyles(tabContainer, tabs, header) {
 }
 
 function styleHeader(tabContainer, tabs, header) {
-  const statusBarColor =
-    cchConfig.statusbar_color ||
+  const headerBackground =
     cchConfig.background ||
     getComputedStyle(document.body).getPropertyValue("--cch-background") ||
     getComputedStyle(document.body).getPropertyValue("--primary-color");
-
+  const statusBarColor = cchConfig.statusbar_color || headerBackground;
   // Match mobile status bar color to header color.
   const themeColor = document.querySelector('[name="theme-color"]');
   function colorStatusBar() {
@@ -674,7 +673,8 @@ function styleButtons(tabs, tabContainer) {
         }
     `;
     buttons.menu.shadowRoot.appendChild(style);
-  } else if ( // Notification indicator's color for HA 0.95 and below.
+  } else if (
+    // Notification indicator's color for HA 0.95 and below.
     cchConfig.notify_indicator_color &&
     cchConfig.notifications == "show" &&
     !newSidebar
@@ -1392,11 +1392,11 @@ function swipeNavigation(tabs, tabContainer) {
               // Move view to other side of screen.
               let neg = view.style.transform.includes("-") ? "" : "-";
               view.style.transition = "";
-              view.style.transform = `translateX(${neg}${width})`
+              view.style.transform = `translateX(${neg}${width})`;
               animation(0, `translateX(${neg}${width})`, 0, 0);
               // Slide view back on screen.
               animation(0.16, "translateX(0px)", 1, 50);
-              observer.disconnect()
+              observer.disconnect();
             }
           });
         });
@@ -1411,7 +1411,7 @@ function swipeNavigation(tabs, tabContainer) {
           mutation.addedNodes.forEach(node => {
             if (node.nodeName == "HUI-VIEW") {
               animation(0.16, "", 1, 0);
-              observer.disconnect()
+              observer.disconnect();
             }
           });
         });
@@ -1425,7 +1425,7 @@ function swipeNavigation(tabs, tabContainer) {
           mutation.addedNodes.forEach(node => {
             if (node.nodeName == "HUI-VIEW") {
               animation(0.25, "rotatey(0deg)", 1, 50);
-              observer.disconnect()
+              observer.disconnect();
             }
           });
         });
