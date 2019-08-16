@@ -43,6 +43,7 @@ const defaultConfig = {
   hide_unused: false,
   tab_color: {},
   button_color: {},
+  statusbar_color: "",
   swipe: false,
   swipe_amount: "15",
   swipe_animate: "none",
@@ -294,26 +295,29 @@ function tabContainerMargin(tabContainer) {
 }
 
 function hideMenuItems() {
+  function localize(item) {
+    return hass.localize(`ui.panel.lovelace.menu.${item}`)
+  }
   if (cchConfig.hide_help || cchConfig.hide_config || cchConfig.hide_unused) {
     let menuItems = buttons.options
       .querySelector("paper-listbox")
       .querySelectorAll("paper-item");
     for (let item of menuItems) {
       if (
-        (item.innerHTML.includes("Help") ||
-          item.getAttribute("aria-label") == "Help") &&
+        (item.innerHTML.includes(localize("help")) ||
+          item.getAttribute("aria-label") == localize("help")) &&
         cchConfig.hide_help
       ) {
         item.parentNode.removeChild(item);
       } else if (
-        (item.innerHTML.includes("Unused entities") ||
-          item.getAttribute("aria-label") == "Unused entities") &&
+        (item.innerHTML.includes(localize("unused_entities")) ||
+          item.getAttribute("aria-label") == localize("unused_entities")) &&
         cchConfig.hide_unused
       ) {
         item.parentNode.removeChild(item);
       } else if (
-        (item.innerHTML.includes("Configure UI") ||
-          item.getAttribute("aria-label") == "Configure UI") &&
+        (item.innerHTML.includes(localize("configure_ui")) ||
+          item.getAttribute("aria-label") == localize("configure_ui")) &&
         cchConfig.hide_config
       ) {
         item.parentNode.removeChild(item);
@@ -390,18 +394,26 @@ function removeStyles(tabContainer, tabs, header) {
 }
 
 function styleHeader(tabContainer, tabs, header) {
-  const headerBackground =
+  const statusBarColor =
+    cchConfig.statusbar_color ||
     cchConfig.background ||
     getComputedStyle(document.body).getPropertyValue("--cch-background") ||
-    "var(--primary-color)";
+    getComputedStyle(document.body).getPropertyValue("--primary-color");
 
   // Match mobile status bar color to header color.
   const themeColor = document.querySelector('[name="theme-color"]');
-  themeColor.content = headerBackground;
-  themeColor.removeAttribute("default-content");
-  const defaultContent = document.createAttribute("default-content");
-  defaultContent.value = headerBackground;
-  themeColor.setAttributeNode(defaultContent);
+  function colorStatusBar() {
+    themeColor.content = statusBarColor;
+    themeColor.removeAttribute("default-content");
+    const defaultContent = document.createAttribute("default-content");
+    defaultContent.value = statusBarColor;
+    themeColor.setAttributeNode(defaultContent);
+  }
+  colorStatusBar();
+  // If app/browser is idle or in background sometimes theme-color needs reset.
+  new MutationObserver(() => {
+    if (themeColor.content != statusBarColor) colorStatusBar();
+  }).observe(themeColor, { attributeFilter: ["content"] });
 
   // Adjust view size & padding for new header size.
   if (!cchConfig.header || cchConfig.kiosk_mode) {
@@ -530,6 +542,7 @@ function styleHeader(tabContainer, tabs, header) {
 function styleButtons(tabs, tabContainer) {
   let topMargin =
     tabs.length > 0 && cchConfig.compact_header ? "margin-top:111px;" : "";
+  // Reverse buttons object so menu is first in overflow menu.
   buttons = reverseObject(buttons);
   for (const button in buttons) {
     if (!buttons[button]) continue;
@@ -661,10 +674,7 @@ function styleButtons(tabs, tabContainer) {
         }
     `;
     buttons.menu.shadowRoot.appendChild(style);
-  }
-
-  // Notification indicator's color for HA 0.95 and below.
-  if (
+  } else if ( // Notification indicator's color for HA 0.95 and below.
     cchConfig.notify_indicator_color &&
     cchConfig.notifications == "show" &&
     !newSidebar
@@ -729,6 +739,7 @@ function sidebarMod() {
   let menu = buttons.menu.querySelector("paper-icon-button");
   let sidebar = main.shadowRoot.querySelector("app-drawer");
 
+  // HA 0.95 and below
   if (!newSidebar) {
     if (!cchConfig.sidebar_swipe || cchConfig.kiosk_mode) {
       sidebar.removeAttribute("swipe-open");
@@ -737,10 +748,8 @@ function sidebarMod() {
       if (sidebar.hasAttribute("opened")) menu.click();
       sidebarClosed = true;
     }
-  } else if (
-    newSidebar &&
-    (cchConfig.disable_sidebar || cchConfig.kiosk_mode)
-  ) {
+    // HA 0.96 and above
+  } else if (cchConfig.disable_sidebar || cchConfig.kiosk_mode) {
     sidebar.style.display = "none";
     sidebar.addEventListener(
       "mouseenter",
@@ -1254,6 +1263,10 @@ function swipeNavigation(tabs, tabContainer) {
     }
   }
 
+  document.body.style.backgroundColor = getComputedStyle(
+    document.body
+  ).getPropertyValue("--background-color");
+
   swipe_amount /= Math.pow(10, 2);
   const appLayout = root.querySelector("ha-app-layout");
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
@@ -1347,7 +1360,7 @@ function swipeNavigation(tabs, tabContainer) {
   function animation(secs, transform, opacity, timeout) {
     setTimeout(() => {
       view.style.transition = `transform ${secs}s, opacity ${secs}s`;
-      if (transform) view.style.transform = transform;
+      view.style.transform = transform ? transform : "";
       view.style.opacity = opacity;
     }, timeout);
   }
@@ -1361,26 +1374,64 @@ function swipeNavigation(tabs, tabContainer) {
   }
 
   function click(index) {
+    let right = !left;
     if (
       !wrap &&
-      ((activeTab == firstTab && left) || (activeTab == lastTab && !left))
+      ((activeTab == firstTab && left) || (activeTab == lastTab && right))
     ) {
       return;
     } else if (animate == "swipe") {
-      let width = `${screen.width / 1.5}px`;
-      animation(0.16, `translateX(${left ? width : "-" + width})`, 0, 0);
-      navigate(tabs[index], 170);
-      animation(0, `translateX(${!left ? width : "-" + width})`, 0, 180);
-      animation(0.16, "translateX(0px)", 1, 220);
+      let width = screen.width / 1.5 + "px";
+      // Swipe view off screen.
+      animation(0.16, `translateX(${left ? "" : "-"}${width})`, 0, 0);
+      // Watch for content to load.
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeName == "HUI-VIEW") {
+              // Move view to other side of screen.
+              let neg = view.style.transform.includes("-") ? "" : "-";
+              view.style.transition = "";
+              view.style.transform = `translateX(${neg}${width})`
+              animation(0, `translateX(${neg}${width})`, 0, 0);
+              // Slide view back on screen.
+              animation(0.16, "translateX(0px)", 1, 50);
+              observer.disconnect()
+            }
+          });
+        });
+      });
+      observer.observe(view, { childList: true });
+      // Navigate to next view and trigger the observer.
+      navigate(tabs[index], 180);
     } else if (animate == "fade") {
-      animation(0.16, false, 0, 0);
+      animation(0.16, "", 0, 0);
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeName == "HUI-VIEW") {
+              animation(0.16, "", 1, 0);
+              observer.disconnect()
+            }
+          });
+        });
+      });
+      observer.observe(view, { childList: true });
       navigate(tabs[index], 170);
-      animation(0.16, false, 0, 180);
-      animation(0.16, false, 1, 220);
     } else if (animate == "flip") {
       animation(0.25, "rotatey(90deg)", 0.25, 0);
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeName == "HUI-VIEW") {
+              animation(0.25, "rotatey(0deg)", 1, 50);
+              observer.disconnect()
+            }
+          });
+        });
+      });
+      observer.observe(view, { childList: true });
       navigate(tabs[index], 270);
-      animation(0.25, "rotatey(0deg)", 1, 300);
     } else {
       navigate(tabs[index], 0);
     }
