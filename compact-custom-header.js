@@ -50,6 +50,7 @@ const defaultConfig = {
   swipe_skip: "",
   swipe_wrap: true,
   swipe_prevent_default: false,
+  swipe_skip_hidden: true,
   warning: true,
   compact_header: true
 };
@@ -553,11 +554,14 @@ function styleButtons(tabs, tabContainer) {
     }
     let buttonStyle = `
       z-index:1;
-      ${button == "menu" ? "" : "padding: 4px;margin-top:-1px;"}
+      ${
+        button == "menu"
+          ? "padding: 4px 0;"
+          : "padding: 4px 0; margin-top:-1px;"
+      }
       ${topMargin}
       ${button == "options" ? "margin-right:-5px;" : ""}
     `;
-    if (button == "menu") buttons[button].style.padding = "4px";
     if (cchConfig[button] == "show" || cchConfig[button] == "clock") {
       if (button == "menu") {
         let paperIconButton = buttons[button].querySelector("paper-icon-button")
@@ -843,7 +847,7 @@ function insertClock(button) {
   const clockWidth =
     (cchConfig.clock_format == 12 && cchConfig.clock_am_pm) ||
     cchConfig.clock_date
-      ? 110
+      ? 105
       : 80;
 
   if (
@@ -1308,12 +1312,18 @@ function swipeNavigation(tabs, tabContainer) {
   }
 
   function filterTabs() {
-    fTabs = tabs.filter(element => {
-      return (
-        !skip_tabs.includes(tabs.indexOf(element)) &&
-        getComputedStyle(element, null).display != "none"
-      );
-    });
+    if (cchConfig.swipe_skip_hidden) {
+      fTabs = tabs.filter(element => {
+        return (
+          !skip_tabs.includes(tabs.indexOf(element)) &&
+          getComputedStyle(element, null).display != "none"
+        );
+      });
+    } else {
+      fTabs = tabs.filter(element => {
+        return !skip_tabs.includes(tabs.indexOf(element));
+      });
+    }
     firstTab = fTabs[0];
     lastTab = fTabs[fTabs.length - 1];
     if (swipe_groups) {
@@ -1321,8 +1331,8 @@ function swipeNavigation(tabs, tabContainer) {
       for (let group in groups) {
         let firstLast = groups[group].replace(/ /g, "").split("to");
         if (wrap && activeTab >= firstLast[0] && activeTab <= firstLast[1]) {
-          firstTab = parseInt(firstLast[0]);
-          lastTab = parseInt(firstLast[1]);
+          firstTab = tabs[parseInt(firstLast[0])];
+          lastTab = tabs[parseInt(firstLast[1])];
         }
       }
     }
