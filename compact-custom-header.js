@@ -394,6 +394,9 @@ function removeStyles(tabContainer, tabs, header) {
 }
 
 function styleHeader(tabContainer, tabs, header) {
+  document.body.style.backgroundColor = getComputedStyle(
+    document.body
+  ).getPropertyValue("--background-color");
   const headerBackground =
     cchConfig.background ||
     getComputedStyle(document.body).getPropertyValue("--cch-background") ||
@@ -570,7 +573,7 @@ function styleButtons(tabs, tabContainer) {
       let paperIconButton = buttons[button].querySelector("paper-icon-button")
         ? buttons[button].querySelector("paper-icon-button")
         : buttons[button].shadowRoot.querySelector("paper-icon-button");
-      if (paperIconButton.hasAttribute("hidden")) {
+      if (paperIconButton && paperIconButton.hasAttribute("hidden")) {
         continue;
       }
       const id = `menu_item_${button}`;
@@ -1252,30 +1255,16 @@ function swipeNavigation(tabs, tabContainer) {
       ? cchConfig.swipe_prevent_default
       : false;
 
-  let leftStop = [];
-  let rightStop = [];
-  if (swipe_groups) {
-    let groups = swipe_groups.replace(/, /g, ",").split(",");
-    for (let group in groups) {
-      let tabRange = groups[group].replace(/ /g, "").split("to");
-      leftStop.push(tabRange[0]);
-      rightStop.push(tabRange[1]);
-    }
-  }
-
-  document.body.style.backgroundColor = getComputedStyle(
-    document.body
-  ).getPropertyValue("--background-color");
-
   swipe_amount /= Math.pow(10, 2);
   const appLayout = root.querySelector("ha-app-layout");
-  let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
+  let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left, fTabs;
 
   appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
   appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
   appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
 
   function handleTouchStart(event) {
+    filterTabs();
     let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD", "HUI-MAP-CARD"];
     let path = (event.composedPath && event.composedPath()) || event.path;
     if (path) {
@@ -1286,8 +1275,7 @@ function swipeNavigation(tabs, tabContainer) {
     }
     xDown = event.touches[0].clientX;
     yDown = event.touches[0].clientY;
-    activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
-    filterTabs();
+    activeTab = fTabs.indexOf(tabContainer.querySelector(".iron-selected"));
   }
 
   function handleTouchMove(event) {
@@ -1307,44 +1295,27 @@ function swipeNavigation(tabs, tabContainer) {
     }
     if (xDiff > Math.abs(screen.width * swipe_amount)) {
       left = false;
-      if (
-        (!rightStop.includes(String(activeTab)) &&
-          buildRanges(swipe_groups).includes(activeTab)) ||
-        (wrap && rightStop.includes(String(activeTab)))
-      ) {
-        activeTab == tabs.length - 1 ||
-        (lastTab != null && activeTab == lastTab)
-          ? click(firstTab)
-          : click(activeTab + 1);
-      } else if (!swipe_groups) {
-        activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
-      }
+      if (!wrap && fTabs[activeTab] == lastTab) return;
+      else if (fTabs[activeTab] == lastTab && wrap) click(firstTab);
+      else click(fTabs[activeTab + 1]);
     } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
       left = true;
-      if (
-        (!leftStop.includes(String(activeTab)) &&
-          buildRanges(swipe_groups).includes(activeTab)) ||
-        (wrap && leftStop.includes(String(activeTab)))
-      ) {
-        activeTab == 0 || (firstTab != null && activeTab == firstTab)
-          ? click(lastTab)
-          : click(activeTab - 1);
-      } else if (!swipe_groups) {
-        activeTab == 0 ? click(lastTab) : click(activeTab - 1);
-      }
+      if (!wrap && fTabs[activeTab] == firstTab) return;
+      else if (fTabs[activeTab] == firstTab && wrap) click(lastTab);
+      else click(fTabs[activeTab - 1]);
     }
     xDown = yDown = xDiff = yDiff = null;
   }
 
   function filterTabs() {
-    tabs = tabs.filter(element => {
+    fTabs = tabs.filter(element => {
       return (
         !skip_tabs.includes(tabs.indexOf(element)) &&
         getComputedStyle(element, null).display != "none"
       );
     });
-    firstTab = wrap ? 0 : null;
-    lastTab = wrap ? tabs.length - 1 : null;
+    firstTab = fTabs[0];
+    lastTab = fTabs[fTabs.length - 1];
     if (swipe_groups) {
       let groups = swipe_groups.replace(/, /g, ",").split(",");
       for (let group in groups) {
@@ -1373,11 +1344,10 @@ function swipeNavigation(tabs, tabContainer) {
     }, timeout);
   }
 
-  function click(index) {
-    let right = !left;
+  function click(tab) {
     if (
       !wrap &&
-      ((activeTab == firstTab && left) || (activeTab == lastTab && right))
+      ((activeTab == firstTab && left) || (activeTab == lastTab && !left))
     ) {
       return;
     } else if (animate == "swipe") {
@@ -1388,7 +1358,7 @@ function swipeNavigation(tabs, tabContainer) {
       const observer = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
           mutation.addedNodes.forEach(node => {
-            if (node.nodeName == "HUI-VIEW") {
+            if (node.nodeName) {
               // Move view to other side of screen.
               let neg = view.style.transform.includes("-") ? "" : "-";
               view.style.transition = "";
@@ -1397,13 +1367,14 @@ function swipeNavigation(tabs, tabContainer) {
               // Slide view back on screen.
               animation(0.16, "translateX(0px)", 1, 50);
               observer.disconnect();
+              return;
             }
           });
         });
       });
       observer.observe(view, { childList: true });
       // Navigate to next view and trigger the observer.
-      navigate(tabs[index], 180);
+      navigate(tab, 180);
     } else if (animate == "fade") {
       animation(0.16, "", 0, 0);
       const observer = new MutationObserver(mutations => {
@@ -1417,7 +1388,7 @@ function swipeNavigation(tabs, tabContainer) {
         });
       });
       observer.observe(view, { childList: true });
-      navigate(tabs[index], 170);
+      navigate(tab, 170);
     } else if (animate == "flip") {
       animation(0.25, "rotatey(90deg)", 0.25, 0);
       const observer = new MutationObserver(mutations => {
@@ -1431,9 +1402,9 @@ function swipeNavigation(tabs, tabContainer) {
         });
       });
       observer.observe(view, { childList: true });
-      navigate(tabs[index], 270);
+      navigate(tab, 270);
     } else {
-      navigate(tabs[index], 0);
+      navigate(tab, 0);
     }
   }
 }
