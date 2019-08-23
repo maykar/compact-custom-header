@@ -6,6 +6,7 @@ Style configuration can be done in yaml, raw edit mode, or from your [HA theme](
 |NAME|DESCRIPTION|
 |-|-|
 |background|Change the header's background color or image. Uses any CSS that can be used with the CSS [background-color property](https://www.w3schools.com/cssref/pr_background-color.asp), [background-image property](https://www.w3schools.com/cssref/pr_background-image.asp), or [background property](https://www.w3schools.com/cssref/css3_pr_background.asp). Examples: `background: "#000"` or even `background: url("paper.gif")`.
+|backdrop_filter|Add a backdrop-filter to the header, for example to blur the contents behind it. Uses any CSS that can be used with the CSS [backdrop-filter property](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter). Examples: `backdrop_filter: blur(10px)` or `backdrop_filter: grayscale(30%) blur(5px)`
 |all_buttons_color|Set all buttons to one color. Acts as a fallback, if set to red and a button is set to blue with button_color then all buttons will be red except for that button.
 |button_color|Set the color of a single button. See example below.
 |all_tabs_color|Set all tabs to one color. Acts as a fallback, if set to red and one tab is set to blue with tab_color then all tabs will be red except for that one tab.

@@ -31,6 +31,7 @@ const defaultConfig = {
   chevrons: false,
   redirect: true,
   background: "",
+  backdrop_filter: "",
   hide_tabs: [],
   show_tabs: [],
   default_tab: [],
@@ -356,6 +357,8 @@ function removeStyles(tabContainer, tabs, header) {
     tabContainer.style.marginRight = "";
   }
   header.style.background = null;
+  header.style.backdropFilter = null;
+  header.style.webkitBackdropFilter = null;
   view.style.minHeight = "";
   view.style.marginTop = "";
   view.style.paddingTop = "";
@@ -383,6 +386,8 @@ function styleHeader(tabContainer, tabs, header) {
       getComputedStyle(document.body).getPropertyValue("--cch-background") ||
       "var(--primary-color)";
     header.querySelector("app-toolbar").style.background = "transparent";
+    header.style.backdropFilter = cchConfig.backdrop_filter || null;
+    header.style.webkitBackdropFilter = cchConfig.backdrop_filter || null;
   }
 
   if (newSidebar && cchConfig.compact_header) {
