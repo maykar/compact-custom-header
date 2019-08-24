@@ -1261,6 +1261,7 @@ function swipeNavigation(tabs, tabContainer) {
 
   swipe_amount /= Math.pow(10, 2);
   const appLayout = root.querySelector("ha-app-layout");
+  let inGroup = true;
   let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left, fTabs;
 
   appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
@@ -1269,6 +1270,7 @@ function swipeNavigation(tabs, tabContainer) {
 
   function handleTouchStart(event) {
     filterTabs();
+    if (swipe_groups && !inGroup) return;
     let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD", "HUI-MAP-CARD"];
     let path = (event.composedPath && event.composedPath()) || event.path;
     if (path) {
@@ -1279,7 +1281,6 @@ function swipeNavigation(tabs, tabContainer) {
     }
     xDown = event.touches[0].clientX;
     yDown = event.touches[0].clientY;
-    activeTab = fTabs.indexOf(tabContainer.querySelector(".iron-selected"));
   }
 
   function handleTouchMove(event) {
@@ -1312,6 +1313,27 @@ function swipeNavigation(tabs, tabContainer) {
   }
 
   function filterTabs() {
+    let active = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
+    if (swipe_groups) {
+      let groups = swipe_groups.replace(/, /g, ",").split(",");
+      for (let group in groups) {
+        let firstLast = groups[group].replace(/ /g, "").split("to");
+        if (wrap && active >= firstLast[0] && active <= firstLast[1]) {
+          inGroup = true;
+          firstTab = tabs[parseInt(firstLast[0])];
+          lastTab = tabs[parseInt(firstLast[1])];
+          fTabs = tabs.filter(element => {
+            return (
+              tabs.indexOf(element) >= firstLast[0] &&
+              tabs.indexOf(element) <= firstLast[1]
+            );
+          });
+          break;
+        } else {
+          inGroup = false;
+        }
+      }
+    }
     if (cchConfig.swipe_skip_hidden) {
       fTabs = tabs.filter(element => {
         return (
@@ -1324,18 +1346,11 @@ function swipeNavigation(tabs, tabContainer) {
         return !skip_tabs.includes(tabs.indexOf(element));
       });
     }
-    firstTab = fTabs[0];
-    lastTab = fTabs[fTabs.length - 1];
-    if (swipe_groups) {
-      let groups = swipe_groups.replace(/, /g, ",").split(",");
-      for (let group in groups) {
-        let firstLast = groups[group].replace(/ /g, "").split("to");
-        if (wrap && activeTab >= firstLast[0] && activeTab <= firstLast[1]) {
-          firstTab = tabs[parseInt(firstLast[0])];
-          lastTab = tabs[parseInt(firstLast[1])];
-        }
-      }
+    if (!swipe_groups) {
+      firstTab = fTabs[0];
+      lastTab = fTabs[fTabs.length - 1];
     }
+    activeTab = fTabs.indexOf(tabContainer.querySelector(".iron-selected"));
   }
 
   function animation(secs, transform, opacity, timeout) {
