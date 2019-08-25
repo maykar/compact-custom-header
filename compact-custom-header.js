@@ -497,6 +497,11 @@ function styleHeader(tabContainer, tabs, header) {
   // Add header custom css.
   if (cchConfig.header_css) header.style.cssText += cchConfig.header_css;
 
+  // Add view custom css.
+  if (cchConfig.view_css) {
+    view.style.cssText += cchConfig.view_css;
+  }
+
   // Add tab custom css.
   let tabCss = cchConfig.tab_css;
   if (tabCss) {
@@ -545,6 +550,8 @@ function styleHeader(tabContainer, tabs, header) {
 function styleButtons(tabs, tabContainer) {
   let topMargin =
     tabs.length > 0 && cchConfig.compact_header ? "margin-top:111px;" : "";
+  let topMarginMenu =
+    tabs.length > 0 && cchConfig.compact_header ? "margin-top:115px;" : "";
   // Reverse buttons object so menu is first in overflow menu.
   buttons = reverseObject(buttons);
   for (const button in buttons) {
@@ -556,10 +563,10 @@ function styleButtons(tabs, tabContainer) {
       z-index:1;
       ${
         button == "menu"
-          ? "padding: 4px 0;"
-          : "padding: 4px 0; margin-top:-1px;"
+          ? `padding: 8px 0; margin-bottom:5px; ${topMarginMenu}`
+          : "padding: 4px 0;"
       }
-      ${topMargin}
+      ${button == "menu" ? "" : topMargin}
       ${button == "options" ? "margin-right:-5px;" : ""}
     `;
     if (cchConfig[button] == "show" || cchConfig[button] == "clock") {
@@ -1313,12 +1320,12 @@ function swipeNavigation(tabs, tabContainer) {
   }
 
   function filterTabs() {
-    let active = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
+    let currentTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
     if (swipe_groups) {
       let groups = swipe_groups.replace(/, /g, ",").split(",");
       for (let group in groups) {
         let firstLast = groups[group].replace(/ /g, "").split("to");
-        if (wrap && active >= firstLast[0] && active <= firstLast[1]) {
+        if (wrap && currentTab >= firstLast[0] && currentTab <= firstLast[1]) {
           inGroup = true;
           firstTab = tabs[parseInt(firstLast[0])];
           lastTab = tabs[parseInt(firstLast[1])];
