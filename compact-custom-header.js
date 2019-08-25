@@ -201,9 +201,6 @@ function observers(tabContainer, tabs, urlDisable, header) {
         for (let node of mutation.addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
-            buttons = getButtonElements();
-            run();
-            return;
           }
         }
       } else if (
@@ -216,6 +213,12 @@ function observers(tabContainer, tabs, urlDisable, header) {
         if (editor) root.querySelector("ha-app-layout").removeChild(editor);
         if (!editMode && !urlDisable && cchConfig.conditional_styles) {
           conditionalStyling(tabs, header);
+        }
+      }
+      if (mutation.target.id == "view") {
+        if (mutation.addedNodes.length) {
+          buttons = getButtonElements();
+          run();
         }
       }
     });
@@ -1393,8 +1396,6 @@ function swipeNavigation(tabs, tabContainer) {
             if (node.nodeName) {
               // Move view to other side of screen.
               let neg = view.style.transform.includes("-") ? "" : "-";
-              view.style.transition = "";
-              view.style.transform = `translateX(${neg}${width})`;
               animation(0, `translateX(${neg}${width})`, 0, 0);
               // Slide view back on screen.
               animation(0.16, "translateX(0px)", 1, 50);
