@@ -43,12 +43,14 @@ const defaultConfig = {
   hide_unused: false,
   tab_color: {},
   button_color: {},
+  statusbar_color: "",
   swipe: false,
   swipe_amount: "15",
   swipe_animate: "none",
   swipe_skip: "",
   swipe_wrap: true,
   swipe_prevent_default: false,
+  swipe_skip_hidden: true,
   warning: true,
   compact_header: true
 };
@@ -104,7 +106,7 @@ function run() {
     insertEditMenu(tabs);
     hideMenuItems();
     styleHeader(tabContainer, tabs, header);
-    styleButtons(tabs);
+    styleButtons(tabs, tabContainer);
     defaultTab(tabs, tabContainer);
     hideTabs(tabContainer, tabs);
     for (let button in buttons) {
@@ -126,6 +128,8 @@ function run() {
 function buildConfig(config) {
   let exceptionConfig = {};
   let highestMatch = 0;
+
+  // Count number of matching conditions and choose config with most matches.
   if (config.exceptions) {
     config.exceptions.forEach(exception => {
       const matches = countMatches(exception.conditions);
@@ -136,6 +140,8 @@ function buildConfig(config) {
     });
   }
 
+  // If exception config uses hide_tabs and main config uses show_tabs,
+  // delete show_tabs and vice versa.
   if (
     exceptionConfig.hide_tabs &&
     config.show_tabs &&
@@ -151,6 +157,7 @@ function buildConfig(config) {
   ) {
     delete config.hide_tabs;
   }
+
   return { ...defaultConfig, ...config, ...exceptionConfig };
 
   function countMatches(conditions) {
@@ -194,19 +201,24 @@ function observers(tabContainer, tabs, urlDisable, header) {
         for (let node of mutation.addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
-            buttons = getButtonElements(tabContainer);
-            run();
-            return;
           }
         }
-      } else if (mutation.addedNodes.length) {
-        if (mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES") return;
+      } else if (
+        mutation.addedNodes.length &&
+        !mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES"
+      ) {
         let editor = root
           .querySelector("ha-app-layout")
           .querySelector("editor");
         if (editor) root.querySelector("ha-app-layout").removeChild(editor);
         if (!editMode && !urlDisable && cchConfig.conditional_styles) {
           conditionalStyling(tabs, header);
+        }
+      }
+      if (mutation.target.id == "view") {
+        if (mutation.addedNodes.length) {
+          buttons = getButtonElements();
+          run();
         }
       }
     });
@@ -249,7 +261,7 @@ function notificationCount() {
   return i;
 }
 
-function getButtonElements(tabContainer) {
+function getButtonElements() {
   let buttons = {};
   buttons.options = root.querySelector("paper-menu-button");
   if (!editMode) {
@@ -258,16 +270,6 @@ function getButtonElements(tabContainer) {
     if (!newSidebar) {
       buttons.notifications = root.querySelector("hui-notifications-button");
     }
-  }
-  if (buttons.menu && newSidebar) {
-    new MutationObserver(() => {
-      if (buttons.menu.style.visibility == "hidden") {
-        buttons.menu.style.display = "none";
-      } else {
-        buttons.menu.style.display = "";
-      }
-      tabContainerMargin(tabContainer);
-    }).observe(buttons.menu, { attributeFilter: ["style"] });
   }
   return buttons;
 }
@@ -297,26 +299,29 @@ function tabContainerMargin(tabContainer) {
 }
 
 function hideMenuItems() {
+  function localize(item) {
+    return hass.localize(`ui.panel.lovelace.menu.${item}`);
+  }
   if (cchConfig.hide_help || cchConfig.hide_config || cchConfig.hide_unused) {
     let menuItems = buttons.options
       .querySelector("paper-listbox")
       .querySelectorAll("paper-item");
     for (let item of menuItems) {
       if (
-        (item.innerHTML.includes("Help") ||
-          item.getAttribute("aria-label") == "Help") &&
+        (item.innerHTML.includes(localize("help")) ||
+          item.getAttribute("aria-label") == localize("help")) &&
         cchConfig.hide_help
       ) {
         item.parentNode.removeChild(item);
       } else if (
-        (item.innerHTML.includes("Unused entities") ||
-          item.getAttribute("aria-label") == "Unused entities") &&
+        (item.innerHTML.includes(localize("unused_entities")) ||
+          item.getAttribute("aria-label") == localize("unused_entities")) &&
         cchConfig.hide_unused
       ) {
         item.parentNode.removeChild(item);
       } else if (
-        (item.innerHTML.includes("Configure UI") ||
-          item.getAttribute("aria-label") == "Configure UI") &&
+        (item.innerHTML.includes(localize("configure_ui")) ||
+          item.getAttribute("aria-label") == localize("configure_ui")) &&
         cchConfig.hide_config
       ) {
         item.parentNode.removeChild(item);
@@ -327,6 +332,7 @@ function hideMenuItems() {
 
 function insertEditMenu(tabs) {
   if (buttons.options && editMode) {
+    // If any tabs are hidden, add "show all tabs" option.
     if (cchConfig.hide_tabs) {
       let show_tabs = document.createElement("paper-item");
       show_tabs.setAttribute("id", "show_tabs");
@@ -339,6 +345,7 @@ function insertEditMenu(tabs) {
       insertMenuItem(buttons.options.querySelector("paper-listbox"), show_tabs);
     }
 
+    // Add menu item to open CCH settings.
     let cchSettings = document.createElement("paper-item");
     cchSettings.setAttribute("id", "cch_settings");
     cchSettings.addEventListener("click", () => {
@@ -351,6 +358,27 @@ function insertEditMenu(tabs) {
 
 function removeStyles(tabContainer, tabs, header) {
   let header_colors = root.querySelector('[id="cch_header_colors"]');
+  let tabCss = cchConfig.tab_css;
+  if (tabCss) {
+    for (let [key, value] of Object.entries(tabCss)) {
+      if (isNaN(key)) {
+        let views = lovelace.config.views;
+        for (let view in views) {
+          if (views[view]["title"] == key || views[view]["path"] == key) {
+            key = view;
+          }
+        }
+      }
+      value = value.replace(/: /g, ":").replace(/; /g, ";");
+      let css = tabs[key].style.cssText.replace(/: /g, ":").replace(/; /g, ";");
+      tabs[key].style.cssText = css.replace(value, "");
+    }
+  }
+  if (cchConfig.header_css) {
+    let value = cchConfig.header_css.replace(/: /g, ":").replace(/; /g, ";");
+    let css = header.style.cssText.replace(/: /g, ":").replace(/; /g, ";");
+    header.style.cssText = css.replace(value, "");
+  }
   if (tabContainer) {
     tabContainer.style.marginLeft = "";
     tabContainer.style.marginRight = "";
@@ -370,6 +398,30 @@ function removeStyles(tabContainer, tabs, header) {
 }
 
 function styleHeader(tabContainer, tabs, header) {
+  document.body.style.backgroundColor = getComputedStyle(
+    document.body
+  ).getPropertyValue("--background-color");
+  const headerBackground =
+    cchConfig.background ||
+    getComputedStyle(document.body).getPropertyValue("--cch-background") ||
+    getComputedStyle(document.body).getPropertyValue("--primary-color");
+  const statusBarColor = cchConfig.statusbar_color || headerBackground;
+  // Match mobile status bar color to header color.
+  const themeColor = document.querySelector('[name="theme-color"]');
+  function colorStatusBar() {
+    themeColor.content = statusBarColor;
+    themeColor.removeAttribute("default-content");
+    const defaultContent = document.createAttribute("default-content");
+    defaultContent.value = statusBarColor;
+    themeColor.setAttributeNode(defaultContent);
+  }
+  colorStatusBar();
+  // If app/browser is idle or in background sometimes theme-color needs reset.
+  new MutationObserver(() => {
+    if (themeColor.content != statusBarColor) colorStatusBar();
+  }).observe(themeColor, { attributeFilter: ["content"] });
+
+  // Adjust view size & padding for new header size.
   if (!cchConfig.header || cchConfig.kiosk_mode) {
     header.style.display = "none";
     view.style.minHeight = "100vh";
@@ -378,38 +430,18 @@ function styleHeader(tabContainer, tabs, header) {
     view.style.marginTop = "-48.5px";
     view.style.paddingTop = "48.5px";
     view.style.boxSizing = "border-box";
-    header.style.background =
-      cchConfig.background ||
-      getComputedStyle(document.body).getPropertyValue("--cch-background") ||
-      "var(--primary-color)";
+    header.style.background = headerBackground;
     header.querySelector("app-toolbar").style.background = "transparent";
   }
 
+  // Match sidebar elements to header's size.
   if (newSidebar && cchConfig.compact_header) {
     let sidebar = main.shadowRoot.querySelector("ha-sidebar").shadowRoot;
     sidebar.querySelector(".menu").style = "height:49px;";
     sidebar.querySelector("paper-listbox").style = "height:calc(100% - 180px);";
   }
-  let indicator = cchConfig.tab_indicator_color;
-  if (
-    indicator &&
-    !root.querySelector('[id="cch_header_colors"]') &&
-    !editMode
-  ) {
-    let style = document.createElement("style");
-    style.setAttribute("id", "cch_header_colors");
-    style.innerHTML = `
-          paper-tabs {
-            ${
-              indicator
-                ? `--paper-tabs-selection-bar-color: ${indicator} !important`
-                : "var(--cch-tab-indicator-color) !important"
-            }
-          }
-        `;
-    root.appendChild(style);
-  }
 
+  // Current tab icon color.
   let conditionalTabs = cchConfig.conditional_styles
     ? JSON.stringify(cchConfig.conditional_styles).includes("tab")
     : false;
@@ -432,6 +464,29 @@ function styleHeader(tabContainer, tabs, header) {
           `;
     tabContainer.appendChild(style);
   }
+
+  // Style current tab indicator.
+  let indicator = cchConfig.tab_indicator_color;
+  if (
+    indicator &&
+    !root.querySelector('[id="cch_header_colors"]') &&
+    !editMode
+  ) {
+    let style = document.createElement("style");
+    style.setAttribute("id", "cch_header_colors");
+    style.innerHTML = `
+          paper-tabs {
+            ${
+              indicator
+                ? `--paper-tabs-selection-bar-color: ${indicator} !important`
+                : "var(--cch-tab-indicator-color) !important"
+            }
+          }
+        `;
+    root.appendChild(style);
+  }
+
+  // Tab's icon color.
   let all_tabs_color = cchConfig.all_tabs_color || "var(--cch-all-tabs-color)";
   if (
     (cchConfig.tab_color && Object.keys(cchConfig.tab_color).length) ||
@@ -442,14 +497,40 @@ function styleHeader(tabContainer, tabs, header) {
     }
   }
 
+  // Add header custom css.
+  if (cchConfig.header_css) header.style.cssText += cchConfig.header_css;
+
+  // Add view custom css.
+  if (cchConfig.view_css) {
+    view.style.cssText += cchConfig.view_css;
+  }
+
+  // Add tab custom css.
+  let tabCss = cchConfig.tab_css;
+  if (tabCss) {
+    for (let [key, value] of Object.entries(tabCss)) {
+      if (isNaN(key)) {
+        let views = lovelace.config.views;
+        for (let view in views) {
+          if (views[view]["title"] == key || views[view]["path"] == key) {
+            key = view;
+          }
+        }
+      }
+      if (tabs[key]) tabs[key].style.cssText += value;
+    }
+  }
+
   if (tabContainer) {
     // Shift the header up to hide unused portion.
     root.querySelector("app-toolbar").style.marginTop = cchConfig.compact_header
       ? "-64px"
       : "";
 
+    for (const tab in tabs) tabs[tab].style.marginTop = "-1px";
+
+    // Show/hide tab navigation chevrons.
     if (!cchConfig.chevrons) {
-      // Hide chevrons.
       let chevron = tabContainer.shadowRoot.querySelectorAll(
         '[icon^="paper-tabs:chevron"]'
       );
@@ -469,67 +550,44 @@ function styleHeader(tabContainer, tabs, header) {
   }
 }
 
-function styleButtons(tabs) {
+function styleButtons(tabs, tabContainer) {
   let topMargin =
     tabs.length > 0 && cchConfig.compact_header ? "margin-top:111px;" : "";
+  let topMarginMenu =
+    tabs.length > 0 && cchConfig.compact_header ? "margin-top:115px;" : "";
+  // Reverse buttons object so menu is first in overflow menu.
   buttons = reverseObject(buttons);
-  if (
-    newSidebar &&
-    cchConfig.menu != "hide" &&
-    !buttons.menu.shadowRoot.querySelector('[id="cch_dot"]')
-  ) {
-    let style = document.createElement("style");
-    style.setAttribute("id", "cch_dot");
-    let indicator =
-      cchConfig.notify_indicator_color ||
-      getComputedStyle(header).getPropertyValue("--cch-tab-indicator-color") ||
-      "";
-    let border = getComputedStyle(header)
-      .getPropertyValue("background")
-      .includes("url")
-      ? "border-color: transparent !important"
-      : `border-color: ${getComputedStyle(header).getPropertyValue(
-          "background-color"
-        )} !important;`;
-    style.innerHTML = `
-        .dot {
-          ${topMargin}
-          z-index: 2;
-          ${indicator ? `background: ${indicator} !important` : ""}
-          ${border}
-        }
-    `;
-    buttons.menu.shadowRoot.appendChild(style);
-  }
   for (const button in buttons) {
     if (!buttons[button]) continue;
     if (button == "options" && cchConfig[button] == "overflow") {
       cchConfig[button] = "show";
     }
+    let buttonStyle = `
+      z-index:1;
+      ${
+        button == "menu"
+          ? `padding: 8px 0; margin-bottom:5px; ${topMarginMenu}`
+          : "padding: 4px 0;"
+      }
+      ${button == "menu" ? "" : topMargin}
+      ${button == "options" ? "margin-right:-5px;" : ""}
+    `;
     if (cchConfig[button] == "show" || cchConfig[button] == "clock") {
       if (button == "menu") {
         let paperIconButton = buttons[button].querySelector("paper-icon-button")
           ? buttons[button].querySelector("paper-icon-button")
           : buttons[button].shadowRoot.querySelector("paper-icon-button");
         if (!paperIconButton) continue;
-        paperIconButton.style.cssText = `
-          z-index:1;
-          ${topMargin}
-          ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
-        `;
+        paperIconButton.style.cssText = buttonStyle;
       } else {
-        buttons[button].style.cssText = `
-              z-index:1;
-              ${topMargin}
-              ${button == "options" ? "margin-right:-5px; padding:0;" : ""}
-            `;
+        buttons[button].style.cssText = buttonStyle;
       }
     } else if (cchConfig[button] == "overflow") {
       const menu_items = buttons.options.querySelector("paper-listbox");
       let paperIconButton = buttons[button].querySelector("paper-icon-button")
         ? buttons[button].querySelector("paper-icon-button")
         : buttons[button].shadowRoot.querySelector("paper-icon-button");
-      if (paperIconButton.hasAttribute("hidden")) {
+      if (paperIconButton && paperIconButton.hasAttribute("hidden")) {
         continue;
       }
       const id = `menu_item_${button}`;
@@ -567,9 +625,22 @@ function styleButtons(tabs) {
     } else if (cchConfig[button] == "hide") {
       buttons[button].style.display = "none";
     }
+    // Hide menu button if hiding the sidebar.
     if (newSidebar && (cchConfig.kiosk_mode || cchConfig.disable_sidebar)) {
       buttons.menu.style.display = "none";
     }
+  }
+
+  // Remove empty space taken up by hidden menu button.
+  if (buttons.menu && newSidebar) {
+    new MutationObserver(() => {
+      if (buttons.menu.style.visibility == "hidden") {
+        buttons.menu.style.display = "none";
+      } else {
+        buttons.menu.style.display = "";
+      }
+      tabContainerMargin(tabContainer);
+    }).observe(buttons.menu, { attributeFilter: ["style"] });
   }
 
   // Use color vars set in HA theme.
@@ -591,7 +662,40 @@ function styleButtons(tabs) {
     }
   }
 
-  if (cchConfig.notify_indicator_color && cchConfig.notifications == "show") {
+  // Notification indicator's color for HA 0.96 and above.
+  if (
+    newSidebar &&
+    cchConfig.menu != "hide" &&
+    !buttons.menu.shadowRoot.querySelector('[id="cch_dot"]')
+  ) {
+    let style = document.createElement("style");
+    style.setAttribute("id", "cch_dot");
+    let indicator =
+      cchConfig.notify_indicator_color ||
+      getComputedStyle(header).getPropertyValue("--cch-tab-indicator-color") ||
+      "";
+    let border = getComputedStyle(header)
+      .getPropertyValue("background")
+      .includes("url")
+      ? "border-color: transparent !important"
+      : `border-color: ${getComputedStyle(header).getPropertyValue(
+          "background-color"
+        )} !important;`;
+    style.innerHTML = `
+        .dot {
+          ${topMargin}
+          z-index: 2;
+          ${indicator ? `background: ${indicator} !important` : ""}
+          ${border}
+        }
+    `;
+    buttons.menu.shadowRoot.appendChild(style);
+  } else if (
+    // Notification indicator's color for HA 0.95 and below.
+    cchConfig.notify_indicator_color &&
+    cchConfig.notifications == "show" &&
+    !newSidebar
+  ) {
     let style = document.createElement("style");
     style.innerHTML = `
           .indicator {
@@ -601,7 +705,19 @@ function styleButtons(tabs) {
               "var(--cch-notify-text-color), var(--primary-text-color)"};
           }
         `;
-    if (!newSidebar) buttons.notifications.shadowRoot.appendChild(style);
+    buttons.notifications.shadowRoot.appendChild(style);
+  }
+
+  // Add buttons's custom css.
+  let buttonCss = cchConfig.button_css;
+  if (buttonCss) {
+    for (const [key, value] of Object.entries(buttonCss)) {
+      if (!buttons[key]) {
+        continue;
+      } else {
+        buttons[key].style.cssText += value;
+      }
+    }
   }
 }
 
@@ -629,11 +745,7 @@ function defaultTab(tabs, tabContainer) {
         }
       }
     }
-    if (
-      activeTab != default_tab &&
-      activeTab == 0 &&
-      !cchConfig.hide_tabs.includes(default_tab)
-    ) {
+    if (activeTab != default_tab && activeTab == 0) {
       tabs[default_tab].click();
     }
     defaultTabRedirect = true;
@@ -644,6 +756,7 @@ function sidebarMod() {
   let menu = buttons.menu.querySelector("paper-icon-button");
   let sidebar = main.shadowRoot.querySelector("app-drawer");
 
+  // HA 0.95 and below
   if (!newSidebar) {
     if (!cchConfig.sidebar_swipe || cchConfig.kiosk_mode) {
       sidebar.removeAttribute("swipe-open");
@@ -652,10 +765,8 @@ function sidebarMod() {
       if (sidebar.hasAttribute("opened")) menu.click();
       sidebarClosed = true;
     }
-  } else if (
-    newSidebar &&
-    (cchConfig.disable_sidebar || cchConfig.kiosk_mode)
-  ) {
+    // HA 0.96 and above
+  } else if (cchConfig.disable_sidebar || cchConfig.kiosk_mode) {
     sidebar.style.display = "none";
     sidebar.addEventListener(
       "mouseenter",
@@ -746,7 +857,7 @@ function insertClock(button) {
   const clockWidth =
     (cchConfig.clock_format == 12 && cchConfig.clock_am_pm) ||
     cchConfig.clock_date
-      ? 110
+      ? 105
       : 80;
 
   if (
@@ -1147,6 +1258,7 @@ function swipeNavigation(tabs, tabContainer) {
   // To make it easier to update lovelace-swipe-navigation
   // keep this as close to the standalone lovelace addon as possible.
   let swipe_amount = cchConfig.swipe_amount || 15;
+  let swipe_groups = cchConfig.swipe_groups;
   let animate = cchConfig.swipe_animate || "none";
   let skip_tabs = cchConfig.swipe_skip
     ? buildRanges(cchConfig.swipe_skip.split(","))
@@ -1159,13 +1271,16 @@ function swipeNavigation(tabs, tabContainer) {
 
   swipe_amount /= Math.pow(10, 2);
   const appLayout = root.querySelector("ha-app-layout");
-  let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left;
+  let inGroup = true;
+  let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left, fTabs;
 
   appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
   appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
   appLayout.addEventListener("touchend", handleTouchEnd, { passive: true });
 
   function handleTouchStart(event) {
+    filterTabs();
+    if (swipe_groups && !inGroup) return;
     let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD", "HUI-MAP-CARD"];
     let path = (event.composedPath && event.composedPath()) || event.path;
     if (path) {
@@ -1176,8 +1291,6 @@ function swipeNavigation(tabs, tabContainer) {
     }
     xDown = event.touches[0].clientX;
     yDown = event.touches[0].clientY;
-    if (!lastTab) filterTabs();
-    activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
   }
 
   function handleTouchMove(event) {
@@ -1197,90 +1310,134 @@ function swipeNavigation(tabs, tabContainer) {
     }
     if (xDiff > Math.abs(screen.width * swipe_amount)) {
       left = false;
-      activeTab == tabs.length - 1 ? click(firstTab) : click(activeTab + 1);
+      if (!wrap && fTabs[activeTab] == lastTab) return;
+      else if (fTabs[activeTab] == lastTab && wrap) click(firstTab);
+      else click(fTabs[activeTab + 1]);
     } else if (xDiff < -Math.abs(screen.width * swipe_amount)) {
       left = true;
-      activeTab == 0 ? click(lastTab) : click(activeTab - 1);
+      if (!wrap && fTabs[activeTab] == firstTab) return;
+      else if (fTabs[activeTab] == firstTab && wrap) click(lastTab);
+      else click(fTabs[activeTab - 1]);
     }
     xDown = yDown = xDiff = yDiff = null;
   }
 
   function filterTabs() {
-    tabs = tabs.filter(element => {
-      return (
-        !skip_tabs.includes(tabs.indexOf(element)) &&
-        getComputedStyle(element, null).display != "none"
-      );
-    });
-    firstTab = wrap ? 0 : null;
-    lastTab = wrap ? tabs.length - 1 : null;
+    let currentTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
+    if (swipe_groups) {
+      let groups = swipe_groups.replace(/, /g, ",").split(",");
+      for (let group in groups) {
+        let firstLast = groups[group].replace(/ /g, "").split("to");
+        if (wrap && currentTab >= firstLast[0] && currentTab <= firstLast[1]) {
+          inGroup = true;
+          firstTab = tabs[parseInt(firstLast[0])];
+          lastTab = tabs[parseInt(firstLast[1])];
+          fTabs = tabs.filter(element => {
+            return (
+              tabs.indexOf(element) >= firstLast[0] &&
+              tabs.indexOf(element) <= firstLast[1]
+            );
+          });
+          break;
+        } else {
+          inGroup = false;
+        }
+      }
+    }
+    if (cchConfig.swipe_skip_hidden) {
+      fTabs = tabs.filter(element => {
+        return (
+          !skip_tabs.includes(tabs.indexOf(element)) &&
+          getComputedStyle(element, null).display != "none"
+        );
+      });
+    } else {
+      fTabs = tabs.filter(element => {
+        return !skip_tabs.includes(tabs.indexOf(element));
+      });
+    }
+    if (!swipe_groups) {
+      firstTab = fTabs[0];
+      lastTab = fTabs[fTabs.length - 1];
+    }
+    activeTab = fTabs.indexOf(tabContainer.querySelector(".iron-selected"));
   }
 
-  function click(index) {
-    if (
-      (activeTab == 0 && !wrap && left) ||
-      (activeTab == tabs.length - 1 && !wrap && !left)
-    ) {
-      return;
-    }
-    if (animate == "swipe") {
-      let _in = left ? `${screen.width / 1.5}px` : `-${screen.width / 1.5}px`;
-      let _out = left ? `-${screen.width / 1.5}px` : `${screen.width / 1.5}px`;
-      view.style.transitionDuration = "200ms";
-      view.style.opacity = 0;
-      view.style.transform = `translateX(${_in})`;
-      view.style.transition = "transform 0.20s, opacity 0.20s";
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
-        view.style.transitionDuration = "0ms";
-        view.style.transform = `translateX(${_out})`;
-        view.style.transition = "transform 0s";
-      }, 210);
-      setTimeout(function() {
-        view.style.transitionDuration = "200ms";
-        view.style.opacity = 1;
-        view.style.transform = `translateX(0px)`;
-        view.style.transition = "transform 0.20s, opacity 0.20s";
-      }, 215);
-    } else if (animate == "fade") {
-      view.style.transitionDuration = "200ms";
-      view.style.transition = "opacity 0.20s";
-      view.style.opacity = 0;
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
-        view.style.transitionDuration = "0ms";
-        view.style.opacity = 0;
-        view.style.transition = "opacity 0s";
-      }, 210);
-      setTimeout(function() {
-        view.style.transitionDuration = "200ms";
-        view.style.transition = "opacity 0.20s";
-        view.style.opacity = 1;
-      }, 250);
-    } else if (animate == "flip") {
-      view.style.transitionDuration = "200ms";
-      view.style.transform = "rotatey(90deg)";
-      view.style.transition = "transform 0.20s, opacity 0.20s";
-      view.style.opacity = 0.25;
-      setTimeout(function() {
-        tabs[index].dispatchEvent(
-          new MouseEvent("click", { bubbles: false, cancelable: true })
-        );
-      }, 210);
-      setTimeout(function() {
-        view.style.transitionDuration = "200ms";
-        view.style.transform = "rotatey(0deg)";
-        view.style.transition = "transform 0.20s, opacity 0.20s";
-        view.style.opacity = 1;
-      }, 250);
-    } else {
-      tabs[index].dispatchEvent(
+  function animation(secs, transform, opacity, timeout) {
+    setTimeout(() => {
+      view.style.transition = `transform ${secs}s, opacity ${secs}s`;
+      view.style.transform = transform ? transform : "";
+      view.style.opacity = opacity;
+    }, timeout);
+  }
+
+  function navigate(tab, timeout) {
+    setTimeout(() => {
+      tab.dispatchEvent(
         new MouseEvent("click", { bubbles: false, cancelable: true })
       );
+    }, timeout);
+  }
+
+  function click(tab) {
+    if (
+      !wrap &&
+      ((activeTab == firstTab && left) || (activeTab == lastTab && !left))
+    ) {
+      return;
+    } else if (animate == "swipe") {
+      let width = screen.width / 1.5 + "px";
+      // Swipe view off screen.
+      animation(0.16, `translateX(${left ? "" : "-"}${width})`, 0, 0);
+      // Watch for content to load.
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeName) {
+              // Move view to other side of screen.
+              let neg = view.style.transform.includes("-") ? "" : "-";
+              animation(0, `translateX(${neg}${width})`, 0, 0);
+              // Slide view back on screen.
+              animation(0.16, "translateX(0px)", 1, 50);
+              observer.disconnect();
+              return;
+            }
+          });
+        });
+      });
+      observer.observe(view, { childList: true });
+      // Navigate to next view and trigger the observer.
+      navigate(tab, 180);
+    } else if (animate == "fade") {
+      animation(0.16, "", 0, 0);
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeName == "HUI-VIEW") {
+              animation(0.16, "", 1, 0);
+              observer.disconnect();
+            }
+          });
+        });
+      });
+      observer.observe(view, { childList: true });
+      navigate(tab, 170);
+    } else if (animate == "flip") {
+      animation(0.25, "rotatey(90deg)", 0.25, 0);
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeName == "HUI-VIEW") {
+              animation(0.25, "rotatey(0deg)", 1, 50);
+              observer.disconnect();
+            }
+          });
+        });
+      });
+      observer.observe(view, { childList: true });
+      navigate(tab, 270);
+    } else {
+      navigate(tab, 0);
     }
   }
 }
@@ -1305,7 +1462,7 @@ function breakingChangeNotification() {
   }
 }
 
-// EDITOR //////////////////////////////////////////////////////////////////
+// EDITOR //////////////////////////////////////////////////////////////////////
 
 const buttonOptions = ["show", "hide", "clock", "overflow"];
 const overflowOptions = ["show", "hide", "clock"];
@@ -2530,7 +2687,7 @@ function deepcopy(value) {
 }
 
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.5     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.6     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
