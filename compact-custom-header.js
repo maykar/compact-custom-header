@@ -103,6 +103,10 @@ function run() {
   }
 
   if (!disable && !urlDisable) {
+    if (firstRun) {
+      sidebarMod();
+      conditionalStyling(tabs, header);
+    }
     insertEditMenu(tabs);
     hideMenuItems();
     styleHeader(tabContainer, tabs, header);
@@ -111,10 +115,6 @@ function run() {
     hideTabs(tabContainer, tabs);
     for (let button in buttons) {
       if (cchConfig[button] == "clock") insertClock(button);
-    }
-    if (firstRun) {
-      sidebarMod();
-      conditionalStyling(tabs, header);
     }
     if (!editMode) tabContainerMargin(tabContainer);
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
@@ -922,6 +922,17 @@ function insertClock(button) {
             `;
     clockIronIcon.parentNode.insertBefore(clockElement, clockIronIcon);
     clockIronIcon.style.display = "none";
+    let style = document.createElement("style");
+    style.setAttribute("id", "cch_clock");
+    style.innerHTML = `
+          time {
+            ${cchConfig.time_css}
+          }
+          date {
+            ${cchConfig.date_css}
+          }
+        `;
+    clockIronIcon.parentNode.insertBefore(style, clockIronIcon);
   }
 
   const clockFormat = {
@@ -942,12 +953,12 @@ function updateClock(clock, clockFormat) {
     day: "2-digit"
   };
   date = cchConfig.clock_date
-    ? `</br>${date.toLocaleDateString(locale, options)}`
+    ? `</br><date>${date.toLocaleDateString(locale, options)}</date>`
     : "";
   if (!cchConfig.clock_am_pm && cchConfig.clock_format == 12) {
-    clock.innerHTML = time.slice(0, -3) + date;
+    clock.innerHTML = `<time>${time.slice(0, -3)}</time>${date}`;
   } else {
-    clock.innerHTML = time + date;
+    clock.innerHTML = `<time>${time}</time>${date}`;
   }
   window.setTimeout(() => updateClock(clock, clockFormat), 60000);
 }
