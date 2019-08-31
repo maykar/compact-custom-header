@@ -731,8 +731,29 @@ function getTranslation(button) {
 }
 
 function defaultTab(tabs, tabContainer) {
-  if (cchConfig.default_tab && !defaultTabRedirect && tabContainer) {
-    let default_tab = cchConfig.default_tab;
+  let default_tab = cchConfig.default_tab;
+  let tab_template = cchConfig.default_tab_template;
+  if ((default_tab || tab_template) && !defaultTabRedirect && tabContainer) {
+    if (tab_template) {
+      // Variables for template.
+      let states = hass.states;
+      let entity = states;
+
+      const templateEval = tab_template => {
+        try {
+          if (tab_template.includes("return")) {
+            return eval(`(function() {${tab_template}}())`);
+          } else {
+            return eval(tab_template);
+          }
+        } catch (e) {
+          console.log("CCH default tab template failed.");
+          console.log(e);
+        }
+      };
+
+      default_tab = templateEval(tab_template);
+    }
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
     if (isNaN(default_tab)) {
       let views = lovelace.config.views;
@@ -746,7 +767,7 @@ function defaultTab(tabs, tabContainer) {
       }
     }
     if (activeTab != default_tab && activeTab == 0) {
-      tabs[default_tab].click();
+      if (tabs[default_tab].style.display != "none") tabs[default_tab].click();
     }
     defaultTabRedirect = true;
   }
