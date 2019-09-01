@@ -111,8 +111,8 @@ function run() {
     hideMenuItems();
     styleHeader(tabContainer, tabs, header);
     styleButtons(tabs, tabContainer);
-    defaultTab(tabs, tabContainer);
     hideTabs(tabContainer, tabs);
+    defaultTab(tabs, tabContainer);
     for (let button in buttons) {
       if (cchConfig[button] == "clock") insertClock(button);
     }
@@ -732,28 +732,9 @@ function getTranslation(button) {
 
 function defaultTab(tabs, tabContainer) {
   let default_tab = cchConfig.default_tab;
-  let tab_template = cchConfig.default_tab_template;
-  if ((default_tab || tab_template) && !defaultTabRedirect && tabContainer) {
-    if (tab_template) {
-      // Variables for template.
-      let states = hass.states;
-      let entity = states;
-
-      const templateEval = tab_template => {
-        try {
-          if (tab_template.includes("return")) {
-            return eval(`(function() {${tab_template}}())`);
-          } else {
-            return eval(tab_template);
-          }
-        } catch (e) {
-          console.log("CCH default tab template failed.");
-          console.log(e);
-        }
-      };
-
-      default_tab = templateEval(tab_template);
-    }
+  let template = cchConfig.default_tab_template;
+  if ((default_tab || template) && !defaultTabRedirect && tabContainer) {
+    if (template) default_tab = templateEval(template, hass.states);
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
     if (isNaN(default_tab)) {
       let views = lovelace.config.views;
@@ -766,8 +747,13 @@ function defaultTab(tabs, tabContainer) {
         }
       }
     }
-    if (activeTab != default_tab && activeTab == 0) {
-      if (tabs[default_tab].style.display != "none") tabs[default_tab].click();
+    default_tab = parseInt(default_tab);
+    if (
+      activeTab != default_tab &&
+      activeTab == 0 &&
+      tabs[default_tab].style.display != "none"
+    ) {
+      tabs[default_tab].click();
     }
     defaultTabRedirect = true;
   }
@@ -1131,23 +1117,7 @@ function conditionalStyling(tabs, header) {
 }
 
 function templates(template, tabs, _hass, header) {
-  // Variables for templates.
   let states = _hass.states;
-  let entity = states;
-
-  const templateEval = template => {
-    try {
-      if (template.includes("return")) {
-        return eval(`(function() {${template}}())`);
-      } else {
-        return eval(template);
-      }
-    } catch (e) {
-      console.log("CCH styling template failed.");
-      console.log(e);
-    }
-  };
-
   for (const condition in template) {
     if (condition == "tab") {
       for (const tab in template[condition]) {
@@ -1174,11 +1144,11 @@ function templates(template, tabs, _hass, header) {
           if (styleTarget == "icon") {
             tabElement
               .querySelector("ha-icon")
-              .setAttribute("icon", templateEval(tabTemplate, entity));
+              .setAttribute("icon", templateEval(tabTemplate, states));
           } else if (styleTarget == "color") {
-            tabElement.style.color = templateEval(tabTemplate, entity);
+            tabElement.style.color = templateEval(tabTemplate, states);
           } else if (styleTarget == "display") {
-            templateEval(tabTemplate, entity) == "show"
+            templateEval(tabTemplate, states) == "show"
               ? (tabElement.style.display = "")
               : (tabElement.style.display = "none");
           }
@@ -1198,20 +1168,20 @@ function templates(template, tabs, _hass, header) {
             ? buttonElem.querySelector("paper-icon-button")
             : buttonElem.shadowRoot.querySelector("paper-icon-button");
           if (styleTarget == "icon") {
-            iconTarget.setAttribute("icon", templateEval(tempCond, entity));
+            iconTarget.setAttribute("icon", templateEval(tempCond, states));
           } else if (styleTarget == "color") {
             iconTarget.shadowRoot.querySelector(
               "iron-icon"
-            ).style.color = templateEval(tempCond, entity);
+            ).style.color = templateEval(tempCond, states);
           } else if (styleTarget == "display") {
-            templateEval(tempCond, entity) == "show"
+            templateEval(tempCond, states) == "show"
               ? (buttonElem.style.display = "")
               : (buttonElem.style.display = "none");
           }
         });
       }
     } else if (condition == "background") {
-      header.style.background = templateEval(template[condition], entity);
+      header.style.background = templateEval(template[condition], states);
     }
   }
 }
@@ -1284,6 +1254,24 @@ function reverseObject(object) {
     newObject[keys[i]] = value;
   }
   return newObject;
+}
+
+function templateEval(template, states) {
+  let entity = states;
+  try {
+    if (template.includes("return")) {
+      return eval(`(function() {${template}}())`);
+    } else {
+      return eval(template);
+    }
+  } catch (e) {
+    console.log(
+      `%cCCH Template Failed%c\nTemplate: ${template}\n%cError: ${e}`,
+      "text-decoration: underline;",
+      "",
+      "color: red;"
+    );
+  }
 }
 
 function swipeNavigation(tabs, tabContainer) {
