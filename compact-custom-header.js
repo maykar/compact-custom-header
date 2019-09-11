@@ -124,7 +124,7 @@ function run() {
   if (!disable && firstRun) observers(tabContainer, tabs, urlDisable, header);
   fireEvent(header, "iron-resize");
   firstRun = false;
-  scrollTabIconIntoView();
+  scrollTabIconIntoView(tabContainer);
 }
 
 function buildConfig(config) {
@@ -300,7 +300,8 @@ function tabContainerMargin(tabContainer) {
   }
 }
 
-function scrollTabIconIntoView() {
+function scrollTabIconIntoView(tabContainer) {
+  let currentTab = tabContainer.querySelector(".iron-selected")
   let tabBounds = currentTab.getBoundingClientRect();
   let containerBounds = tabContainer.getBoundingClientRect();
   let chev = tabContainer.shadowRoot.querySelectorAll(
@@ -317,9 +318,7 @@ function scrollTabIconIntoView() {
       (tabBounds.left < containerBounds.right + 5 ||
         tabBounds.right > containerBounds.left - 5))
   ) {
-    tabContainer
-      .querySelector(".iron-selected")
-      .scrollIntoView({ inline: "center" });
+    currentTab.scrollIntoView({ inline: "center" });
   }
 }
 
