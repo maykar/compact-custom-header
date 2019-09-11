@@ -122,26 +122,9 @@ function run() {
   }
 
   if (!disable && firstRun) observers(tabContainer, tabs, urlDisable, header);
-
   fireEvent(header, "iron-resize");
   firstRun = false;
-
-  let currentTab = tabContainer.querySelector(".iron-selected");
-  let tabBounds = currentTab.getBoundingClientRect();
-  let containerBounds = tabContainer.getBoundingClientRect();
-  let chev = tabContainer.shadowRoot.querySelectorAll(
-    '[icon^="paper-tabs:chevron"]'
-  );
-  if (
-    (cchConfig.chevrons &&
-      (tabBounds.left < chev[0].getBoundingClientRect().right + 5 ||
-        tabBounds.right > chev[1].getBoundingClientRect().left - 5)) ||
-    (!cchConfig.chevrons &&
-      (tabBounds.left < containerBounds.right + 5 ||
-        tabBounds.right > containerBounds.left - 5 ))
-  ) {
-    currentTab.scrollIntoView({ inline: "center" });
-  }
+  scrollTabIconIntoView();
 }
 
 function buildConfig(config) {
@@ -314,6 +297,29 @@ function tabContainerMargin(tabContainer) {
   if (tabContainer) {
     tabContainer.style.marginRight = marginRight + "px";
     tabContainer.style.marginLeft = marginLeft + "px";
+  }
+}
+
+function scrollTabIconIntoView() {
+  let tabBounds = currentTab.getBoundingClientRect();
+  let containerBounds = tabContainer.getBoundingClientRect();
+  let chev = tabContainer.shadowRoot.querySelectorAll(
+    '[icon^="paper-tabs:chevron"]'
+  );
+  if (
+    (cchConfig.chevrons &&
+      chev[0] &&
+      tabBounds.left < chev[0].getBoundingClientRect().right + 5) ||
+    (cchConfig.chevrons &&
+      chev[1] &&
+      tabBounds.right > chev[1].getBoundingClientRect().left - 5) ||
+    (!cchConfig.chevrons &&
+      (tabBounds.left < containerBounds.right + 5 ||
+        tabBounds.right > containerBounds.left - 5))
+  ) {
+    tabContainer
+      .querySelector(".iron-selected")
+      .scrollIntoView({ inline: "center" });
   }
 }
 
