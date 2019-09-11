@@ -33,7 +33,8 @@ const defaultConfig = {
   background: "",
   hide_tabs: [],
   show_tabs: [],
-  default_tab: [],
+  default_tab: "",
+  default_tab_template: "",
   kiosk_mode: false,
   sidebar_swipe: true,
   sidebar_closed: false,
@@ -121,8 +122,26 @@ function run() {
   }
 
   if (!disable && firstRun) observers(tabContainer, tabs, urlDisable, header);
+
   fireEvent(header, "iron-resize");
   firstRun = false;
+
+  let currentTab = tabContainer.querySelector(".iron-selected");
+  let tabBounds = currentTab.getBoundingClientRect();
+  let containerBounds = tabContainer.getBoundingClientRect();
+  let chev = tabContainer.shadowRoot.querySelectorAll(
+    '[icon^="paper-tabs:chevron"]'
+  );
+  if (
+    (cchConfig.chevrons &&
+      (tabBounds.left < chev[0].getBoundingClientRect().right + 5 ||
+        tabBounds.right > chev[1].getBoundingClientRect().left - 5)) ||
+    (!cchConfig.chevrons &&
+      (tabBounds.left < containerBounds.right + 5 ||
+        tabBounds.right > containerBounds.left - 5 ))
+  ) {
+    currentTab.scrollIntoView({ inline: "center" });
+  }
 }
 
 function buildConfig(config) {
@@ -1266,7 +1285,7 @@ function templateEval(template, states) {
     }
   } catch (e) {
     console.log(
-      `%cCCH Template Failed%c\nTemplate: ${template}\n%cError: ${e}`,
+      `%cCCH Template Failed:%c\n${template}\n%c${e}`,
       "text-decoration: underline;",
       "",
       "color: red;"
