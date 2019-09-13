@@ -13,7 +13,7 @@ document.getElementsByClassName("col-md-9")[0].style.cssText = "width:80%;displa
 **CCH may not function on some older or unsupported browsers/devices (like Fire tablets using WebView).<br>I maintain a version for these cases found here:**
 [CCH for legacy devices](https://github.com/maykar/compact-custom-header/issues/185)
 
-**To be sure that CCH is the source of the issue, disable it and see if the issue persists. The easiest way to do this is to remove or comment out CCH in `resources:`.**
+**To be sure that CCH is the source of the issue, disable it and see if the issue persists. The easiest way to do this is to remove or comment out CCH in `resources:`. WARNING: Comments made in the UI YAML Raw Config Editor will be stripped.**
 <br><br>
 Please, read through these docs and search the [HA forum thread](https://community.home-assistant.io/t/compact-custom-header) and [Github issues](https://github.com/maykar/compact-custom-header/issues?utf8=%E2%9C%93&q=is%3Aissue) (open and closed) before posting issues on the forums or Github.
 
