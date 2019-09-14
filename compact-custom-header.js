@@ -33,6 +33,7 @@ const defaultConfig = {
   background: "",
   hide_tabs: [],
   show_tabs: [],
+  edit_mode_show_tabs: false,
   default_tab: "",
   default_tab_template: "",
   kiosk_mode: false,
@@ -70,7 +71,6 @@ const lovelace = root.lovelace;
 root = root.shadowRoot;
 
 const newSidebar = !root.querySelector("hui-notification-drawer");
-
 let notifications = notificationCount();
 const header = root.querySelector("app-header");
 let cchConfig = buildConfig(lovelace.config.cch || {});
@@ -316,7 +316,7 @@ function scrollTabIconIntoView(tabContainer) {
       tabBounds.right > chev[1].getBoundingClientRect().left - 5) ||
     (!cchConfig.chevrons &&
       (tabBounds.left < containerBounds.right + 5 ||
-        tabBounds.right > containerBounds.left - 5))
+      tabBounds.right > containerBounds.left - 5))
   ) {
     currentTab.scrollIntoView({ inline: "center" });
   }
@@ -418,6 +418,11 @@ function removeStyles(tabContainer, tabs, header) {
   if (header_colors) header_colors.parentNode.removeChild(header_colors);
   for (let i = 0; i < tabs.length; i++) {
     tabs[i].style.color = "";
+  }
+  if (cchConfig.edit_mode_show_tabs) {
+    for (let i = 0; i < tabs.length; i++) {
+      tabs[i].style.removeProperty("display");
+    }
   }
 }
 
