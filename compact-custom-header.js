@@ -63,6 +63,7 @@ root = root && root.querySelector("home-assistant-main");
 const main = root;
 root = root && root.shadowRoot;
 root = root && root.querySelector("app-drawer-layout partial-panel-resolver");
+const panelResolver = root;
 root = (root && root.shadowRoot) || root;
 root = root && root.querySelector("ha-panel-lovelace");
 root = root && root.shadowRoot;
@@ -194,17 +195,27 @@ function buildConfig(config) {
 function observers(tabContainer, tabs, urlDisable, header) {
   const callback = function(mutations) {
     mutations.forEach(mutation => {
-      if (mutation.target.className == "edit-mode") {
+      // Navigating back to lovelace from elsewhere in HA.
+      if (
+        mutation.addedNodes.length &&
+        mutation.target.nodeName == "PARTIAL-PANEL-RESOLVER"
+      ) {
+        buttons = getButtonElements();
+        run()
+      // Entered edit mode.
+      } else if (mutation.target.className == "edit-mode") {
         editMode = true;
         if (!cchConfig.disable) removeStyles(tabContainer, tabs, header);
         buttons.options = root.querySelector("paper-menu-button");
         insertEditMenu(tabs);
+      // Exited edit mode.
       } else if (mutation.target.nodeName == "APP-HEADER") {
         for (let node of mutation.addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
           }
         }
+      // Viewing unused entities
       } else if (
         mutation.addedNodes.length &&
         !mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES"
@@ -217,18 +228,23 @@ function observers(tabContainer, tabs, urlDisable, header) {
           conditionalStyling(tabs, header);
         }
       }
-      if (mutation.target.id == "view") {
-        if (mutation.addedNodes.length) {
-          buttons = getButtonElements();
-          run();
-        }
-      }
+      // Navigating between tabs.
+      // if (mutation.target.id == "view") {
+      //   if (mutation.addedNodes.length) {
+      //     buttons = getButtonElements();
+      //     run();
+      //   }
+      // }
     });
   };
-  new MutationObserver(callback).observe(view, { childList: true });
-  new MutationObserver(callback).observe(root.querySelector("app-header"), {
-    childList: true
-  });
+  if (firstRun) {
+    let observer = new MutationObserver(callback);
+    observer.observe(panelResolver, { childList: true })
+    observer.observe(view, { childList: true });
+    observer.observe(root.querySelector("app-header"), {
+      childList: true
+    });
+  }
 
   if (!urlDisable) {
     window.hassConnection.then(({ conn }) => {
@@ -430,25 +446,34 @@ function styleHeader(tabContainer, tabs, header) {
   document.body.style.backgroundColor = getComputedStyle(
     document.body
   ).getPropertyValue("--background-color");
-  const headerBackground =
+  let headerBackground =
     cchConfig.background ||
     getComputedStyle(document.body).getPropertyValue("--cch-background") ||
     getComputedStyle(document.body).getPropertyValue("--primary-color");
-  const statusBarColor = cchConfig.statusbar_color || headerBackground;
+  let statusBarColor = cchConfig.statusbar_color || headerBackground;
   // Match mobile status bar color to header color.
-  const themeColor = document.querySelector('[name="theme-color"]');
+  let themeColor = document.querySelector('[name="theme-color"]');
   function colorStatusBar() {
+    headerBackground =
+      cchConfig.background ||
+      getComputedStyle(document.body).getPropertyValue("--cch-background") ||
+      getComputedStyle(document.body).getPropertyValue("--primary-color");
+    statusBarColor = cchConfig.statusbar_color || headerBackground;
+    themeColor = document.querySelector('[name="theme-color"]');
     themeColor.content = statusBarColor;
     themeColor.removeAttribute("default-content");
-    const defaultContent = document.createAttribute("default-content");
+    let defaultContent = document.createAttribute("default-content");
     defaultContent.value = statusBarColor;
     themeColor.setAttributeNode(defaultContent);
   }
   colorStatusBar();
   // If app/browser is idle or in background sometimes theme-color needs reset.
-  new MutationObserver(() => {
+  let observeStatus = new MutationObserver(() => {
     if (themeColor.content != statusBarColor) colorStatusBar();
-  }).observe(themeColor, { attributeFilter: ["content"] });
+  });
+  if (firstRun) {
+    observeStatus.observe(themeColor, { attributeFilter: ["content"] });
+  }
 
   // Adjust view size & padding for new header size.
   if (!cchConfig.header || cchConfig.kiosk_mode) {
@@ -661,7 +686,7 @@ function styleButtons(tabs, tabContainer) {
   }
 
   // Remove empty space taken up by hidden menu button.
-  if (buttons.menu && newSidebar) {
+  if (buttons.menu && newSidebar && firstRun) {
     new MutationObserver(() => {
       if (buttons.menu.style.visibility == "hidden") {
         buttons.menu.style.display = "none";
