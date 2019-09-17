@@ -81,10 +81,8 @@ let defaultTabRedirect = false;
 let sidebarClosed = false;
 let editMode = header.className == "edit-mode";
 let firstRun = true;
-let condState = [];
-let prevColor = {};
-let prevState = [];
 let buttons = {};
+let prevColor = [];
 
 run();
 breakingChangeNotification();
@@ -105,14 +103,14 @@ function run() {
   }
 
   if (!disable && !urlDisable) {
-    if (firstRun) {
-      sidebarMod();
-      conditionalStyling(tabs, header);
-    }
     insertEditMenu(tabs);
     hideMenuItems();
     styleHeader(tabContainer, tabs, header);
     styleButtons(tabs, tabContainer);
+    if (firstRun) {
+      sidebarMod();
+      conditionalStyling(tabs, header);
+    }
     hideTabs(tabContainer, tabs);
     defaultTab(tabs, tabContainer);
     for (let button in buttons) {
@@ -195,28 +193,28 @@ function buildConfig(config) {
 function observers(tabContainer, tabs, urlDisable, header) {
   const callback = function(mutations) {
     mutations.forEach(mutation => {
-      // Navigating back to lovelace from elsewhere in HA.
       if (
         mutation.addedNodes.length &&
         mutation.target.nodeName == "PARTIAL-PANEL-RESOLVER"
       ) {
+        // Navigated back to lovelace from elsewhere in HA.
         buttons = getButtonElements();
-        run()
-      // Entered edit mode.
+        run();
       } else if (mutation.target.className == "edit-mode") {
+        // Entered edit mode.
         editMode = true;
         if (!cchConfig.disable) removeStyles(tabContainer, tabs, header);
         buttons.options = root.querySelector("paper-menu-button");
         insertEditMenu(tabs);
-      // Exited edit mode.
       } else if (mutation.target.nodeName == "APP-HEADER") {
+        // Exited edit mode.
         for (let node of mutation.addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
           }
         }
-      // Viewing unused entities
       } else if (
+        // Viewing unused entities
         mutation.addedNodes.length &&
         !mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES"
       ) {
@@ -237,14 +235,12 @@ function observers(tabContainer, tabs, urlDisable, header) {
       // }
     });
   };
-  if (firstRun) {
-    let observer = new MutationObserver(callback);
-    observer.observe(panelResolver, { childList: true })
-    observer.observe(view, { childList: true });
-    observer.observe(root.querySelector("app-header"), {
-      childList: true
-    });
-  }
+  let observer = new MutationObserver(callback);
+  observer.observe(panelResolver, { childList: true });
+  observer.observe(view, { childList: true });
+  observer.observe(root.querySelector("app-header"), {
+    childList: true
+  });
 
   if (!urlDisable) {
     window.hassConnection.then(({ conn }) => {
@@ -317,7 +313,8 @@ function tabContainerMargin(tabContainer) {
 }
 
 function scrollTabIconIntoView(tabContainer) {
-  let currentTab = tabContainer.querySelector(".iron-selected")
+  if (!tabContainer) return;
+  let currentTab = tabContainer.querySelector(".iron-selected");
   let tabBounds = currentTab.getBoundingClientRect();
   let containerBounds = tabContainer.getBoundingClientRect();
   let chev = tabContainer.shadowRoot.querySelectorAll(
@@ -332,7 +329,7 @@ function scrollTabIconIntoView(tabContainer) {
       tabBounds.right > chev[1].getBoundingClientRect().left - 5) ||
     (!cchConfig.chevrons &&
       (tabBounds.left < containerBounds.right + 5 ||
-      tabBounds.right > containerBounds.left - 5))
+        tabBounds.right > containerBounds.left - 5))
   ) {
     currentTab.scrollIntoView({ inline: "center" });
   }
@@ -401,14 +398,7 @@ function removeStyles(tabContainer, tabs, header) {
   let tabCss = cchConfig.tab_css;
   if (tabCss) {
     for (let [key, value] of Object.entries(tabCss)) {
-      if (isNaN(key)) {
-        let views = lovelace.config.views;
-        for (let view in views) {
-          if (views[view]["title"] == key || views[view]["path"] == key) {
-            key = view;
-          }
-        }
-      }
+      key = getViewIndex(key);
       value = value.replace(/: /g, ":").replace(/; /g, ";");
       let css = tabs[key].style.cssText.replace(/: /g, ":").replace(/; /g, ";");
       tabs[key].style.cssText = css.replace(value, "");
@@ -508,14 +498,14 @@ function styleHeader(tabContainer, tabs, header) {
     let style = document.createElement("style");
     style.setAttribute("id", "cch_iron_selected");
     style.innerHTML = `
-            .iron-selected {
-              ${
-                cchConfig.active_tab_color
-                  ? `color: ${cchConfig.active_tab_color + " !important"}`
-                  : "var(--cch-active-tab-color)"
+              .iron-selected {
+                ${
+                  cchConfig.active_tab_color
+                    ? `color: ${cchConfig.active_tab_color + " !important"}`
+                    : "var(--cch-active-tab-color)"
+                }
               }
-            }
-          `;
+            `;
     tabContainer.appendChild(style);
   }
 
@@ -529,14 +519,14 @@ function styleHeader(tabContainer, tabs, header) {
     let style = document.createElement("style");
     style.setAttribute("id", "cch_header_colors");
     style.innerHTML = `
-          paper-tabs {
-            ${
-              indicator
-                ? `--paper-tabs-selection-bar-color: ${indicator} !important`
-                : "var(--cch-tab-indicator-color) !important"
+            paper-tabs {
+              ${
+                indicator
+                  ? `--paper-tabs-selection-bar-color: ${indicator} !important`
+                  : "var(--cch-tab-indicator-color) !important"
+              }
             }
-          }
-        `;
+          `;
     root.appendChild(style);
   }
 
@@ -563,14 +553,7 @@ function styleHeader(tabContainer, tabs, header) {
   let tabCss = cchConfig.tab_css;
   if (tabCss) {
     for (let [key, value] of Object.entries(tabCss)) {
-      if (isNaN(key)) {
-        let views = lovelace.config.views;
-        for (let view in views) {
-          if (views[view]["title"] == key || views[view]["path"] == key) {
-            key = view;
-          }
-        }
-      }
+      key = getViewIndex(key);
       if (tabs[key]) tabs[key].style.cssText += value;
     }
   }
@@ -595,10 +578,10 @@ function styleHeader(tabContainer, tabs, header) {
       let style = document.createElement("style");
       style.setAttribute("id", "cch_chevron");
       style.innerHTML = `
-            .not-visible {
-              display:none;
-            }
-          `;
+              .not-visible {
+                display:none;
+              }
+            `;
       tabContainer.shadowRoot.appendChild(style);
     }
   }
@@ -617,15 +600,15 @@ function styleButtons(tabs, tabContainer) {
       cchConfig[button] = "show";
     }
     let buttonStyle = `
-      z-index:1;
-      ${
-        button == "menu"
-          ? `padding: 8px 0; margin-bottom:5px; ${topMarginMenu}`
-          : "padding: 4px 0;"
-      }
-      ${button == "menu" ? "" : topMargin}
-      ${button == "options" ? "margin-right:-5px;" : ""}
-    `;
+        z-index:1;
+        ${
+          button == "menu"
+            ? `padding: 8px 0; margin-bottom:5px; ${topMarginMenu}`
+            : "padding: 4px 0;"
+        }
+        ${button == "menu" ? "" : topMargin}
+        ${button == "options" ? "margin-right:-5px;" : ""}
+      `;
     if (cchConfig[button] == "show" || cchConfig[button] == "clock") {
       if (button == "menu") {
         let paperIconButton = buttons[button].querySelector("paper-icon-button")
@@ -658,21 +641,21 @@ function styleButtons(tabs, tabContainer) {
         if (button == "notifications" && !newSidebar) {
           let style = document.createElement("style");
           style.innerHTML = `
-                .indicator {
-                  top: 5px;
-                  right: 0px;
-                  width: 10px;
-                  height: 10px;
-                  ${
-                    cchConfig.notify_indicator_color
-                      ? `background-color:${cchConfig.notify_indicator_color}`
-                      : ""
+                  .indicator {
+                    top: 5px;
+                    right: 0px;
+                    width: 10px;
+                    height: 10px;
+                    ${
+                      cchConfig.notify_indicator_color
+                        ? `background-color:${cchConfig.notify_indicator_color}`
+                        : ""
+                    }
                   }
-                }
-                .indicator > div{
-                  display:none;
-                }
-              `;
+                  .indicator > div{
+                    display:none;
+                  }
+                `;
           paperIconButton.parentNode.appendChild(style);
         }
       }
@@ -736,13 +719,13 @@ function styleButtons(tabs, tabContainer) {
           "background-color"
         )} !important;`;
     style.innerHTML = `
-        .dot {
-          ${topMargin}
-          z-index: 2;
-          ${indicator ? `background: ${indicator} !important` : ""}
-          ${border}
-        }
-    `;
+          .dot {
+            ${topMargin}
+            z-index: 2;
+            ${indicator ? `background: ${indicator} !important` : ""}
+            ${border}
+          }
+      `;
     buttons.menu.shadowRoot.appendChild(style);
   } else if (
     // Notification indicator's color for HA 0.95 and below.
@@ -752,13 +735,13 @@ function styleButtons(tabs, tabContainer) {
   ) {
     let style = document.createElement("style");
     style.innerHTML = `
-          .indicator {
-            background-color:${cchConfig.notify_indicator_color ||
-              "var(--cch-notify-indicator-color)"} !important;
-            color: ${cchConfig.notify_text_color ||
-              "var(--cch-notify-text-color), var(--primary-text-color)"};
-          }
-        `;
+            .indicator {
+              background-color:${cchConfig.notify_indicator_color ||
+                "var(--cch-notify-indicator-color)"} !important;
+              color: ${cchConfig.notify_text_color ||
+                "var(--cch-notify-text-color), var(--primary-text-color)"};
+            }
+          `;
     buttons.notifications.shadowRoot.appendChild(style);
   }
 
@@ -789,19 +772,8 @@ function defaultTab(tabs, tabContainer) {
   let template = cchConfig.default_tab_template;
   if ((default_tab || template) && !defaultTabRedirect && tabContainer) {
     if (template) default_tab = templateEval(template, hass.states);
+    default_tab = getViewIndex(default_tab);
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
-    if (isNaN(default_tab)) {
-      let views = lovelace.config.views;
-      for (let view in views) {
-        if (
-          views[view]["title"] == default_tab ||
-          views[view]["path"] == default_tab
-        ) {
-          default_tab = view;
-        }
-      }
-    }
-    default_tab = parseInt(default_tab);
     if (
       activeTab != default_tab &&
       activeTab == 0 &&
@@ -930,23 +902,23 @@ function insertClock(button) {
     let style = document.createElement("style");
     style.setAttribute("id", "cch_indicator");
     style.innerHTML = `
-          .indicator {
-            top: unset;
-            bottom: -3px;
-            right: 0px;
-            width: 90%;
-            height: 3px;
-            border-radius: 0;
-            ${
-              cchConfig.notify_indicator_color
-                ? `background-color:${cchConfig.notify_indicator_color}`
-                : ""
+            .indicator {
+              top: unset;
+              bottom: -3px;
+              right: 0px;
+              width: 90%;
+              height: 3px;
+              border-radius: 0;
+              ${
+                cchConfig.notify_indicator_color
+                  ? `background-color:${cchConfig.notify_indicator_color}`
+                  : ""
+              }
             }
-          }
-          .indicator > div{
-            display:none;
-          }
-        `;
+            .indicator > div{
+              display:none;
+            }
+          `;
     buttons.notifications.shadowRoot.appendChild(style);
   }
 
@@ -957,10 +929,10 @@ function insertClock(button) {
   }
   if (!clockElement) {
     clockIcon.style.cssText = `
-              margin-right:-5px;
-              width:${clockWidth}px;
-              text-align: center;
-            `;
+                margin-right:-5px;
+                width:${clockWidth}px;
+                text-align: center;
+              `;
     clockElement = document.createElement("p");
     clockElement.setAttribute("id", "cch_clock");
     let clockAlign = "center";
@@ -976,23 +948,23 @@ function insertClock(button) {
       fontSize = "font-size:12pt";
     }
     clockElement.style.cssText = `
-              margin-top: ${cchConfig.clock_date ? "-4px" : "2px"};
-              text-align: ${clockAlign};
-              ${padding};
-              ${fontSize};
-            `;
+                margin-top: ${cchConfig.clock_date ? "-4px" : "2px"};
+                text-align: ${clockAlign};
+                ${padding};
+                ${fontSize};
+              `;
     clockIronIcon.parentNode.insertBefore(clockElement, clockIronIcon);
     clockIronIcon.style.display = "none";
     let style = document.createElement("style");
     style.setAttribute("id", "cch_clock");
     style.innerHTML = `
-          time {
-            ${cchConfig.time_css}
-          }
-          date {
-            ${cchConfig.date_css}
-          }
-        `;
+            time {
+              ${cchConfig.time_css}
+            }
+            date {
+              ${cchConfig.date_css}
+            }
+          `;
     clockIronIcon.parentNode.insertBefore(style, clockIronIcon);
   }
 
@@ -1029,31 +1001,8 @@ function conditionalStyling(tabs, header) {
   let _hass = document.querySelector("home-assistant").hass;
   const conditional_styles = cchConfig.conditional_styles;
   let tabContainer = tabs[0] ? tabs[0].parentNode : "";
-  let elem, color, bg, hide, onIcon, offIcon, iconElem;
-
-  const styleElements = () => {
-    if (bg && elem == "background") header.style.background = bg;
-    else if (color) elem.style.color = color;
-    if (onIcon && iconElem) iconElem.setAttribute("icon", onIcon);
-    if (hide && elem !== "background" && !editMode) {
-      elem.style.display = "none";
-    }
-  };
-
-  const getElements = (key, elemArray, i, obj, styling) => {
-    elem = elemArray[key];
-    color = styling[i][obj][key].color;
-    onIcon = styling[i][obj][key].on_icon;
-    offIcon = styling[i][obj][key].off_icon;
-    hide = styling[i][obj][key].hide;
-    if (!prevColor[key]) {
-      prevColor[key] = window
-        .getComputedStyle(elem, null)
-        .getPropertyValue("color");
-    }
-  };
-
   let styling = [];
+
   if (Array.isArray(conditional_styles)) {
     for (let i = 0; i < conditional_styles.length; i++) {
       styling.push(Object.assign({}, conditional_styles[i]));
@@ -1062,108 +1011,115 @@ function conditionalStyling(tabs, header) {
     styling.push(Object.assign({}, conditional_styles));
   }
 
+  function exists(configItem) {
+    return configItem !== undefined && configItem !== null;
+  }
+
   for (let i = 0; i < styling.length; i++) {
     let template = styling[i].template;
+    let condition = styling[i].condition;
+
     if (template) {
       if (!template.length) template = [template];
       template.forEach(template => {
         templates(template, tabs, _hass, header);
       });
-    } else if (conditional_styles) {
-      let entity = styling[i].entity;
-      if (_hass.states[entity] == undefined && entity !== "notifications") {
-        console.log(`CCH conditional styling: ${entity} does not exist.`);
-        continue;
-      }
-      if (entity == "notifications") condState[i] = notifications;
-      else condState[i] = _hass.states[entity].state;
+    } else if (condition) {
+      let entState = _hass.states[styling[i].entity].state;
+      let condState = condition.state;
+      above = condition.above;
+      below = condition.below;
 
-      if (condState[i] !== prevState[i] || !condState.length) {
-        prevState[i] = condState[i];
-        let above = styling[i].condition.above;
-        let below = styling[i].condition.below;
+      let toStyle =
+        (exists(condState) && entState == condState) ||
+        (exists(above) &&
+          exists(below) &&
+          entState > above &&
+          entState < below) ||
+        (exists(above) && entState > above) ||
+        (exists(below) && entState < below);
 
-        for (const obj in styling[i]) {
-          let key;
-          if (styling[i][obj]) {
-            key = Object.keys(styling[i][obj])[0];
-          }
-          if (obj == "background") {
-            elem = "background";
-            color = styling[i][obj].color;
-            bg = styling[i][obj];
-            iconElem = false;
-            if (!prevColor[obj]) {
-              prevColor[obj] = window
-                .getComputedStyle(header, null)
-                .getPropertyValue("background");
-            }
-          } else if (obj == "button") {
-            if (newSidebar && key == "notifications") continue;
-            getElements(key, buttons, i, obj, styling);
-            if (key == "menu") {
-              iconElem = elem
-                .querySelector("paper-icon-button")
-                .shadowRoot.querySelector("iron-icon");
-            } else {
-              iconElem = elem.shadowRoot
-                .querySelector("paper-icon-button")
-                .shadowRoot.querySelector("iron-icon");
-            }
-          } else if (obj == "tab") {
-            if (isNaN(key)) {
-              let views = lovelace.config.views;
-              for (let view in views) {
-                if (views[view]["title"] == key || views[view]["path"] == key) {
-                  styling[i][obj][view] = styling[i][obj][key];
-                  delete styling[i][obj][key];
-                  key = view;
-                }
-              }
-            }
-            getElements(key, tabs, i, obj, styling);
-            iconElem = elem.querySelector("ha-icon");
-          }
+      let tabIndex = styling[i].tab
+        ? getViewIndex(Object.keys(styling[i].tab)[0])
+        : null;
+      let button = styling[i].button ? Object.keys(styling[i].button)[0] : null;
+      let background = styling[i].background;
 
-          if (condState[i] == styling[i].condition.state) {
-            styleElements();
-          } else if (
-            above !== undefined &&
-            below !== undefined &&
-            condState[i] > above &&
-            condState[i] < below
-          ) {
-            styleElements();
-          } else if (
-            above !== undefined &&
-            below == undefined &&
-            condState[i] > above
-          ) {
-            styleElements();
-          } else if (
-            above == undefined &&
-            below !== undefined &&
-            condState[i] < below
-          ) {
-            styleElements();
-          } else {
-            if (elem !== "background" && hide && elem.style.display == "none") {
-              elem.style.display = "";
-            }
-            if (bg && elem == "background") {
-              header.style.background = prevColor[obj];
-            } else if (
-              obj !== "background" &&
-              obj !== "entity" &&
-              obj !== "condition"
-            ) {
-              elem.style.color = prevColor[key];
-            }
-            if (onIcon && offIcon) {
-              iconElem.setAttribute("icon", offIcon);
-            }
-          }
+      // Conditionally style tabs.
+      if (toStyle && exists(tabIndex)) {
+        let tabCondition = styling[i].tab[tabIndex];
+        let tabElem = tabs[tabIndex];
+        if (tabCondition.hide) tabElem.style.display = "none";
+        if (tabCondition.color) {
+          prevColor[i] = window
+            .getComputedStyle(tabElem, null)
+            .getPropertyValue("color");
+          tabElem.style.color = tabCondition.color;
         }
+        if (tabCondition.on_icon) {
+          tabElem
+            .querySelector("ha-icon")
+            .setAttribute("icon", tabCondition.on_icon);
+        }
+      } else if (!toStyle && exists(tabIndex)) {
+        let tabCondition = styling[i].tab[tabIndex];
+        let tabElem = tabs[tabIndex];
+        if (tabCondition.hide) {
+          tabElem.style.display = "";
+        }
+        if (tabCondition.color) {
+          if (prevColor[i]) tabElem.style.color = prevColor[i];
+        }
+        if (tabCondition.off_icon) {
+          tabElem
+            .querySelector("ha-icon")
+            .setAttribute("icon", tabCondition.off_icon);
+        }
+      }
+
+      // Conditionally style buttons.
+      if (toStyle && button) {
+        let buttonCondition = styling[i].button[button];
+        let buttonElem = buttons[button];
+        if (buttonCondition.hide) {
+          buttonElem.style.display = "none";
+        }
+        if (buttonCondition.color) {
+          prevColor[i] = window
+            .getComputedStyle(buttonElem, null)
+            .getPropertyValue("color");
+          buttonElem.style.color = buttonCondition.color;
+        }
+        if (buttonCondition.on_icon) {
+          let icon =
+            buttonElem.querySelector("iron-icon") ||
+            buttonElem.shadowRoot.querySelector("iron-icon");
+          icon.setAttribute("icon", buttonCondition.on_icon);
+        }
+      } else if (!toStyle && button) {
+        let condbutton = styling[i].button[button];
+        if (condbutton.hide) {
+          buttonElem.style.display = "";
+        }
+        if (condbutton.color) {
+          if (prevColor[i]) buttonElem.style.color = prevColor[i];
+        }
+        if (condbutton.off_icon) {
+          let icon =
+            buttonElem.querySelector("iron-icon") ||
+            buttonElem.shadowRoot.querySelector("iron-icon");
+          icon.setAttribute("icon", condbutton.off_icon);
+        }
+      }
+
+      // Conditionally style background.
+      if (toStyle && background) {
+        prevColor[i] = window
+          .getComputedStyle(header, null)
+          .getPropertyValue("background");
+        header.style.background = styling[i].background;
+      } else if (!toStyle && background) {
+        header.style.background = prevColor[i];
       }
     }
   }
@@ -1178,20 +1134,7 @@ function templates(template, tabs, _hass, header) {
         let tempCond = template[condition][tab];
         if (!tempCond.length) tempCond = [tempCond];
         tempCond.forEach(templateObj => {
-          let tabIndex = Object.keys(template[condition]);
-          let views = lovelace.config.views;
-          if (isNaN(tabIndex)) {
-            for (let view in views) {
-              if (
-                views[view]["title"] == tabIndex ||
-                views[view]["path"] == tabIndex
-              ) {
-                tabIndex = view;
-              }
-            }
-          } else {
-            tabIndex = parseInt(tabIndex);
-          }
+          let tabIndex = getViewIndex(Object.keys(template[condition]));
           let styleTarget = Object.keys(templateObj);
           let tabTemplate = templateObj[styleTarget];
           let tabElement = tabs[tabIndex];
@@ -1278,24 +1221,40 @@ function showEditor() {
     const container = document.createElement("editor");
     const nest = document.createElement("div");
     nest.style.cssText = `
-      padding: 20px;
-      max-width: 600px;
-      margin: 15px auto;
-      background: var(--paper-card-background-color);
-      border: 6px solid var(--paper-card-background-color);
-    `;
+        padding: 20px;
+        max-width: 600px;
+        margin: 15px auto;
+        background: var(--paper-card-background-color);
+        border: 6px solid var(--paper-card-background-color);
+      `;
     container.style.cssText = `
-      width: 100%;
-      min-height: 100%;
-      box-sizing: border-box;
-      position: absolute;
-      background: var(--background-color, grey);
-      z-index: 2;
-      padding: 5px;
-    `;
+        width: 100%;
+        min-height: 100%;
+        box-sizing: border-box;
+        position: absolute;
+        background: var(--background-color, grey);
+        z-index: 2;
+        padding: 5px;
+      `;
     root.querySelector("ha-app-layout").insertBefore(container, view);
     container.appendChild(nest);
     nest.appendChild(document.createElement("compact-custom-header-editor"));
+  }
+}
+
+function getViewIndex(viewString) {
+  let views = lovelace.config.views;
+  if (isNaN(viewString)) {
+    for (let view in views) {
+      if (
+        views[view]["title"] == viewString ||
+        views[view]["path"] == viewString
+      ) {
+        return view;
+      }
+    }
+  } else {
+    return parseInt(viewString);
   }
 }
 
@@ -1614,7 +1573,7 @@ class CompactCustomHeaderEditor extends LitElement {
       <br />
       <h4
         style="background:var(--paper-card-background-color);
-      margin-bottom:-20px;"
+        margin-bottom:-20px;"
         class="underline"
       >
         ${!this.exception
@@ -2313,87 +2272,87 @@ class CchConfigEditor extends LitElement {
         </paper-toggle-button>
         ${this.config.swipe
           ? html`
-        <paper-toggle-button
-          class="${
-            this.exception && this.config.swipe_wrap === undefined
-              ? "inherited"
-              : ""
-          }"
-          ?checked="${this.getConfig("swipe_wrap") !== false}"
-          .configValue="${"swipe_wrap"}"
-          @change="${this._valueChanged}"
-          title="Wrap from first to last tab and vice versa."
-        >
-          Wrapping
-        </paper-toggle-button>
-        <paper-toggle-button
-          class="${
-            this.exception && this.config.swipe_prevent_default === undefined
-              ? "inherited"
-              : ""
-          }"
-          ?checked="${this.getConfig("swipe_prevent_default") !== false}"
-          .configValue="${"swipe_prevent_default"}"
-          @change="${this._valueChanged}"
-          title="Prevent browsers default horizontal swipe action."
-        >
-          Prevent Default
-        </paper-toggle-button>
-        <div
-        class="${
-          this.exception && this.config.swipe_animate === undefined
-            ? "inherited"
-            : ""
-        }"
-      >
-      </div>
-      <div class="side-by-side">
-        <paper-dropdown-menu
-          @value-changed="${this._valueChanged}"
-          label="Swipe Animation:"
-          .configValue="${"swipe_animate"}"
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${swipeAnimation.indexOf(
-              this.getConfig("swipe_animate")
-            )}"
+          <paper-toggle-button
+            class="${
+              this.exception && this.config.swipe_wrap === undefined
+                ? "inherited"
+                : ""
+            }"
+            ?checked="${this.getConfig("swipe_wrap") !== false}"
+            .configValue="${"swipe_wrap"}"
+            @change="${this._valueChanged}"
+            title="Wrap from first to last tab and vice versa."
           >
-            ${swipeAnimation.map(option => {
-              return html`
-                <paper-item>${option}</paper-item>
-              `;
-            })}
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-      <paper-input
-      class="${
-        this.exception && this.config.swipe_amount === undefined
-          ? "inherited"
-          : ""
-      }"
-      label="Percentage of screen width needed for swipe:"
-      .value="${this.getConfig("swipe_amount")}"
-      .configValue="${"swipe_amount"}"
-      @value-changed="${this._valueChanged}"
-    >
-    </paper-input>
+            Wrapping
+          </paper-toggle-button>
+          <paper-toggle-button
+            class="${
+              this.exception && this.config.swipe_prevent_default === undefined
+                ? "inherited"
+                : ""
+            }"
+            ?checked="${this.getConfig("swipe_prevent_default") !== false}"
+            .configValue="${"swipe_prevent_default"}"
+            @change="${this._valueChanged}"
+            title="Prevent browsers default horizontal swipe action."
+          >
+            Prevent Default
+          </paper-toggle-button>
+          <div
+          class="${
+            this.exception && this.config.swipe_animate === undefined
+              ? "inherited"
+              : ""
+          }"
+        >
+        </div>
+        <div class="side-by-side">
+          <paper-dropdown-menu
+            @value-changed="${this._valueChanged}"
+            label="Swipe Animation:"
+            .configValue="${"swipe_animate"}"
+          >
+            <paper-listbox
+              slot="dropdown-content"
+              .selected="${swipeAnimation.indexOf(
+                this.getConfig("swipe_animate")
+              )}"
+            >
+              ${swipeAnimation.map(option => {
+                return html`
+                  <paper-item>${option}</paper-item>
+                `;
+              })}
+            </paper-listbox>
+          </paper-dropdown-menu>
         </div>
         <paper-input
         class="${
-          this.exception && this.config.swipe_skip === undefined
+          this.exception && this.config.swipe_amount === undefined
             ? "inherited"
             : ""
         }"
-        label="Comma-separated list of tabs to skip over on swipe:"
-        .value="${this.getConfig("swipe_skip")}"
-        .configValue="${"swipe_skip"}"
+        label="Percentage of screen width needed for swipe:"
+        .value="${this.getConfig("swipe_amount")}"
+        .configValue="${"swipe_amount"}"
         @value-changed="${this._valueChanged}"
       >
       </paper-input>
-      </div>
-    `
+          </div>
+          <paper-input
+          class="${
+            this.exception && this.config.swipe_skip === undefined
+              ? "inherited"
+              : ""
+          }"
+          label="Comma-separated list of tabs to skip over on swipe:"
+          .value="${this.getConfig("swipe_skip")}"
+          .configValue="${"swipe_skip"}"
+          @value-changed="${this._valueChanged}"
+        >
+        </paper-input>
+        </div>
+      `
           : ""}
       </div>
     `;
