@@ -71,7 +71,8 @@ root = root && root.querySelector("hui-root");
 const lovelace = root.lovelace;
 root = root.shadowRoot;
 
-const newSidebar = !root.querySelector("hui-notification-drawer");
+const frontendVersion = Number(window.frontendVersion);
+const newSidebar = frontendVersion >= 20190710;
 let notifications = notificationCount();
 const header = root.querySelector("app-header");
 let cchConfig = buildConfig(lovelace.config.cch || {});
@@ -477,6 +478,22 @@ function styleHeader(tabContainer, tabs, header) {
     view.style.boxSizing = "border-box";
     header.style.background = headerBackground;
     header.querySelector("app-toolbar").style.background = "transparent";
+  }
+
+  if (
+    frontendVersion >= 20190911 &&
+    !root.querySelector('[id="cch_view_styling"]') &&
+    !editMode &&
+    cchConfig.header
+  ) {
+    let style = document.createElement("style");
+    style.setAttribute("id", "cch_view_styling");
+    style.innerHTML = `
+      hui-view {
+        margin-top: -48.5px;
+        padding-top: 48.5px;
+      }`;
+    root.appendChild(style);
   }
 
   // Match sidebar elements to header's size.
@@ -1088,10 +1105,7 @@ function conditionalStyling(tabs, header) {
             .setAttribute("icon", tabCondition.off_icon);
         }
       }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Fix other button elemenets with paper-icon-button
-//
-      // Conditionally style buttons.
+
       if (toStyle && button) {
         let buttonCondition = styling[i].button[button];
         let buttonElem = buttons[button].querySelector("paper-icon-button")
@@ -1101,7 +1115,7 @@ function conditionalStyling(tabs, header) {
           buttonElem.style.display = "none";
         }
         if (buttonCondition.color) {
-          if (prevColor.button == undefined) prevColor.button = {}
+          if (prevColor.button == undefined) prevColor.button = {};
           if (prevColor.button[button] == undefined) {
             prevColor.button[button] = window
               .getComputedStyle(buttonElem, null)
@@ -1123,7 +1137,11 @@ function conditionalStyling(tabs, header) {
         if (buttonCondition.hide) {
           buttonElem.style.display = "";
         }
-        if (buttonCondition.color && prevColor.button && prevColor.button[button]) {
+        if (
+          buttonCondition.color &&
+          prevColor.button &&
+          prevColor.button[button]
+        ) {
           buttonElem.style.color = prevColor.button[button];
         }
         if (buttonCondition.off_icon) {
@@ -2745,7 +2763,7 @@ function deepcopy(value) {
 }
 
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.6     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.7     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
