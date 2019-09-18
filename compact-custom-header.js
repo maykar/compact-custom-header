@@ -82,7 +82,7 @@ let sidebarClosed = false;
 let editMode = header.className == "edit-mode";
 let firstRun = true;
 let buttons = {};
-let prevColor = [];
+let prevColor = {};
 
 run();
 breakingChangeNotification();
@@ -886,7 +886,9 @@ function insertClock(button) {
     ? buttons[button]
     : buttons[button].shadowRoot;
   const clockIcon = clock_button.querySelector("paper-icon-button");
-  const clockIronIcon = clockIcon.shadowRoot.querySelector("iron-icon");
+  const clockIronIcon =
+    clockIcon.querySelector("iron-icon") ||
+    clockIcon.shadowRoot.querySelector("iron-icon");
   const clockWidth =
     (cchConfig.clock_format == 12 && cchConfig.clock_am_pm) ||
     cchConfig.clock_date
@@ -1025,7 +1027,13 @@ function conditionalStyling(tabs, header) {
         templates(template, tabs, _hass, header);
       });
     } else if (condition) {
-      let entState = _hass.states[styling[i].entity].state;
+      let entity = styling[i].entity;
+      if (_hass.states[entity] == undefined && entity !== "notifications") {
+        console.log(`CCH conditional styling: ${entity} does not exist.`);
+        continue;
+      }
+      let entState =
+        entity == "notifications" ? notifications : _hass.states[entity].state;
       let condState = condition.state;
       above = condition.above;
       below = condition.below;
@@ -1042,18 +1050,23 @@ function conditionalStyling(tabs, header) {
       let tabIndex = styling[i].tab
         ? getViewIndex(Object.keys(styling[i].tab)[0])
         : null;
+      let tabCondition = styling[i].tab[tabIndex];
+      let tabElem = tabs[tabIndex];
+      let tabkey = "tab" + tabIndex;
       let button = styling[i].button ? Object.keys(styling[i].button)[0] : null;
       let background = styling[i].background;
 
       // Conditionally style tabs.
       if (toStyle && exists(tabIndex)) {
-        let tabCondition = styling[i].tab[tabIndex];
-        let tabElem = tabs[tabIndex];
         if (tabCondition.hide) tabElem.style.display = "none";
         if (tabCondition.color) {
-          prevColor[i] = window
-            .getComputedStyle(tabElem, null)
-            .getPropertyValue("color");
+          if (prevColor[tabkey] == undefined) {
+            Object.assign(prevColor, {
+              [tabkey]: window
+                .getComputedStyle(tabElem, null)
+                .getPropertyValue("color")
+            });
+          }
           tabElem.style.color = tabCondition.color;
         }
         if (tabCondition.on_icon) {
@@ -1062,13 +1075,11 @@ function conditionalStyling(tabs, header) {
             .setAttribute("icon", tabCondition.on_icon);
         }
       } else if (!toStyle && exists(tabIndex)) {
-        let tabCondition = styling[i].tab[tabIndex];
-        let tabElem = tabs[tabIndex];
         if (tabCondition.hide) {
           tabElem.style.display = "";
         }
-        if (tabCondition.color) {
-          if (prevColor[i]) tabElem.style.color = prevColor[i];
+        if (tabCondition.color && prevColor[tabkey]) {
+          tabElem.style.color = prevColor[tabkey];
         }
         if (tabCondition.off_icon) {
           tabElem
@@ -1085,9 +1096,11 @@ function conditionalStyling(tabs, header) {
           buttonElem.style.display = "none";
         }
         if (buttonCondition.color) {
-          prevColor[i] = window
-            .getComputedStyle(buttonElem, null)
-            .getPropertyValue("color");
+          if (prevColor.button[button] == undefined) {
+            prevColor.button[button] = window
+              .getComputedStyle(buttonElem, null)
+              .getPropertyValue("color");
+          }
           buttonElem.style.color = buttonCondition.color;
         }
         if (buttonCondition.on_icon) {
@@ -1101,8 +1114,8 @@ function conditionalStyling(tabs, header) {
         if (condbutton.hide) {
           buttonElem.style.display = "";
         }
-        if (condbutton.color) {
-          if (prevColor[i]) buttonElem.style.color = prevColor[i];
+        if (condbutton.color && prevColor.button[button]) {
+          buttonElem.style.color = prevColor.button[button];
         }
         if (condbutton.off_icon) {
           let icon =
@@ -1114,12 +1127,14 @@ function conditionalStyling(tabs, header) {
 
       // Conditionally style background.
       if (toStyle && background) {
-        prevColor[i] = window
-          .getComputedStyle(header, null)
-          .getPropertyValue("background");
+        if (prevColor.background == undefined) {
+          prevColor.background = window
+            .getComputedStyle(header, null)
+            .getPropertyValue("background");
+        }
         header.style.background = styling[i].background;
       } else if (!toStyle && background) {
-        header.style.background = prevColor[i];
+        header.style.background = prevColor.background;
       }
     }
   }
@@ -1167,9 +1182,10 @@ function templates(template, tabs, _hass, header) {
           if (styleTarget == "icon") {
             iconTarget.setAttribute("icon", templateEval(tempCond, states));
           } else if (styleTarget == "color") {
-            iconTarget.shadowRoot.querySelector(
-              "iron-icon"
-            ).style.color = templateEval(tempCond, states);
+            let tar =
+              iconTarget.querySelector("iron-icon") ||
+              iconTarget.shadowRoot.querySelector("iron-icon");
+            tar.style.color = templateEval(tempCond, states);
           } else if (styleTarget == "display") {
             templateEval(tempCond, states) == "show"
               ? (buttonElem.style.display = "")
