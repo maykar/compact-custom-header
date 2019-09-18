@@ -370,7 +370,7 @@ function hideMenuItems() {
 function insertEditMenu(tabs) {
   if (buttons.options && editMode) {
     // If any tabs are hidden, add "show all tabs" option.
-    if (cchConfig.hide_tabs) {
+    if (cchConfig.hide_tabs && !cchConfig.edit_mode_show_tabs) {
       let show_tabs = document.createElement("paper-item");
       show_tabs.setAttribute("id", "show_tabs");
       show_tabs.addEventListener("click", () => {
@@ -390,6 +390,7 @@ function insertEditMenu(tabs) {
     });
     cchSettings.innerHTML = "CCH Settings";
     insertMenuItem(buttons.options.querySelector("paper-listbox"), cchSettings);
+    hideMenuItems();
   }
 }
 
@@ -1050,7 +1051,7 @@ function conditionalStyling(tabs, header) {
       let tabIndex = styling[i].tab
         ? getViewIndex(Object.keys(styling[i].tab)[0])
         : null;
-      let tabCondition = styling[i].tab[tabIndex];
+      let tabCondition = styling[i].tab ? styling[i].tab[tabIndex] : null;
       let tabElem = tabs[tabIndex];
       let tabkey = "tab" + tabIndex;
       let button = styling[i].button ? Object.keys(styling[i].button)[0] : null;
@@ -1087,15 +1088,20 @@ function conditionalStyling(tabs, header) {
             .setAttribute("icon", tabCondition.off_icon);
         }
       }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fix other button elemenets with paper-icon-button
+//
       // Conditionally style buttons.
       if (toStyle && button) {
         let buttonCondition = styling[i].button[button];
-        let buttonElem = buttons[button];
+        let buttonElem = buttons[button].querySelector("paper-icon-button")
+          ? buttons[button].querySelector("paper-icon-button")
+          : buttons[button].shadowRoot.querySelector("paper-icon-button");
         if (buttonCondition.hide) {
           buttonElem.style.display = "none";
         }
         if (buttonCondition.color) {
+          if (prevColor.button == undefined) prevColor.button = {}
           if (prevColor.button[button] == undefined) {
             prevColor.button[button] = window
               .getComputedStyle(buttonElem, null)
@@ -1110,18 +1116,21 @@ function conditionalStyling(tabs, header) {
           icon.setAttribute("icon", buttonCondition.on_icon);
         }
       } else if (!toStyle && button) {
-        let condbutton = styling[i].button[button];
-        if (condbutton.hide) {
+        let buttonCondition = styling[i].button[button];
+        let buttonElem = buttons[button].querySelector("paper-icon-button")
+          ? buttons[button].querySelector("paper-icon-button")
+          : buttons[button].shadowRoot.querySelector("paper-icon-button");
+        if (buttonCondition.hide) {
           buttonElem.style.display = "";
         }
-        if (condbutton.color && prevColor.button[button]) {
+        if (buttonCondition.color && prevColor.button && prevColor.button[button]) {
           buttonElem.style.color = prevColor.button[button];
         }
-        if (condbutton.off_icon) {
+        if (buttonCondition.off_icon) {
           let icon =
             buttonElem.querySelector("iron-icon") ||
             buttonElem.shadowRoot.querySelector("iron-icon");
-          icon.setAttribute("icon", condbutton.off_icon);
+          icon.setAttribute("icon", buttonCondition.off_icon);
         }
       }
 
