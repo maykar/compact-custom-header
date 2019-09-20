@@ -752,7 +752,8 @@ function defaultTab(tabs, tabContainer) {
     if (
       activeTab != default_tab &&
       activeTab == 0 &&
-      tabs[default_tab].style.display != "none"
+      (!cchConfig.redirect ||
+        (cchConfig.redirect && tabs[default_tab].style.display != "none"))
     ) {
       tabs[default_tab].click();
     }
