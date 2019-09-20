@@ -73,10 +73,11 @@ root = root.shadowRoot;
 
 const frontendVersion = Number(window.frontendVersion);
 const newSidebar = frontendVersion >= 20190710;
-let notifications = notificationCount();
 const header = root.querySelector("app-header");
 let cchConfig = buildConfig(lovelace.config.cch || {});
-const view = root.querySelector("ha-app-layout").querySelector('[id="view"]');
+const view = root.querySelector("ha-app-layout").querySelector("#view");
+const disabled =
+  window.location.href.includes("disable_cch") || cchConfig.disable;
 
 let defaultTabRedirect = false;
 let sidebarClosed = false;
@@ -89,8 +90,6 @@ run();
 breakingChangeNotification();
 
 function run() {
-  const disable = cchConfig.disable;
-  const urlDisable = window.location.href.includes("disable_cch");
   const tabContainer = root.querySelector("paper-tabs");
   const tabs = tabContainer
     ? Array.from(tabContainer.querySelectorAll("paper-tab"))
@@ -103,7 +102,7 @@ function run() {
     return;
   }
 
-  if (!disable && !urlDisable) {
+  if (!disabled) {
     insertEditMenu(tabs);
     hideMenuItems();
     styleHeader(tabContainer, tabs, header);
@@ -121,7 +120,7 @@ function run() {
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
   }
 
-  if (!disable && firstRun) observers(tabContainer, tabs, urlDisable, header);
+  if (firstRun) observers(tabContainer, tabs, header);
   fireEvent(header, "iron-resize");
   firstRun = false;
   scrollTabIconIntoView(tabContainer);
@@ -167,12 +166,9 @@ function buildConfig(config) {
     let count = 0;
     for (const cond in conditions) {
       if (cond == "user" && conditions[cond].includes(",")) {
-        let userList = conditions[cond].split(/[ ,]+/);
-        for (let user in userList) {
-          if (userVars[cond] == userList[user]) {
-            count++;
-          }
-        }
+        conditions[cond].split(/[ ,]+/).forEach(user => {
+          if (userVars[cond] == user) count++;
+        });
       } else {
         if (
           userVars[cond] == conditions[cond] ||
@@ -191,7 +187,7 @@ function buildConfig(config) {
   }
 }
 
-function observers(tabContainer, tabs, urlDisable, header) {
+function observers(tabContainer, tabs, header) {
   const callback = function(mutations) {
     mutations.forEach(mutation => {
       if (
@@ -204,7 +200,7 @@ function observers(tabContainer, tabs, urlDisable, header) {
       } else if (mutation.target.className == "edit-mode") {
         // Entered edit mode.
         editMode = true;
-        if (!cchConfig.disable) removeStyles(tabContainer, tabs, header);
+        if (!disabled) removeStyles(tabContainer, tabs, header);
         buttons.options = root.querySelector("paper-menu-button");
         insertEditMenu(tabs);
       } else if (mutation.target.nodeName == "APP-HEADER") {
@@ -212,10 +208,14 @@ function observers(tabContainer, tabs, urlDisable, header) {
         for (let node of mutation.addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
+            buttons = getButtonElements();
+            run();
+            if (!disabled) conditionalStyling(tabs, header);
           }
         }
       } else if (
         // Viewing unused entities
+        frontendVersion < 20190911 &&
         mutation.addedNodes.length &&
         !mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES"
       ) {
@@ -223,17 +223,11 @@ function observers(tabContainer, tabs, urlDisable, header) {
           .querySelector("ha-app-layout")
           .querySelector("editor");
         if (editor) root.querySelector("ha-app-layout").removeChild(editor);
-        if (!editMode && !urlDisable && cchConfig.conditional_styles) {
+        if (cchConfig.conditional_styles) {
+          buttons = getButtonElements(tabContainer);
           conditionalStyling(tabs, header);
         }
       }
-      // Navigating between tabs.
-      // if (mutation.target.id == "view") {
-      //   if (mutation.addedNodes.length) {
-      //     buttons = getButtonElements();
-      //     run();
-      //   }
-      // }
     });
   };
   let observer = new MutationObserver(callback);
@@ -243,37 +237,15 @@ function observers(tabContainer, tabs, urlDisable, header) {
     childList: true
   });
 
-  if (!urlDisable) {
+  if (!disabled) {
     window.hassConnection.then(({ conn }) => {
       conn.socket.onmessage = () => {
-        notifications = notificationCount();
         if (cchConfig.conditional_styles && !editMode) {
           conditionalStyling(tabs, header);
         }
       };
     });
   }
-}
-
-function notificationCount() {
-  if (newSidebar) {
-    let badge = main.shadowRoot
-      .querySelector("ha-sidebar")
-      .shadowRoot.querySelector("span.notification-badge");
-    if (!badge) {
-      return 0;
-    } else {
-      return parseInt(badge.innerHTML);
-    }
-  }
-  let i = 0;
-  let drawer = root
-    .querySelector("hui-notification-drawer")
-    .shadowRoot.querySelector(".notifications");
-  for (let notification of drawer.querySelectorAll(".notification")) {
-    if (notification.style.display !== "none") i++;
-  }
-  return i;
 }
 
 function getButtonElements() {
@@ -285,6 +257,11 @@ function getButtonElements() {
     if (!newSidebar) {
       buttons.notifications = root.querySelector("hui-notifications-button");
     }
+  }
+  if (buttons.menu && buttons.menu.style.visibility == "hidden" && !disabled) {
+    buttons.menu.style.display = "none";
+  } else if (buttons.menu) {
+    buttons.menu.style.display = "";
   }
   return buttons;
 }
@@ -314,7 +291,7 @@ function tabContainerMargin(tabContainer) {
 }
 
 function scrollTabIconIntoView(tabContainer) {
-  if (!tabContainer) return;
+  if (!tabContainer || !tabContainer.querySelector(".iron-selected")) return;
   let currentTab = tabContainer.querySelector(".iron-selected");
   let tabBounds = currentTab.getBoundingClientRect();
   let containerBounds = tabContainer.getBoundingClientRect();
@@ -337,34 +314,26 @@ function scrollTabIconIntoView(tabContainer) {
 }
 
 function hideMenuItems() {
-  function localize(item) {
-    return hass.localize(`ui.panel.lovelace.menu.${item}`);
-  }
   if (cchConfig.hide_help || cchConfig.hide_config || cchConfig.hide_unused) {
-    let menuItems = buttons.options
+    const itemCheck = (item, string) => {
+      let localized = hass.localize(`ui.panel.lovelace.menu.${string}`);
+      return (
+        item.innerHTML.includes(localized) ||
+        item.getAttribute("aria-label") == localized
+      );
+    };
+    buttons.options
       .querySelector("paper-listbox")
-      .querySelectorAll("paper-item");
-    for (let item of menuItems) {
-      if (
-        (item.innerHTML.includes(localize("help")) ||
-          item.getAttribute("aria-label") == localize("help")) &&
-        cchConfig.hide_help
-      ) {
-        item.parentNode.removeChild(item);
-      } else if (
-        (item.innerHTML.includes(localize("unused_entities")) ||
-          item.getAttribute("aria-label") == localize("unused_entities")) &&
-        cchConfig.hide_unused
-      ) {
-        item.parentNode.removeChild(item);
-      } else if (
-        (item.innerHTML.includes(localize("configure_ui")) ||
-          item.getAttribute("aria-label") == localize("configure_ui")) &&
-        cchConfig.hide_config
-      ) {
-        item.parentNode.removeChild(item);
-      }
-    }
+      .querySelectorAll("paper-item")
+      .forEach(item => {
+        if (
+          (cchConfig.hide_help && itemCheck(item, "help")) ||
+          (cchConfig.hide_unused && itemCheck(item, "unused_entities")) ||
+          (cchConfig.hide_config && itemCheck(item, "configure_ui"))
+        ) {
+          item.parentNode.removeChild(item);
+        }
+      });
   }
 }
 
@@ -391,15 +360,17 @@ function insertEditMenu(tabs) {
     });
     cchSettings.innerHTML = "CCH Settings";
     insertMenuItem(buttons.options.querySelector("paper-listbox"), cchSettings);
-    hideMenuItems();
+    if (!disabled) hideMenuItems();
   }
 }
 
 function removeStyles(tabContainer, tabs, header) {
-  let header_colors = root.querySelector('[id="cch_header_colors"]');
-  let tabCss = cchConfig.tab_css;
-  if (tabCss) {
-    for (let [key, value] of Object.entries(tabCss)) {
+  root.querySelectorAll("[id^='cch'], style").forEach(style => {
+    style.remove();
+  });
+
+  if (cchConfig.tab_css) {
+    for (let [key, value] of Object.entries(cchConfig.tab_css)) {
       key = getViewIndex(key);
       value = value.replace(/: /g, ":").replace(/; /g, ";");
       let css = tabs[key].style.cssText.replace(/: /g, ":").replace(/; /g, ";");
@@ -415,15 +386,8 @@ function removeStyles(tabContainer, tabs, header) {
     tabContainer.style.marginLeft = "";
     tabContainer.style.marginRight = "";
   }
-  header.style.background = null;
-  view.style.minHeight = "";
-  view.style.marginTop = "";
-  view.style.paddingTop = "";
-  view.style.boxSizing = "";
-  if (root.querySelector('[id="cch_iron_selected"]')) {
-    root.querySelector('[id="cch_iron_selected"]').outerHTML = "";
-  }
-  if (header_colors) header_colors.parentNode.removeChild(header_colors);
+  header.style.background = "";
+  view.style = "";
   for (let i = 0; i < tabs.length; i++) {
     tabs[i].style.color = "";
   }
@@ -446,17 +410,14 @@ function styleHeader(tabContainer, tabs, header) {
   // Match mobile status bar color to header color.
   let themeColor = document.querySelector('[name="theme-color"]');
   function colorStatusBar() {
-    headerBackground =
+    statusBarColor =
+      cchConfig.statusbar_color ||
       cchConfig.background ||
       getComputedStyle(document.body).getPropertyValue("--cch-background") ||
       getComputedStyle(document.body).getPropertyValue("--primary-color");
-    statusBarColor = cchConfig.statusbar_color || headerBackground;
     themeColor = document.querySelector('[name="theme-color"]');
     themeColor.content = statusBarColor;
-    themeColor.removeAttribute("default-content");
-    let defaultContent = document.createAttribute("default-content");
-    defaultContent.value = statusBarColor;
-    themeColor.setAttributeNode(defaultContent);
+    themeColor.setAttribute("default-content", statusBarColor);
   }
   colorStatusBar();
   // If app/browser is idle or in background sometimes theme-color needs reset.
@@ -478,22 +439,20 @@ function styleHeader(tabContainer, tabs, header) {
     view.style.boxSizing = "border-box";
     header.style.background = headerBackground;
     header.querySelector("app-toolbar").style.background = "transparent";
-  }
-
-  if (
-    frontendVersion >= 20190911 &&
-    !root.querySelector('[id="cch_view_styling"]') &&
-    !editMode &&
-    cchConfig.header
-  ) {
-    let style = document.createElement("style");
-    style.setAttribute("id", "cch_view_styling");
-    style.innerHTML = `
-      hui-view {
-        margin-top: -48.5px;
-        padding-top: 48.5px;
-      }`;
-    root.appendChild(style);
+    if (
+      frontendVersion >= 20190911 &&
+      !root.querySelector("#cch_view_styling")
+    ) {
+      let style = document.createElement("style");
+      style.setAttribute("id", "cch_view_styling");
+      style.innerHTML = `
+        hui-view {
+          margin-top: -48.5px;
+          padding-top: 52px;
+          ${cchConfig.view_css ? cchConfig.view_css : ""}
+        }`;
+      root.appendChild(style);
+    }
   }
 
   // Match sidebar elements to header's size.
@@ -508,7 +467,7 @@ function styleHeader(tabContainer, tabs, header) {
     ? JSON.stringify(cchConfig.conditional_styles).includes("tab")
     : false;
   if (
-    !root.querySelector('[id="cch_iron_selected"]') &&
+    !root.querySelector("#cch_iron_selected") &&
     !editMode &&
     !conditionalTabs &&
     tabContainer
@@ -529,11 +488,7 @@ function styleHeader(tabContainer, tabs, header) {
 
   // Style current tab indicator.
   let indicator = cchConfig.tab_indicator_color;
-  if (
-    indicator &&
-    !root.querySelector('[id="cch_header_colors"]') &&
-    !editMode
-  ) {
+  if (indicator && !root.querySelector("#cch_header_colors") && !editMode) {
     let style = document.createElement("style");
     style.setAttribute("id", "cch_header_colors");
     style.innerHTML = `
@@ -563,7 +518,7 @@ function styleHeader(tabContainer, tabs, header) {
   if (cchConfig.header_css) header.style.cssText += cchConfig.header_css;
 
   // Add view custom css.
-  if (cchConfig.view_css) {
+  if (cchConfig.view_css && frontendVersion < 20190911) {
     view.style.cssText += cchConfig.view_css;
   }
 
@@ -582,7 +537,9 @@ function styleHeader(tabContainer, tabs, header) {
       ? "-64px"
       : "";
 
-    for (const tab in tabs) tabs[tab].style.marginTop = "-1px";
+    tabs.forEach(tab => {
+      tab.style.marginTop = "-1px";
+    });
 
     // Show/hide tab navigation chevrons.
     if (!cchConfig.chevrons) {
@@ -646,7 +603,7 @@ function styleButtons(tabs, tabContainer) {
         continue;
       }
       const id = `menu_item_${button}`;
-      if (!menu_items.querySelector(`[id="${id}"]`)) {
+      if (!menu_items.querySelector(`#${id}`)) {
         const wrapper = document.createElement("paper-item");
         wrapper.setAttribute("id", id);
         wrapper.innerText = getTranslation(button);
@@ -687,7 +644,7 @@ function styleButtons(tabs, tabContainer) {
   }
 
   // Remove empty space taken up by hidden menu button.
-  if (buttons.menu && newSidebar && firstRun) {
+  if (buttons.menu && newSidebar && !disabled) {
     new MutationObserver(() => {
       if (buttons.menu.style.visibility == "hidden") {
         buttons.menu.style.display = "none";
@@ -721,7 +678,7 @@ function styleButtons(tabs, tabContainer) {
   if (
     newSidebar &&
     cchConfig.menu != "hide" &&
-    !buttons.menu.shadowRoot.querySelector('[id="cch_dot"]')
+    !buttons.menu.shadowRoot.querySelector("#cch_dot")
   ) {
     let style = document.createElement("style");
     style.setAttribute("id", "cch_dot");
@@ -894,7 +851,7 @@ function hideTabs(tabContainer, tabs) {
 
 function insertMenuItem(menu_items, element) {
   let first_item = menu_items.querySelector("paper-item");
-  if (!menu_items.querySelector(`[id="${element.id}"]`)) {
+  if (!menu_items.querySelector(`#${element.id}`)) {
     first_item.parentNode.insertBefore(element, first_item);
   }
 }
@@ -917,7 +874,7 @@ function insertClock(button) {
     !newSidebar &&
     cchConfig.notifications == "clock" &&
     cchConfig.clock_date &&
-    !buttons.notifications.shadowRoot.querySelector('[id="cch_indicator"]')
+    !buttons.notifications.shadowRoot.querySelector("#cch_indicator")
   ) {
     let style = document.createElement("style");
     style.setAttribute("id", "cch_indicator");
@@ -1035,6 +992,24 @@ function conditionalStyling(tabs, header) {
     return configItem !== undefined && configItem !== null;
   }
 
+  function notificationCount() {
+    if (newSidebar) {
+      let badge = main.shadowRoot
+        .querySelector("ha-sidebar")
+        .shadowRoot.querySelector("span.notification-badge");
+      if (!badge) return 0;
+      else return parseInt(badge.innerHTML);
+    }
+    let i = 0;
+    let drawer = root
+      .querySelector("hui-notification-drawer")
+      .shadowRoot.querySelector(".notifications");
+    for (let notification of drawer.querySelectorAll(".notification")) {
+      if (notification.style.display !== "none") i++;
+    }
+    return i;
+  }
+
   for (let i = 0; i < styling.length; i++) {
     let template = styling[i].template;
     let condition = styling[i].condition;
@@ -1051,7 +1026,9 @@ function conditionalStyling(tabs, header) {
         continue;
       }
       let entState =
-        entity == "notifications" ? notifications : _hass.states[entity].state;
+        entity == "notifications"
+          ? notificationCount()
+          : _hass.states[entity].state;
       let condState = condition.state;
       above = condition.above;
       below = condition.below;
@@ -1065,12 +1042,10 @@ function conditionalStyling(tabs, header) {
         (exists(above) && entState > above) ||
         (exists(below) && entState < below);
 
-      let tabIndex = styling[i].tab
-        ? getViewIndex(Object.keys(styling[i].tab)[0])
-        : null;
+      let tabIndex = styling[i].tab ? Object.keys(styling[i].tab)[0] : null;
       let tabCondition = styling[i].tab ? styling[i].tab[tabIndex] : null;
-      let tabElem = tabs[tabIndex];
-      let tabkey = "tab" + tabIndex;
+      let tabElem = tabs[getViewIndex(tabIndex)];
+      let tabkey = `tab_${getViewIndex(tabIndex)}`;
       let button = styling[i].button ? Object.keys(styling[i].button)[0] : null;
       let background = styling[i].background;
 
@@ -1456,6 +1431,9 @@ function swipeNavigation(tabs, tabContainer) {
   }
 
   function click(tab) {
+    if (!tab || (tab.style.display == "none" && cchConfig.swipe_skip_hidden)) {
+      return;
+    }
     if (
       !wrap &&
       ((activeTab == firstTab && left) || (activeTab == lastTab && !left))
@@ -2407,9 +2385,9 @@ class CchConfigEditor extends LitElement {
   }
 
   _tabVisibility() {
-    let show = this.shadowRoot.querySelector('[id="show"]');
-    let hide = this.shadowRoot.querySelector('[id="hide"]');
-    if (this.shadowRoot.querySelector('[id="tabs"]').value == "Hide Tabs") {
+    let show = this.shadowRoot.querySelector("#show");
+    let hide = this.shadowRoot.querySelector("#hide");
+    if (this.shadowRoot.querySelector("#tabs").value == "Hide Tabs") {
       show.style.display = "none";
       hide.style.display = "initial";
     } else {
@@ -2737,24 +2715,18 @@ class CchConditionsEditor extends LitElement {
         };
       }
     }
-    fireEvent(this, "cch-conditions-changed", {
-      conditions: this.conditions
-    });
+    fireEvent(this, "cch-conditions-changed", { conditions: this.conditions });
   }
 }
 
 customElements.define("cch-conditions-editor", CchConditionsEditor);
 
 function deepcopy(value) {
-  if (!(!!value && typeof value == "object")) {
-    return value;
-  }
+  if (!(!!value && typeof value == "object")) return value;
   if (Object.prototype.toString.call(value) == "[object Date]") {
     return new Date(value.getTime());
   }
-  if (Array.isArray(value)) {
-    return value.map(deepcopy);
-  }
+  if (Array.isArray(value)) return value.map(deepcopy);
   var result = {};
   Object.keys(value).forEach(function(key) {
     result[key] = deepcopy(value[key]);
