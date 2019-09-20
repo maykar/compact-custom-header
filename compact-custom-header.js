@@ -1031,8 +1031,8 @@ function conditionalStyling(tabs, header) {
           ? notificationCount()
           : _hass.states[entity].state;
       let condState = condition.state;
-      above = condition.above;
-      below = condition.below;
+      let above = condition.above;
+      let below = condition.below;
 
       let toStyle =
         (exists(condState) && entState == condState) ||
