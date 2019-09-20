@@ -2736,7 +2736,7 @@ function deepcopy(value) {
 }
 
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.7     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.8     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
