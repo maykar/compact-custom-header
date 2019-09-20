@@ -4,8 +4,7 @@ const LitElement = Object.getPrototypeOf(
 const html = LitElement.prototype.html;
 const hass = document.querySelector("home-assistant").hass;
 
-const fireEvent = (node, type, detail, options) => {
-  options = options || {};
+const fireEvent = (node, type, detail, options = {}) => {
   detail = detail === null || detail === undefined ? {} : detail;
   const event = new Event(type, {
     bubbles: options.bubbles === undefined ? true : options.bubbles,
@@ -94,14 +93,12 @@ function run() {
   const tabs = tabContainer
     ? Array.from(tabContainer.querySelectorAll("paper-tab"))
     : [];
-
   if (firstRun || buttons == undefined) {
     buttons = getButtonElements(tabContainer);
   }
   if (!buttons.menu || !buttons.options || header.className == "edit-mode") {
     return;
   }
-
   if (!disabled) {
     insertEditMenu(tabs);
     hideMenuItems();
@@ -119,7 +116,6 @@ function run() {
     if (!editMode) tabContainerMargin(tabContainer);
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
   }
-
   if (firstRun) observers(tabContainer, tabs, header);
   fireEvent(header, "iron-resize");
   firstRun = false;
@@ -129,7 +125,6 @@ function run() {
 function buildConfig(config) {
   let exceptionConfig = {};
   let highestMatch = 0;
-
   // Count number of matching conditions and choose config with most matches.
   if (config.exceptions) {
     config.exceptions.forEach(exception => {
@@ -140,7 +135,6 @@ function buildConfig(config) {
       }
     });
   }
-
   // If exception config uses hide_tabs and main config uses show_tabs,
   // delete show_tabs and vice versa.
   if (
@@ -158,7 +152,6 @@ function buildConfig(config) {
   ) {
     delete config.hide_tabs;
   }
-
   return { ...defaultConfig, ...config, ...exceptionConfig };
 
   function countMatches(conditions) {
@@ -188,24 +181,21 @@ function buildConfig(config) {
 }
 
 function observers(tabContainer, tabs, header) {
-  const callback = function(mutations) {
-    mutations.forEach(mutation => {
-      if (
-        mutation.addedNodes.length &&
-        mutation.target.nodeName == "PARTIAL-PANEL-RESOLVER"
-      ) {
+  const callback = mutations => {
+    mutations.forEach(({ addedNodes, target }) => {
+      if (addedNodes.length && target.nodeName == "PARTIAL-PANEL-RESOLVER") {
         // Navigated back to lovelace from elsewhere in HA.
         buttons = getButtonElements();
         run();
-      } else if (mutation.target.className == "edit-mode") {
+      } else if (target.className == "edit-mode") {
         // Entered edit mode.
         editMode = true;
         if (!disabled) removeStyles(tabContainer, tabs, header);
         buttons.options = root.querySelector("paper-menu-button");
         insertEditMenu(tabs);
-      } else if (mutation.target.nodeName == "APP-HEADER") {
+      } else if (target.nodeName == "APP-HEADER") {
         // Exited edit mode.
-        for (let node of mutation.addedNodes) {
+        for (let node of addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
             buttons = getButtonElements();
@@ -216,8 +206,8 @@ function observers(tabContainer, tabs, header) {
       } else if (
         // Viewing unused entities
         frontendVersion < 20190911 &&
-        mutation.addedNodes.length &&
-        !mutation.addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES"
+        addedNodes.length &&
+        !addedNodes[0].nodeName == "HUI-UNUSED-ENTITIES"
       ) {
         let editor = root
           .querySelector("ha-app-layout")
@@ -226,6 +216,12 @@ function observers(tabContainer, tabs, header) {
         if (cchConfig.conditional_styles) {
           buttons = getButtonElements(tabContainer);
           conditionalStyling(tabs, header);
+        }
+      }
+      // Navigating between tabs.
+      if (target.id == "view") {
+        if (addedNodes.length) {
+          scrollTabIconIntoView(tabContainer);
         }
       }
     });
@@ -285,8 +281,8 @@ function tabContainerMargin(tabContainer) {
     }
   }
   if (tabContainer) {
-    tabContainer.style.marginRight = marginRight + "px";
-    tabContainer.style.marginLeft = marginLeft + "px";
+    tabContainer.style.marginRight = `${marginRight}px`;
+    tabContainer.style.marginLeft = `${marginLeft}px`;
   }
 }
 
@@ -364,7 +360,7 @@ function insertEditMenu(tabs) {
   }
 }
 
-function removeStyles(tabContainer, tabs, header) {
+function removeStyles(tabContainer, tabs, { style }) {
   root.querySelectorAll("[id^='cch'], style").forEach(style => {
     style.remove();
   });
@@ -379,14 +375,14 @@ function removeStyles(tabContainer, tabs, header) {
   }
   if (cchConfig.header_css) {
     let value = cchConfig.header_css.replace(/: /g, ":").replace(/; /g, ";");
-    let css = header.style.cssText.replace(/: /g, ":").replace(/; /g, ";");
-    header.style.cssText = css.replace(value, "");
+    let css = style.cssText.replace(/: /g, ":").replace(/; /g, ";");
+    style.cssText = css.replace(value, "");
   }
   if (tabContainer) {
     tabContainer.style.marginLeft = "";
     tabContainer.style.marginRight = "";
   }
-  header.style.background = "";
+  style.background = "";
   view.style = "";
   for (let i = 0; i < tabs.length; i++) {
     tabs[i].style.color = "";
@@ -478,7 +474,7 @@ function styleHeader(tabContainer, tabs, header) {
               .iron-selected {
                 ${
                   cchConfig.active_tab_color
-                    ? `color: ${cchConfig.active_tab_color + " !important"}`
+                    ? `color: ${`${cchConfig.active_tab_color} !important`}`
                     : "var(--cch-active-tab-color)"
                 }
               }
@@ -537,8 +533,8 @@ function styleHeader(tabContainer, tabs, header) {
       ? "-64px"
       : "";
 
-    tabs.forEach(tab => {
-      tab.style.marginTop = "-1px";
+    tabs.forEach(({ style }) => {
+      style.marginTop = "-1px";
     });
 
     // Show/hide tab navigation chevrons.
@@ -562,11 +558,11 @@ function styleHeader(tabContainer, tabs, header) {
   }
 }
 
-function styleButtons(tabs, tabContainer) {
+function styleButtons({ length }, tabContainer) {
   let topMargin =
-    tabs.length > 0 && cchConfig.compact_header ? "margin-top:111px;" : "";
+    length > 0 && cchConfig.compact_header ? "margin-top:111px;" : "";
   let topMarginMenu =
-    tabs.length > 0 && cchConfig.compact_header ? "margin-top:115px;" : "";
+    length > 0 && cchConfig.compact_header ? "margin-top:115px;" : "";
   // Reverse buttons object so menu is first in overflow menu.
   buttons = reverseObject(buttons);
   for (const button in buttons) {
@@ -779,7 +775,7 @@ function sidebarMod() {
     sidebar.style.display = "none";
     sidebar.addEventListener(
       "mouseenter",
-      function(event) {
+      event => {
         event.stopPropagation();
       },
       true
@@ -1051,7 +1047,7 @@ function conditionalStyling(tabs, header) {
       let background = styling[i].background;
 
       // Conditionally style tabs.
-      if (toStyle && exists(tabIndex)) {
+      if (toStyle && exists(tabIndex) && tabElem) {
         if (tabCondition.hide) tabElem.style.display = "none";
         if (tabCondition.color) {
           if (prevColor[tabkey] == undefined) {
@@ -1068,7 +1064,7 @@ function conditionalStyling(tabs, header) {
             .querySelector("ha-icon")
             .setAttribute("icon", tabCondition.on_icon);
         }
-      } else if (!toStyle && exists(tabIndex)) {
+      } else if (!toStyle && exists(tabIndex) && tabElem) {
         if (tabCondition.hide) {
           tabElem.style.display = "";
         }
@@ -1083,6 +1079,7 @@ function conditionalStyling(tabs, header) {
       }
 
       if (toStyle && button) {
+        if (!buttons[button]) continue;
         let buttonCondition = styling[i].button[button];
         let buttonElem = buttons[button].querySelector("paper-icon-button")
           ? buttons[button].querySelector("paper-icon-button")
@@ -1144,7 +1141,7 @@ function conditionalStyling(tabs, header) {
   tabContainerMargin(tabContainer);
 }
 
-function templates(template, tabs, _hass, header) {
+function templates(template, tabs, _hass, { style }) {
   let states = _hass.states;
   for (const condition in template) {
     if (condition == "tab") {
@@ -1197,7 +1194,7 @@ function templates(template, tabs, _hass, header) {
         });
       }
     } else if (condition == "background") {
-      header.style.background = templateEval(template[condition], states);
+      style.background = templateEval(template[condition], states);
     }
   }
 }
@@ -1321,10 +1318,18 @@ function swipeNavigation(tabs, tabContainer) {
       ? cchConfig.swipe_prevent_default
       : false;
 
-  swipe_amount /= Math.pow(10, 2);
+  swipe_amount /= 10 ** 2;
   const appLayout = root.querySelector("ha-app-layout");
   let inGroup = true;
-  let xDown, yDown, xDiff, yDiff, activeTab, firstTab, lastTab, left, fTabs;
+  let xDown;
+  let yDown;
+  let xDiff;
+  let yDiff;
+  let activeTab;
+  let firstTab;
+  let lastTab;
+  let left;
+  let fTabs;
 
   appLayout.addEventListener("touchstart", handleTouchStart, { passive: true });
   appLayout.addEventListener("touchmove", handleTouchMove, { passive: false });
@@ -1338,7 +1343,7 @@ function swipeNavigation(tabs, tabContainer) {
     if (path) {
       for (let element of path) {
         if (element.nodeName == "HUI-VIEW") break;
-        else if (ignored.indexOf(element.nodeName) > -1) return;
+        else if (ignored.includes(element.nodeName)) return;
       }
     }
     xDown = event.touches[0].clientX;
@@ -1384,12 +1389,11 @@ function swipeNavigation(tabs, tabContainer) {
           inGroup = true;
           firstTab = tabs[parseInt(firstLast[0])];
           lastTab = tabs[parseInt(firstLast[1])];
-          fTabs = tabs.filter(element => {
-            return (
+          fTabs = tabs.filter(
+            element =>
               tabs.indexOf(element) >= firstLast[0] &&
               tabs.indexOf(element) <= firstLast[1]
-            );
-          });
+          );
           break;
         } else {
           inGroup = false;
@@ -1397,16 +1401,15 @@ function swipeNavigation(tabs, tabContainer) {
       }
     }
     if (cchConfig.swipe_skip_hidden) {
-      fTabs = tabs.filter(element => {
-        return (
+      fTabs = tabs.filter(
+        element =>
           !skip_tabs.includes(tabs.indexOf(element)) &&
           getComputedStyle(element, null).display != "none"
-        );
-      });
+      );
     } else {
-      fTabs = tabs.filter(element => {
-        return !skip_tabs.includes(tabs.indexOf(element));
-      });
+      fTabs = tabs.filter(
+        element => !skip_tabs.includes(tabs.indexOf(element))
+      );
     }
     if (!swipe_groups) {
       firstTab = fTabs[0];
@@ -1441,14 +1444,14 @@ function swipeNavigation(tabs, tabContainer) {
     ) {
       return;
     } else if (animate == "swipe") {
-      let width = screen.width / 1.5 + "px";
+      let width = `${screen.width / 1.5}px`;
       // Swipe view off screen.
       animation(0.16, `translateX(${left ? "" : "-"}${width})`, 0, 0);
       // Watch for content to load.
       const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-          mutation.addedNodes.forEach(node => {
-            if (node.nodeName) {
+        mutations.forEach(({ addedNodes }) => {
+          addedNodes.forEach(({ nodeName }) => {
+            if (nodeName) {
               // Move view to other side of screen.
               let neg = view.style.transform.includes("-") ? "" : "-";
               animation(0, `translateX(${neg}${width})`, 0, 0);
@@ -1466,9 +1469,9 @@ function swipeNavigation(tabs, tabContainer) {
     } else if (animate == "fade") {
       animation(0.16, "", 0, 0);
       const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-          mutation.addedNodes.forEach(node => {
-            if (node.nodeName == "HUI-VIEW") {
+        mutations.forEach(({ addedNodes }) => {
+          addedNodes.forEach(({ nodeName }) => {
+            if (nodeName == "HUI-VIEW") {
               animation(0.16, "", 1, 0);
               observer.disconnect();
             }
@@ -1480,9 +1483,9 @@ function swipeNavigation(tabs, tabContainer) {
     } else if (animate == "flip") {
       animation(0.25, "rotatey(90deg)", 0.25, 0);
       const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-          mutation.addedNodes.forEach(node => {
-            if (node.nodeName == "HUI-VIEW") {
+        mutations.forEach(({ addedNodes }) => {
+          addedNodes.forEach(({ nodeName }) => {
+            if (nodeName == "HUI-VIEW") {
               animation(0.25, "rotatey(0deg)", 1, 50);
               observer.disconnect();
             }
@@ -1526,9 +1529,7 @@ let _lovelace;
 
 class CompactCustomHeaderEditor extends LitElement {
   static get properties() {
-    return {
-      _config: {}
-    };
+    return { _config: {} };
   }
 
   firstUpdated() {
@@ -1561,8 +1562,8 @@ class CompactCustomHeaderEditor extends LitElement {
       <h4 class="underline">Exceptions</h4>
       <br />
       ${this._config.exceptions
-        ? this._config.exceptions.map((exception, index) => {
-            return html`
+        ? this._config.exceptions.map(
+            (exception, index) => html`
               <cch-exception-editor
                 .config="${this._config}"
                 .exception="${exception}"
@@ -1571,8 +1572,8 @@ class CompactCustomHeaderEditor extends LitElement {
                 @cch-exception-delete="${this._exceptionDelete}"
               >
               </cch-exception-editor>
-            `;
-          })
+            `
+          )
         : ""}
       <br />
       ${this._mwc_button
@@ -1622,21 +1623,16 @@ class CompactCustomHeaderEditor extends LitElement {
   }
 
   _save() {
-    for (var key in this._config) {
-      if (this._config[key] == defaultConfig[key]) {
-        delete this._config[key];
-      }
+    for (const key in this._config) {
+      if (this._config[key] == defaultConfig[key]) delete this._config[key];
     }
-    let newConfig = {
-      ..._lovelace.config,
-      ...{ cch: this._config }
-    };
+    let newConfig = { ..._lovelace.config, ...{ cch: this._config } };
     try {
       _lovelace.saveConfig(newConfig).then(() => {
         location.reload(true);
       });
     } catch (e) {
-      alert("Save failed: " + e);
+      alert(`Save failed: ${e}`);
     }
   }
 
@@ -1665,73 +1661,39 @@ class CompactCustomHeaderEditor extends LitElement {
     let newExceptions;
     if (this._config.exceptions) {
       newExceptions = this._config.exceptions.slice(0);
-      newExceptions.push({
-        conditions: {},
-        config: {}
-      });
+      newExceptions.push({ conditions: {}, config: {} });
     } else {
-      newExceptions = [
-        {
-          conditions: {},
-          config: {}
-        }
-      ];
+      newExceptions = [{ conditions: {}, config: {} }];
     }
-    this._config = {
-      ...this._config,
-      exceptions: newExceptions
-    };
+    this._config = { ...this._config, exceptions: newExceptions };
 
-    fireEvent(this, "config-changed", {
-      config: this._config
-    });
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
-  _configChanged(ev) {
-    if (!this._config) {
-      return;
-    }
-    this._config = {
-      ...this._config,
-      ...ev.detail.config
-    };
-    fireEvent(this, "config-changed", {
-      config: this._config
-    });
+  _configChanged({ detail }) {
+    if (!this._config) return;
+    this._config = { ...this._config, ...detail.config };
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   _exceptionChanged(ev) {
-    if (!this._config) {
-      return;
-    }
+    if (!this._config) return;
     const target = ev.target.index;
     const newExceptions = this._config.exceptions.slice(0);
     newExceptions[target] = ev.detail.exception;
-    this._config = {
-      ...this._config,
-      exceptions: newExceptions
-    };
+    this._config = { ...this._config, exceptions: newExceptions };
 
-    fireEvent(this, "config-changed", {
-      config: this._config
-    });
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   _exceptionDelete(ev) {
-    if (!this._config) {
-      return;
-    }
+    if (!this._config) return;
     const target = ev.target;
     const newExceptions = this._config.exceptions.slice(0);
     newExceptions.splice(target.index, 1);
-    this._config = {
-      ...this._config,
-      exceptions: newExceptions
-    };
+    this._config = { ...this._config, exceptions: newExceptions };
 
-    fireEvent(this, "config-changed", {
-      config: this._config
-    });
+    fireEvent(this, "config-changed", { config: this._config });
     this.requestUpdate();
   }
 
@@ -2078,11 +2040,11 @@ class CchConfigEditor extends LitElement {
               slot="dropdown-content"
               .selected="${buttonOptions.indexOf(this.getConfig("menu"))}"
             >
-              ${buttonOptions.map(option => {
-                return html`
+              ${buttonOptions.map(
+                option => html`
                   <paper-item>${option}</paper-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -2101,11 +2063,11 @@ class CchConfigEditor extends LitElement {
               slot="dropdown-content"
               .selected="${buttonOptions.indexOf(this.getConfig("voice"))}"
             >
-              ${buttonOptions.map(option => {
-                return html`
+              ${buttonOptions.map(
+                option => html`
                   <paper-item>${option}</paper-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -2129,11 +2091,11 @@ class CchConfigEditor extends LitElement {
               slot="dropdown-content"
               .selected="${overflowOptions.indexOf(this.getConfig("options"))}"
             >
-              ${overflowOptions.map(option => {
-                return html`
+              ${overflowOptions.map(
+                option => html`
                   <paper-item>${option}</paper-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -2155,11 +2117,11 @@ class CchConfigEditor extends LitElement {
                 this.getConfig("notifications")
               )}"
             >
-              ${buttonOptions.map(option => {
-                return html`
+              ${buttonOptions.map(
+                option => html`
                   <paper-item>${option}</paper-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -2340,11 +2302,11 @@ class CchConfigEditor extends LitElement {
                 this.getConfig("swipe_animate")
               )}"
             >
-              ${swipeAnimation.map(option => {
-                return html`
+              ${swipeAnimation.map(
+                option => html`
                   <paper-item>${option}</paper-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -2398,13 +2360,9 @@ class CchConfigEditor extends LitElement {
   }
 
   _valueChanged(ev) {
-    if (!this.config) {
-      return;
-    }
+    if (!this.config) return;
     const target = ev.target;
-    if (this[`_${target.configValue}`] === target.value) {
-      return;
-    }
+    if (this[`_${target.configValue}`] === target.value) return;
     if (target.configValue) {
       if (target.value === "") {
         delete this.config[target.configValue];
@@ -2416,9 +2374,7 @@ class CchConfigEditor extends LitElement {
         };
       }
     }
-    fireEvent(this, "cch-config-changed", {
-      config: this.config
-    });
+    fireEvent(this, "cch-config-changed", { config: this.config });
   }
 
   renderStyle() {
@@ -2506,11 +2462,7 @@ customElements.define("cch-config-editor", CchConfigEditor);
 
 class CchExceptionEditor extends LitElement {
   static get properties() {
-    return {
-      config: {},
-      exception: {},
-      _closed: {}
-    };
+    return { config: {}, exception: {}, _closed: {} };
   }
 
   constructor() {
@@ -2612,28 +2564,17 @@ class CchExceptionEditor extends LitElement {
     fireEvent(this, "cch-exception-delete");
   }
 
-  _conditionsChanged(ev) {
-    if (!this.exception) {
-      return;
-    }
-    const newException = {
-      ...this.exception,
-      conditions: ev.detail.conditions
-    };
-    fireEvent(this, "cch-exception-changed", {
-      exception: newException
-    });
+  _conditionsChanged({ detail }) {
+    if (!this.exception) return;
+    const newException = { ...this.exception, conditions: detail.conditions };
+    fireEvent(this, "cch-exception-changed", { exception: newException });
   }
 
   _configChanged(ev) {
     ev.stopPropagation();
-    if (!this.exception) {
-      return;
-    }
+    if (!this.exception) return;
     const newException = { ...this.exception, config: ev.detail.config };
-    fireEvent(this, "cch-exception-changed", {
-      exception: newException
-    });
+    fireEvent(this, "cch-exception-changed", { exception: newException });
   }
 }
 
@@ -2641,31 +2582,23 @@ customElements.define("cch-exception-editor", CchExceptionEditor);
 
 class CchConditionsEditor extends LitElement {
   static get properties() {
-    return {
-      conditions: {}
-    };
+    return { conditions: {} };
   }
-
   get _user() {
     return this.conditions.user || "";
   }
-
   get _user_agent() {
     return this.conditions.user_agent || "";
   }
-
   get _media_query() {
     return this.conditions.media_query || "";
   }
-
   get _query_string() {
     return this.conditions.query_string || "";
   }
 
   render() {
-    if (!this.conditions) {
-      return html``;
-    }
+    if (!this.conditions) return html``;
     return html`
       <paper-input
         label="User (Seperate multiple users with a comma.)"
@@ -2699,13 +2632,9 @@ class CchConditionsEditor extends LitElement {
   }
 
   _valueChanged(ev) {
-    if (!this.conditions) {
-      return;
-    }
+    if (!this.conditions) return;
     const target = ev.target;
-    if (this[`_${target.configValue}`] === target.value) {
-      return;
-    }
+    if (this[`_${target.configValue}`] === target.value) return;
     if (target.configValue) {
       if (target.value === "") {
         delete this.conditions[target.configValue];
@@ -2728,8 +2657,8 @@ function deepcopy(value) {
     return new Date(value.getTime());
   }
   if (Array.isArray(value)) return value.map(deepcopy);
-  var result = {};
-  Object.keys(value).forEach(function(key) {
+  const result = {};
+  Object.keys(value).forEach(key => {
     result[key] = deepcopy(value[key]);
   });
   return result;
