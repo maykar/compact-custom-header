@@ -59,7 +59,13 @@ const defaultConfig = {
   swipe_prevent_default: false,
   swipe_skip_hidden: true,
   warning: true,
-  compact_header: true
+  compact_header: true,
+  view_css: "",
+  time_css: "",
+  date_css: "",
+  header_css: "",
+  tab_css: {},
+  button_css: {}
 };
 
 let root = document.querySelector("home-assistant");
@@ -300,23 +306,23 @@ function tabContainerMargin(tabContainer) {
 }
 
 function scrollTabIconIntoView() {
+  let scrollOptions =
+    "scrollMarginBlockStart" in document.documentElement.style;
   let paperTabs = root.querySelector("paper-tabs");
   let currentTab = paperTabs.querySelector(".iron-selected");
   if (!paperTabs || !currentTab) return;
-  let tabBounds = currentTab.getBoundingClientRect();
-  let containerBounds = paperTabs.shadowRoot
+  let tab = currentTab.getBoundingClientRect();
+  let container = paperTabs.shadowRoot
     .querySelector("#tabsContainer")
     .getBoundingClientRect();
-
-  if (
-    containerBounds.right < tabBounds.right ||
-    containerBounds.left > tabBounds.left
-  ) {
-    if ("scrollMarginInline" in document.documentElement.style) {
-      currentTab.scrollIntoView({ inline: "center" });
-    } else {
-      currentTab.scrollIntoView();
+  if (scrollOptions) {
+    if (container.right < tab.right) {
+      currentTab.scrollIntoView({ block: "end" });
+    } else if (container.left > tab.left) {
+      currentTab.scrollIntoView({ block: "start" });
     }
+  } else if (container.right < tab.right || container.left > tab.left) {
+    currentTab.scrollIntoView();
   }
 }
 
