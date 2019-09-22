@@ -117,9 +117,9 @@ function run() {
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
   }
   if (firstRun) observers(tabContainer, tabs, header);
+  scrollTabIconIntoView();
   fireEvent(header, "iron-resize");
   firstRun = false;
-  scrollTabIconIntoView(tabContainer);
 }
 
 function buildConfig(config) {
@@ -152,6 +152,7 @@ function buildConfig(config) {
   ) {
     delete config.hide_tabs;
   }
+
   return { ...defaultConfig, ...config, ...exceptionConfig };
 
   function countMatches(conditions) {
@@ -221,7 +222,7 @@ function observers(tabContainer, tabs, header) {
       // Navigating between tabs.
       if (target.id == "view") {
         if (addedNodes.length) {
-          scrollTabIconIntoView(tabContainer);
+          scrollTabIconIntoView();
         }
       }
     });
@@ -266,7 +267,13 @@ function tabContainerMargin(tabContainer) {
   let marginRight = 0;
   let marginLeft = 15;
   for (const button in buttons) {
-    let visible = buttons[button].style.display !== "none";
+    let paperIconButton =
+      buttons[button].querySelector("paper-icon-button") ||
+      buttons[button].shadowRoot.querySelector("paper-icon-button");
+    let visible = paperIconButton
+      ? buttons[button].style.display !== "none" &&
+        !paperIconButton.hasAttribute("hidden")
+      : buttons[button].style.display !== "none";
     if (cchConfig[button] == "show" && visible) {
       if (button == "menu") marginLeft += 45;
       else marginRight += 45;
@@ -286,26 +293,24 @@ function tabContainerMargin(tabContainer) {
   }
 }
 
-function scrollTabIconIntoView(tabContainer) {
-  if (!tabContainer || !tabContainer.querySelector(".iron-selected")) return;
-  let currentTab = tabContainer.querySelector(".iron-selected");
-  let tabBounds = currentTab.getBoundingClientRect();
-  let containerBounds = tabContainer.getBoundingClientRect();
-  let chev = tabContainer.shadowRoot.querySelectorAll(
-    '[icon^="paper-tabs:chevron"]'
-  );
+function scrollTabIconIntoView() {
+  const tabContainer = root.querySelector("paper-tabs");
+  if (!tabContainer) return;
+  const currentTab = tabContainer.querySelector(".iron-selected");
+  const tabBounds = currentTab.getBoundingClientRect();
+  const containerBounds = tabContainer.shadowRoot
+    .querySelector("#tabsContainer")
+    .getBoundingClientRect();
+
   if (
-    (cchConfig.chevrons &&
-      chev[0] &&
-      tabBounds.left < chev[0].getBoundingClientRect().right + 5) ||
-    (cchConfig.chevrons &&
-      chev[1] &&
-      tabBounds.right > chev[1].getBoundingClientRect().left - 5) ||
-    (!cchConfig.chevrons &&
-      (tabBounds.left < containerBounds.right + 5 ||
-        tabBounds.right > containerBounds.left - 5))
+    containerBounds.right < tabBounds.right ||
+    containerBounds.left > tabBounds.left
   ) {
-    currentTab.scrollIntoView({ inline: "center" });
+    if ("scrollMarginInline" in document.documentElement.style) {
+      currentTab.scrollIntoView({ inline: "center" });
+    } else {
+      currentTab.scrollIntoView();
+    }
   }
 }
 
