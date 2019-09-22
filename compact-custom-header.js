@@ -1,3 +1,9 @@
+console.info(
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.9     `,
+  "color: orange; font-weight: bold; background: black",
+  "color: white; font-weight: bold; background: dimgray"
+);
+
 const LitElement = Object.getPrototypeOf(
   customElements.get("ha-panel-lovelace")
 );
@@ -117,8 +123,8 @@ function run() {
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
   }
   if (firstRun) observers(tabContainer, tabs, header);
-  scrollTabIconIntoView();
   fireEvent(header, "iron-resize");
+  scrollTabIconIntoView();
   firstRun = false;
 }
 
@@ -294,11 +300,11 @@ function tabContainerMargin(tabContainer) {
 }
 
 function scrollTabIconIntoView() {
-  const tabContainer = root.querySelector("paper-tabs");
-  if (!tabContainer) return;
-  const currentTab = tabContainer.querySelector(".iron-selected");
-  const tabBounds = currentTab.getBoundingClientRect();
-  const containerBounds = tabContainer.shadowRoot
+  let paperTabs = root.querySelector("paper-tabs");
+  let currentTab = paperTabs.querySelector(".iron-selected");
+  if (!paperTabs || !currentTab) return;
+  let tabBounds = currentTab.getBoundingClientRect();
+  let containerBounds = paperTabs.shadowRoot
     .querySelector("#tabsContainer")
     .getBoundingClientRect();
 
@@ -2668,9 +2674,3 @@ function deepcopy(value) {
   });
   return result;
 }
-
-console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.8     `,
-  "color: orange; font-weight: bold; background: black",
-  "color: white; font-weight: bold; background: dimgray"
-);
