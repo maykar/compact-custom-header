@@ -313,7 +313,13 @@ function scrollTabIconIntoView() {
     .querySelector("#tabsContainer")
     .getBoundingClientRect();
   if (container.right < tab.right || container.left > tab.left) {
-    currentTab.scrollIntoViewIfNeeded(true);
+    if ("scrollMarginInline" in document.documentElement.style) {
+      currentTab.scrollIntoView({inline: "center"});
+    } else if (Element.prototype.scrollIntoViewIfNeeded) {
+      currentTab.scrollIntoViewIfNeeded(true);
+    } else {
+      currentTab.scrollIntoView();
+    }
   }
 }
 
