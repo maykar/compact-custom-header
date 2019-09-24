@@ -129,9 +129,8 @@ function run() {
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
   }
   if (firstRun) observers(tabContainer, tabs, header);
-  fireEvent(header, "iron-resize");
-  scrollTabIconIntoView();
   firstRun = false;
+  fireEvent(header, "iron-resize");
 }
 
 function buildConfig(config) {
@@ -200,20 +199,24 @@ function observers(tabContainer, tabs, header) {
         // Navigated back to lovelace from elsewhere in HA.
         buttons = getButtonElements();
         run();
-      } else if (target.className == "edit-mode") {
+      } else if (target.className == "edit-mode" && addedNodes.length) {
         // Entered edit mode.
         editMode = true;
         if (!disabled) removeStyles(tabContainer, tabs, header);
         buttons.options = root.querySelector("paper-menu-button");
         insertEditMenu(tabs);
-      } else if (target.nodeName == "APP-HEADER") {
+        fireEvent(header, "iron-resize");
+      } else if (target.nodeName == "APP-HEADER"  && addedNodes.length) {
         // Exited edit mode.
         for (let node of addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
             buttons = getButtonElements();
-            run();
-            if (!disabled) conditionalStyling(tabs, header);
+            setTimeout(() => {
+              run();
+              if (!disabled) conditionalStyling(tabs, header);
+            }, 100);
+            
           }
         }
       } else if (
@@ -230,12 +233,8 @@ function observers(tabContainer, tabs, header) {
           buttons = getButtonElements(tabContainer);
           conditionalStyling(tabs, header);
         }
-      }
-      // Navigating between tabs.
-      if (target.id == "view") {
-        if (addedNodes.length) {
-          scrollTabIconIntoView();
-        }
+      } else if (target.id == "view" && addedNodes.length) {
+        scrollTabIconIntoView();
       }
     });
   };
@@ -306,8 +305,6 @@ function tabContainerMargin(tabContainer) {
 }
 
 function scrollTabIconIntoView() {
-  let scrollOptions =
-    "scrollMarginBlockStart" in document.documentElement.style;
   let paperTabs = root.querySelector("paper-tabs");
   let currentTab = paperTabs.querySelector(".iron-selected");
   if (!paperTabs || !currentTab) return;
@@ -315,14 +312,8 @@ function scrollTabIconIntoView() {
   let container = paperTabs.shadowRoot
     .querySelector("#tabsContainer")
     .getBoundingClientRect();
-  if (scrollOptions) {
-    if (container.right < tab.right) {
-      currentTab.scrollIntoView({ block: "end" });
-    } else if (container.left > tab.left) {
-      currentTab.scrollIntoView({ block: "start" });
-    }
-  } else if (container.right < tab.right || container.left > tab.left) {
-    currentTab.scrollIntoView();
+  if (container.right < tab.right || container.left > tab.left) {
+    currentTab.scrollIntoViewIfNeeded(true);
   }
 }
 
@@ -378,10 +369,10 @@ function insertEditMenu(tabs) {
 }
 
 function removeStyles(tabContainer, tabs, { style }) {
+  root.querySelector("app-header").style.backgroundColor = "#455a64"
   root.querySelectorAll("[id^='cch'], style").forEach(style => {
     style.remove();
   });
-
   if (cchConfig.tab_css) {
     for (let [key, value] of Object.entries(cchConfig.tab_css)) {
       key = getViewIndex(key);
@@ -399,7 +390,6 @@ function removeStyles(tabContainer, tabs, { style }) {
     tabContainer.style.marginLeft = "";
     tabContainer.style.marginRight = "";
   }
-  style.background = "";
   view.style = "";
   for (let i = 0; i < tabs.length; i++) {
     tabs[i].style.color = "";
@@ -409,6 +399,17 @@ function removeStyles(tabContainer, tabs, { style }) {
       tabs[i].style.removeProperty("display");
     }
   }
+  let viewStyle = document.createElement("style");
+  viewStyle.setAttribute("id", "cch_view_styling");
+  viewStyle.innerHTML = `
+    hui-view {
+      min-height: 100vh;
+    }
+    hui-panel-view {
+      min-height: calc(100vh - 52px);
+    }
+    `;
+  root.appendChild(viewStyle);
 }
 
 function styleHeader(tabContainer, tabs, header) {
@@ -456,15 +457,23 @@ function styleHeader(tabContainer, tabs, header) {
       frontendVersion >= 20190911 &&
       !root.querySelector("#cch_view_styling")
     ) {
-      let style = document.createElement("style");
-      style.setAttribute("id", "cch_view_styling");
-      style.innerHTML = `
+      let viewStyle = document.createElement("style");
+      viewStyle.setAttribute("id", "cch_view_styling");
+      viewStyle.innerHTML = `
         hui-view {
           margin-top: -48.5px;
           padding-top: 52px;
+          min-height: 100vh;
           ${cchConfig.view_css ? cchConfig.view_css : ""}
-        }`;
-      root.appendChild(style);
+        }
+        hui-panel-view {
+          margin-top: -48.5px;
+          padding-top: 52px;
+          min-height: calc(100vh - 52px);
+          ${cchConfig.view_css ? cchConfig.view_css : ""}
+        }
+        `;
+      root.appendChild(viewStyle);
     }
   }
 
