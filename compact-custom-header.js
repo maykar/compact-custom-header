@@ -213,6 +213,9 @@ function observers(tabContainer, tabs, header) {
           if (node.nodeName == "APP-TOOLBAR") {
             editMode = false;
             buttons = getButtonElements();
+            root.querySelectorAll("[id^='cch']").forEach(style => {
+              style.remove();
+            });
             setTimeout(() => {
               run();
               if (!disabled) conditionalStyling(tabs, header);
@@ -376,7 +379,7 @@ function insertEditMenu(tabs) {
 
 function removeStyles(tabContainer, tabs, { style }) {
   root.querySelector("app-header").style.backgroundColor = "#455a64";
-  root.querySelectorAll("[id^='cch'], style").forEach(style => {
+  root.querySelectorAll("[id^='cch']").forEach(style => {
     style.remove();
   });
   if (cchConfig.tab_css) {
