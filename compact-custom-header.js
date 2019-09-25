@@ -455,6 +455,22 @@ function styleHeader(tabContainer, tabs, header) {
   if (!cchConfig.header || cchConfig.kiosk_mode) {
     header.style.display = "none";
     view.style.minHeight = "100vh";
+    if (
+      frontendVersion >= 20190911 &&
+      !root.querySelector("#cch_view_styling")
+    ) {
+      let viewStyle = document.createElement("style");
+      viewStyle.setAttribute("id", "cch_view_styling");
+      viewStyle.innerHTML = `
+        hui-view {
+          ${cchConfig.view_css ? cchConfig.view_css : ""}
+        }
+        hui-panel-view {
+          ${cchConfig.view_css ? cchConfig.view_css : ""}
+        }
+        `;
+      root.appendChild(viewStyle);
+    }
   } else {
     view.style.minHeight = "100vh";
     view.style.marginTop = "-48.5px";
@@ -776,7 +792,7 @@ function getTranslation(button) {
 function defaultTab(tabs, tabContainer) {
   let default_tab = cchConfig.default_tab;
   let template = cchConfig.default_tab_template;
-  if ((default_tab || template) && !defaultTabRedirect && tabContainer) {
+  if ((default_tab || template) && tabContainer) {
     if (template) default_tab = templateEval(template, hass.states);
     default_tab = getViewIndex(default_tab);
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
