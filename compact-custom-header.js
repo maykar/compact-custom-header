@@ -1,5 +1,5 @@
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.3.9     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.0     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
@@ -1902,7 +1902,7 @@ class CchConfigEditor extends LitElement {
       ${!this.exception
         ? html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header &nbsp;₁.₃.₉
+              Compact Custom Header &nbsp;₁.₄.₀
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
