@@ -1886,7 +1886,7 @@ class CchConfigEditor extends LitElement {
       ${!this.exception
         ? html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header
+              Compact Custom Header &nbsp;₁.₃.₉
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
