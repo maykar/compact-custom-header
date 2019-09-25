@@ -90,7 +90,6 @@ const view = root.querySelector("ha-app-layout").querySelector("#view");
 const disabled =
   window.location.href.includes("disable_cch") || cchConfig.disable;
 
-let defaultTabRedirect = false;
 let sidebarClosed = false;
 let editMode = header.className == "edit-mode";
 let firstRun = true;
@@ -121,14 +120,16 @@ function run() {
       conditionalStyling(tabs, header);
     }
     hideTabs(tabContainer, tabs);
-    defaultTab(tabs, tabContainer);
     for (let button in buttons) {
       if (cchConfig[button] == "clock") insertClock(button);
     }
     if (!editMode) tabContainerMargin(tabContainer);
     if (cchConfig.swipe) swipeNavigation(tabs, tabContainer);
   }
-  if (firstRun) observers(tabContainer, tabs, header);
+  if (firstRun) {
+    observers(tabContainer, tabs, header);
+    defaultTab(tabs, tabContainer);
+  }
   firstRun = false;
   fireEvent(header, "iron-resize");
 }
@@ -206,7 +207,7 @@ function observers(tabContainer, tabs, header) {
         buttons.options = root.querySelector("paper-menu-button");
         insertEditMenu(tabs);
         fireEvent(header, "iron-resize");
-      } else if (target.nodeName == "APP-HEADER"  && addedNodes.length) {
+      } else if (target.nodeName == "APP-HEADER" && addedNodes.length) {
         // Exited edit mode.
         for (let node of addedNodes) {
           if (node.nodeName == "APP-TOOLBAR") {
@@ -216,7 +217,6 @@ function observers(tabContainer, tabs, header) {
               run();
               if (!disabled) conditionalStyling(tabs, header);
             }, 100);
-            
           }
         }
       } else if (
@@ -314,7 +314,7 @@ function scrollTabIconIntoView() {
     .getBoundingClientRect();
   if (container.right < tab.right || container.left > tab.left) {
     if ("scrollMarginInline" in document.documentElement.style) {
-      currentTab.scrollIntoView({inline: "center"});
+      currentTab.scrollIntoView({ inline: "center" });
     } else if (Element.prototype.scrollIntoViewIfNeeded) {
       currentTab.scrollIntoViewIfNeeded(true);
     } else {
@@ -375,7 +375,7 @@ function insertEditMenu(tabs) {
 }
 
 function removeStyles(tabContainer, tabs, { style }) {
-  root.querySelector("app-header").style.backgroundColor = "#455a64"
+  root.querySelector("app-header").style.backgroundColor = "#455a64";
   root.querySelectorAll("[id^='cch'], style").forEach(style => {
     style.remove();
   });
@@ -785,7 +785,6 @@ function defaultTab(tabs, tabContainer) {
     ) {
       tabs[default_tab].click();
     }
-    defaultTabRedirect = true;
   }
 }
 
@@ -1370,7 +1369,14 @@ function swipeNavigation(tabs, tabContainer) {
   function handleTouchStart(event) {
     filterTabs();
     if (swipe_groups && !inGroup) return;
-    let ignored = ["APP-HEADER", "HA-SLIDER", "SWIPE-CARD", "HUI-MAP-CARD"];
+    let ignored = [
+      "APP-HEADER",
+      "HA-SLIDER",
+      "SWIPE-CARD",
+      "HUI-MAP-CARD",
+      "ROUND-SLIDER",
+      "HUI-THERMOSTAT-CARD"
+    ];
     let path = (event.composedPath && event.composedPath()) || event.path;
     if (path) {
       for (let element of path) {
@@ -1450,12 +1456,41 @@ function swipeNavigation(tabs, tabContainer) {
     activeTab = fTabs.indexOf(tabContainer.querySelector(".iron-selected"));
   }
 
-  function animation(secs, transform, opacity, timeout) {
-    setTimeout(() => {
-      view.style.transition = `transform ${secs}s, opacity ${secs}s`;
-      view.style.transform = transform ? transform : "";
-      view.style.opacity = opacity;
-    }, timeout);
+  if (!root.querySelector("#cch_swipe_animation")) {
+    let swipeAnimations = document.createElement("style");
+    swipeAnimations.setAttribute("id", "cch_swipe_animation");
+    swipeAnimations.innerHTML = `
+        @keyframes swipeOutRight {
+          0% { transform: translateX(0px); }
+          100% { transform: translateX(${screen.width / 1.5}px); opacity: 0; }
+        }
+        @keyframes swipeOutLeft {
+          0% { transform: translateX(0px); }
+          100% { transform: translateX(-${screen.width / 1.5}px); opacity: 0; }
+        }
+        @keyframes swipeInRight {
+          0% { transform: translateX(${screen.width / 1.5}px); opacity: 0; }
+          100% { transform: translateX(0px); opacity: 1; }
+        }
+        @keyframes swipeInLeft {
+          0% { transform: translateX(-${screen.width / 1.5}px); opacity: 0; }
+          100% { transform: translateX(0px); opacity: 1; }
+        }
+        .swipeOutRight, .swipeOutLeft, .swipeInRight, .swipeInLeft {
+          animation-fill-mode: forwards;
+        }
+        .swipeOutRight { animation: swipeOutRight .20s 1; }
+        .swipeOutLeft { animation: swipeOutLeft .20s 1; }
+        .swipeInRight { animation: swipeInRight .20s 1; }
+        .swipeInLeft { animation: swipeInLeft .20s 1; }
+    `;
+    view.parentNode.appendChild(swipeAnimations);
+  }
+
+  function clear(huiView) {
+    huiView.className = "";
+    huiView.style.overflowX = "";
+    view.style.overflowX = "";
   }
 
   function navigate(tab, timeout) {
@@ -1476,20 +1511,38 @@ function swipeNavigation(tabs, tabContainer) {
     ) {
       return;
     } else if (animate == "swipe") {
-      let width = `${screen.width / 1.5}px`;
-      // Swipe view off screen.
-      animation(0.16, `translateX(${left ? "" : "-"}${width})`, 0, 0);
-      // Watch for content to load.
+      const getHuiView = () => {
+        return (
+          view.querySelector("hui-view") || view.querySelector("hui-panel-view")
+        );
+      };
+      if (window.cch_animation_running) return;
+      window.cch_animation_running = true;
+      let huiView = getHuiView();
+      huiView.style.overflowX = "hidden";
+      view.style.overflowX = "hidden";
+      // Swipe view off screen and fade out.
+      huiView.className = "";
+      view.style.transition = `opacity 0.20s`;
+      view.style.opacity = 1;
+      huiView.classList.add(left ? "swipeOutRight" : "swipeOutLeft");
+      view.style.opacity = 0;
+      setTimeout(() => clear(huiView), 210);
       const observer = new MutationObserver(mutations => {
         mutations.forEach(({ addedNodes }) => {
           addedNodes.forEach(({ nodeName }) => {
             if (nodeName) {
-              // Move view to other side of screen.
-              let neg = view.style.transform.includes("-") ? "" : "-";
-              animation(0, `translateX(${neg}${width})`, 0, 0);
-              // Slide view back on screen.
-              animation(0.16, "translateX(0px)", 1, 50);
-              observer.disconnect();
+              // Swipe view on screen and fade in.
+              huiView = getHuiView();
+              huiView.style.overflowX = "hidden";
+              view.style.overflowX = "hidden";
+              view.style.opacity = 1;
+              huiView.classList.add(left ? "swipeInLeft" : "swipeInRight");
+              setTimeout(() => {
+                clear(huiView);
+                observer.disconnect();
+                window.cch_animation_running = false;
+              }, 210);
               return;
             }
           });
@@ -1497,7 +1550,7 @@ function swipeNavigation(tabs, tabContainer) {
       });
       observer.observe(view, { childList: true });
       // Navigate to next view and trigger the observer.
-      navigate(tab, 180);
+      navigate(tab, 220);
     } else if (animate == "fade") {
       animation(0.16, "", 0, 0);
       const observer = new MutationObserver(mutations => {
