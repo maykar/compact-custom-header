@@ -1,5 +1,5 @@
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.0     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.1     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
@@ -86,6 +86,7 @@ const frontendVersion = Number(window.frontendVersion);
 const newSidebar = frontendVersion >= 20190710;
 const header = root.querySelector("app-header");
 let cchConfig = buildConfig(lovelace.config.cch || {});
+if (typeof cchConfig.background == "boolean") cchConfig.background = "";
 const view = root.querySelector("ha-app-layout").querySelector("#view");
 const disabled =
   window.location.href.includes("disable_cch") || cchConfig.disable;
@@ -790,7 +791,9 @@ function getTranslation(button) {
 }
 
 function defaultTab(tabs, tabContainer) {
+  let firstTab = tabs.indexOf(tabs.filter(tab => tab.style.display == "")[0]);
   let default_tab = cchConfig.default_tab;
+  if (!default_tab) return;
   let template = cchConfig.default_tab_template;
   if ((default_tab || template) && tabContainer) {
     if (template) default_tab = templateEval(template, hass.states);
@@ -798,7 +801,7 @@ function defaultTab(tabs, tabContainer) {
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
     if (
       activeTab != default_tab &&
-      activeTab == 0 &&
+      activeTab == firstTab &&
       (!cchConfig.redirect ||
         (cchConfig.redirect && tabs[default_tab].style.display != "none"))
     ) {
@@ -1902,7 +1905,7 @@ class CchConfigEditor extends LitElement {
       ${!this.exception
         ? html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header &nbsp;₁.₄.₀
+              Compact Custom Header &nbsp;₁.₄.₁
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
