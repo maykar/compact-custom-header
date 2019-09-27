@@ -793,7 +793,7 @@ function getTranslation(button) {
 function defaultTab(tabs, tabContainer) {
   let firstTab = tabs.indexOf(tabs.filter(tab => tab.style.display == "")[0]);
   let default_tab = cchConfig.default_tab;
-  if (!default_tab) return;
+  if (!default_tab || default_tab == []) return;
   let template = cchConfig.default_tab_template;
   if ((default_tab || template) && tabContainer) {
     if (template) default_tab = templateEval(template, hass.states);
