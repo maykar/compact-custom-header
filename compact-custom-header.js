@@ -1,5 +1,5 @@
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.0     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.1     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
@@ -86,6 +86,7 @@ const frontendVersion = Number(window.frontendVersion);
 const newSidebar = frontendVersion >= 20190710;
 const header = root.querySelector("app-header");
 let cchConfig = buildConfig(lovelace.config.cch || {});
+if (typeof cchConfig.background == "boolean") cchConfig.background = "";
 const view = root.querySelector("ha-app-layout").querySelector("#view");
 const disabled =
   window.location.href.includes("disable_cch") || cchConfig.disable;
@@ -195,6 +196,13 @@ function buildConfig(config) {
 
 function observers(tabContainer, tabs, header) {
   const callback = mutations => {
+    // Theme Changed.
+    if (mutations[0].target.nodeName == "HTML") {
+      mutations = [mutations[0]];
+      styleHeader(tabContainer, tabs, header);
+      conditionalStyling(tabs, header);
+      return;
+    }
     mutations.forEach(({ addedNodes, target }) => {
       if (addedNodes.length && target.nodeName == "PARTIAL-PANEL-RESOLVER") {
         // Navigated back to lovelace from elsewhere in HA.
@@ -243,10 +251,9 @@ function observers(tabContainer, tabs, header) {
   };
   let observer = new MutationObserver(callback);
   observer.observe(panelResolver, { childList: true });
+  observer.observe(document.querySelector("html"), { attributes: true });
   observer.observe(view, { childList: true });
-  observer.observe(root.querySelector("app-header"), {
-    childList: true
-  });
+  observer.observe(root.querySelector("app-header"), { childList: true });
 
   if (!disabled) {
     window.hassConnection.then(({ conn }) => {
@@ -425,22 +432,34 @@ function styleHeader(tabContainer, tabs, header) {
   document.body.style.backgroundColor = getComputedStyle(
     document.body
   ).getPropertyValue("--background-color");
-  let headerBackground =
+  prevColor.background =
     cchConfig.background ||
     getComputedStyle(document.body).getPropertyValue("--cch-background") ||
     getComputedStyle(document.body).getPropertyValue("--primary-color");
-  let statusBarColor = cchConfig.statusbar_color || headerBackground;
+  let statusBarColor = cchConfig.statusbar_color || prevColor.background;
   // Match mobile status bar color to header color.
   let themeColor = document.querySelector('[name="theme-color"]');
+  let themeColorApple =
+    document.querySelector('[name="apple-mobile-web-app-status-bar-style"]') ||
+    document.createElement("meta");
   function colorStatusBar() {
     statusBarColor =
       cchConfig.statusbar_color ||
       cchConfig.background ||
       getComputedStyle(document.body).getPropertyValue("--cch-background") ||
       getComputedStyle(document.body).getPropertyValue("--primary-color");
-    themeColor = document.querySelector('[name="theme-color"]');
-    themeColor.content = statusBarColor;
+    themeColor = document.querySelector("meta[name=theme-color]");
+    themeColor.setAttribute("content", statusBarColor);
     themeColor.setAttribute("default-content", statusBarColor);
+    if (
+      !document.querySelector('[name="apple-mobile-web-app-status-bar-style"]')
+    ) {
+      themeColorApple.name = "apple-mobile-web-app-status-bar-style";
+      themeColorApple.content = statusBarColor;
+      document.getElementsByTagName("head")[0].appendChild(themeColorApple);
+    } else {
+      themeColorApple.setAttribute("content", statusBarColor);
+    }
   }
   colorStatusBar();
   // If app/browser is idle or in background sometimes theme-color needs reset.
@@ -476,7 +495,7 @@ function styleHeader(tabContainer, tabs, header) {
     view.style.marginTop = "-48.5px";
     view.style.paddingTop = "48.5px";
     view.style.boxSizing = "border-box";
-    header.style.background = headerBackground;
+    header.style.background = prevColor.background;
     header.querySelector("app-toolbar").style.background = "transparent";
     if (
       frontendVersion >= 20190911 &&
@@ -790,7 +809,9 @@ function getTranslation(button) {
 }
 
 function defaultTab(tabs, tabContainer) {
+  let firstTab = tabs.indexOf(tabs.filter(tab => tab.style.display == "")[0]);
   let default_tab = cchConfig.default_tab;
+  if (!default_tab || default_tab == []) return;
   let template = cchConfig.default_tab_template;
   if ((default_tab || template) && tabContainer) {
     if (template) default_tab = templateEval(template, hass.states);
@@ -798,7 +819,7 @@ function defaultTab(tabs, tabContainer) {
     let activeTab = tabs.indexOf(tabContainer.querySelector(".iron-selected"));
     if (
       activeTab != default_tab &&
-      activeTab == 0 &&
+      activeTab == firstTab &&
       (!cchConfig.redirect ||
         (cchConfig.redirect && tabs[default_tab].style.display != "none"))
     ) {
@@ -1506,6 +1527,14 @@ function swipeNavigation(tabs, tabContainer) {
     view.parentNode.appendChild(swipeAnimations);
   }
 
+  function animation(secs, transform, opacity, timeout) {
+    setTimeout(() => {
+      view.style.transition = `transform ${secs}s, opacity ${secs}s`;
+      view.style.transform = transform ? transform : "";
+      view.style.opacity = opacity;
+    }, timeout);
+  }
+
   function clear(huiView) {
     huiView.className = "";
     huiView.style.overflowX = "";
@@ -1902,7 +1931,7 @@ class CchConfigEditor extends LitElement {
       ${!this.exception
         ? html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header &nbsp;₁.₄.₀
+              Compact Custom Header &nbsp;₁.₄.₁
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
