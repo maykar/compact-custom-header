@@ -14,27 +14,26 @@ var fireEvent = (node, type, detail, options = {}) => {
 };
 
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.1     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.2     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
 
 class CompactCustomHeader {
   constructor() {
-    let root = document.querySelector("home-assistant");
-    root = root && root.shadowRoot;
-    root = root && root.querySelector("home-assistant-main");
-    this.main = root;
-    root = root && root.shadowRoot;
-    root =
-      root && root.querySelector("app-drawer-layout partial-panel-resolver");
-    this.panelResolver = root;
-    root = (root && root.shadowRoot) || root;
-    root = root && root.querySelector("ha-panel-lovelace");
-    root = root && root.shadowRoot;
-    root = root && root.querySelector("hui-root");
-    this.lovelace = root.lovelace;
-    this.root = root.shadowRoot;
+    let ll = document.querySelector("home-assistant");
+    ll = ll && ll.shadowRoot;
+    ll = ll && ll.querySelector("home-assistant-main");
+    this.main = ll;
+    ll = ll && ll.shadowRoot;
+    ll = ll && ll.querySelector("app-drawer-layout partial-panel-resolver");
+    this.panelResolver = ll;
+    ll = (ll && ll.shadowRoot) || ll;
+    ll = ll && ll.querySelector("ha-panel-lovelace");
+    ll = ll && ll.shadowRoot;
+    ll = ll && ll.querySelector("hui-root");
+    this.lovelace = ll.lovelace;
+    this.root = ll.shadowRoot;
 
     this.defaultConfig = {
       header: true,
@@ -87,7 +86,7 @@ class CompactCustomHeader {
     this.header = this.root.querySelector("app-header");
     this.editMode = this.header.className == "edit-mode";
     this.cchConfig = this.buildConfig(this.lovelace.config.cch || {});
-    this.view = this.root.querySelector("ha-app-layout").querySelector("#view");
+    this.view = this.root.querySelector("ha-app-layout #view");
 
     this.sidebarClosed = false;
     this.firstRun = true;
@@ -257,6 +256,7 @@ class CompactCustomHeader {
           }
         } else if (target.id == "view" && addedNodes.length) {
           // Navigating to new tab/view.
+          this.run();
           this.scrollTabIconIntoView();
         }
       });
@@ -1106,15 +1106,22 @@ class CompactCustomHeader {
       month: "2-digit",
       day: "2-digit"
     };
-    date = this.cchConfig.clock_date
+    let d = this.cchConfig.clock_date
       ? `</br><date>${date.toLocaleDateString(locale, options)}</date>`
       : "";
     if (!this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12) {
-      clock.innerHTML = `<time>${time.slice(0, -3)}</time>${date}`;
+      clock.innerHTML = `<time>${time.slice(0, -3)}</time>${d}`;
     } else {
-      clock.innerHTML = `<time>${time}</time>${date}`;
+      clock.innerHTML = `<time>${time}</time>${d}`;
     }
-    window.setTimeout(() => this.updateClock(clock, clockFormat), 60000);
+    if (this.clockSync) {
+      window.setTimeout(() => this.updateClock(clock, clockFormat), 60000);
+    } else {
+      window.setTimeout(() => {
+        this.clockSync = true;
+        this.updateClock(clock, clockFormat);
+      }, (60 - date.getSeconds()) * 1000);
+    }
   }
 
   // Abandon all hope, ye who enter here.
@@ -1390,7 +1397,7 @@ class CompactCustomHeader {
 
   showEditor() {
     window.scrollTo(0, 0);
-    if (!this.root.querySelector("ha-app-layout").querySelector("editor")) {
+    if (!this.root.querySelector("ha-app-layout editor")) {
       const container = document.createElement("editor");
       const nest = document.createElement("div");
       nest.style.cssText = `
@@ -1829,6 +1836,7 @@ class CompactCustomHeaderEditor extends LitElement {
     ll = ll && ll.shadowRoot;
     this._lovelace = ll && ll.querySelector("hui-root").lovelace;
 
+    this.deepcopy = this.deepcopy.bind(this);
     this._config = this._lovelace.config.cch
       ? this.deepcopy(this._lovelace.config.cch)
       : {};
@@ -1989,7 +1997,7 @@ class CompactCustomHeaderEditor extends LitElement {
     this.requestUpdate();
   }
 
-  deepcopy = (value => {
+  deepcopy(value) {
     if (!(!!value && typeof value == "object")) return value;
     if (Object.prototype.toString.call(value) == "[object Date]") {
       return new Date(value.getTime());
@@ -2000,7 +2008,7 @@ class CompactCustomHeaderEditor extends LitElement {
       result[key] = this.deepcopy(value[key]);
     });
     return result;
-  }).bind(this);
+  }
 
   renderStyle() {
     return html`
@@ -2110,7 +2118,7 @@ class CchConfigEditor extends LitElement {
       ${!this.exception
         ? html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header &nbsp;₁.₄.₁
+              Compact Custom Header &nbsp;₁.₄.2
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
