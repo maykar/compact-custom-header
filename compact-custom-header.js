@@ -1099,6 +1099,7 @@ class CompactCustomHeader {
 
   updateClock(clock, clockFormat) {
     let date = new Date();
+    let seconds = date.getSeconds();
     let locale = this.cchConfig.date_locale || hass.language;
     let time = date.toLocaleTimeString([], clockFormat);
     let options = {
@@ -1106,22 +1107,17 @@ class CompactCustomHeader {
       month: "2-digit",
       day: "2-digit"
     };
-    let d = this.cchConfig.clock_date
+    date = this.cchConfig.clock_date
       ? `</br><date>${date.toLocaleDateString(locale, options)}</date>`
       : "";
     if (!this.cchConfig.clock_am_pm && this.cchConfig.clock_format == 12) {
-      clock.innerHTML = `<time>${time.slice(0, -3)}</time>${d}`;
+      clock.innerHTML = `<time>${time.slice(0, -3)}</time>${date}`;
     } else {
-      clock.innerHTML = `<time>${time}</time>${d}`;
+      clock.innerHTML = `<time>${time}</time>${date}`;
     }
-    if (this.clockSync) {
-      window.setTimeout(() => this.updateClock(clock, clockFormat), 60000);
-    } else {
-      window.setTimeout(() => {
-        this.clockSync = true;
-        this.updateClock(clock, clockFormat);
-      }, (60 - date.getSeconds()) * 1000);
-    }
+    window.setTimeout(() => {
+      this.updateClock(clock, clockFormat);
+    }, (60 - seconds) * 1000);
   }
 
   // Abandon all hope, ye who enter here.
@@ -2118,7 +2114,7 @@ class CchConfigEditor extends LitElement {
       ${!this.exception
         ? html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header &nbsp;₁.₄.2
+              Compact Custom Header &nbsp;₁.₄.₂
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
