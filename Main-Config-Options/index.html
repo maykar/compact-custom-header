@@ -174,6 +174,12 @@ views:
 <td>Tab number, view's <code>title:</code>, or view's <code>path:</code> to start on when navigating to <code>/lovelace/</code> for the first time.</td>
 </tr>
 <tr>
+<td>default_tab_template</td>
+<td>string</td>
+<td></td>
+<td>Javascript template for default tab. Used like <a href="https://maykar.github.io/compact-custom-header/Conditional-Styling-Config/#conditional-styling-templates">conditional styling templates</a>.</td>
+</tr>
+<tr>
 <td>kiosk_mode</td>
 <td>boolean</td>
 <td>false</td>
@@ -238,6 +244,12 @@ views:
 <td>boolean</td>
 <td>false</td>
 <td>Removes "Unused Entities" item from options menu.</td>
+</tr>
+<tr>
+<td>edit_mode_show_tabs</td>
+<td>boolean</td>
+<td>false</td>
+<td>Always show all tabs when in edit mode rather than using "show all tabs" menu item.</td>
 </tr>
 <tr>
 <td>exception</td>
@@ -361,7 +373,7 @@ views:
 </tr>
 <tr>
 <td>swipe_skip</td>
-<td>list</td>
+<td>string</td>
 <td></td>
 <td>Comma seperated list of tabs to skip.<br>e.g.,<code>5,6,7,8,13,15</code> Can also use ranges like this <code>5 to 8,13,15</code><br> Tabs hidden with <code>hide_tabs</code> or <code>show_tabs</code> are automatically skipped.</td>
 </tr>
@@ -376,6 +388,18 @@ views:
 <td>boolean</td>
 <td>false</td>
 <td>Toggle the prevention of the browsers default horizontal swipe actions. Some swipe actions, like swiping from screen edge in iOS/Safari, cannot be prevented.</td>
+</tr>
+<tr>
+<td>swipe_skip_hidden</td>
+<td>boolean</td>
+<td>true</td>
+<td>Automatically skip hidden tabs when swiping.</td>
+</tr>
+<tr>
+<td>swipe_groups</td>
+<td>string</td>
+<td>Comma seperated ranges to define groups of tabs that can be swiped. Example:<code>swipe_groups: "2 to 4, 6 to 8"</code> will only swipe on tabs between 2-4 or 6-8 but not any other tab.</td>
+<td></td>
 </tr>
 </tbody>
 </table></div>

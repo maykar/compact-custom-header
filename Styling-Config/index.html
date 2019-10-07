@@ -103,6 +103,7 @@
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#styling-configuration">STYLING CONFIGURATION</a></li>
             <li><a href="#example">Example</a></li>
+            <li><a href="#advanced-styling">Advanced Styling</a></li>
             <li><a href="#theme-variables">Theme Variables</a></li>
     </ul>
 </div></div>
@@ -191,6 +192,29 @@
   clock_date: true
   clock_format: 12
   date_locale: en-gb
+</code></pre>
+
+<h2 id="advanced-styling"><u>Advanced Styling</u><a class="headerlink" href="#advanced-styling" title="Permanent link">&para;</a></h2>
+<p>You can add custom CSS for buttons, tabs, header, time, date and view. Since this is directly editing the CSS of elements it could require a good bit of trial and error on the user’s part, not all elements will react the same or as expected.
+<br>
+The config options are as follows: <code>header_css:</code>, <code>tab_css:</code>, <code>button_css:</code>, <code>time_css:</code>, <code>date_css</code>, and <code>view_css:</code>. <code>view_css:</code> is the entire container under the header. It is mainly useful to adjust the padding between the header and view to account for any custom css to the header that changes it’s height.
+<br>
+<br>
+Example:<br></p>
+<pre><code class="yaml">cch:
+  tab_indicator_color: transparent
+  background: black
+  header_css: &quot;border-bottom: 1px dashed pink;&quot;
+  view_css: &quot;padding-top:63px;&quot;
+  button_css:
+    menu: &quot;margin-top: 17px; border-radius: 10px; padding-bottom: 20px; background: red; border: 1px dashed pink;&quot;
+    options: &quot;margin-top: 129px; border-radius: 0 0 10px 10px; padding-bottom: 20px; background: red;border: 1px dashed pink;&quot;
+  tab_css:
+    0: &quot;margin-left:15px;&quot;
+    1: &quot;border-right:1px dashed pink&quot;
+  time_css: 'font-size: 19pt;font-weight:300'
+  date_css: 'font-weight:300'
+
 </code></pre>
 
 <h2 id="theme-variables"><u>Theme Variables</u><a class="headerlink" href="#theme-variables" title="Permanent link">&para;</a></h2>
