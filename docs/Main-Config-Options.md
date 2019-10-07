@@ -36,6 +36,7 @@ views:
 |compact_header|boolean|true|Toggle the compacting header.
 |header|boolean|true|Display or hide the header.|
 |default_tab|number||Tab number, view's `title:`, or view's `path:` to start on when navigating to `/lovelace/` for the first time.
+|default_tab_template|string||Javascript template for default tab. Used like [conditional styling templates](https://maykar.github.io/compact-custom-header/Conditional-Styling-Config/#conditional-styling-templates).
 |kiosk_mode|boolean|false|Hides the header and turns on `disable_sidebar` for HA 0.96.0 and above. On HA versions lower than 0.96.0 this hides the header, turns off `sidebar_swipe`, and turns on `sidebar_closed`.
 |disable_sidebar|boolean|false|Disable sidebar and menu button completely, only available on HA 0.96.0 and above.
 |sidebar_swipe|boolean|true|Not available on HA 0.96.0 and above. Toggle ability to swipe open sidebar on mobile.
@@ -47,6 +48,7 @@ views:
 |hide_help|boolean|false|Removes "Help" item from options menu.
 |hide_config|boolean|false|Removes "Configure UI" item from options menu.
 |hide_unused|boolean|false|Removes "Unused Entities" item from options menu.
+|edit_mode_show_tabs|boolean|false|Always show all tabs when in edit mode rather than using "show all tabs" menu item.
 |exception|||Allows for different configs when exceptions are met, see [Exception Config](Exception-Config.md).
 
 <br>
@@ -80,6 +82,8 @@ Enable swipe navigation between Lovelace views.<br><br>
 |swipe|boolean|false|Toggle swiping on or off.
 |swipe_amount|number|15|Percent of the screen required for a swipe.
 |swipe_animate|string|none|Animation to use between swipes. Can be `none`, `swipe`, `fade`, or `flip`
-|swipe_skip|list||Comma seperated list of tabs to skip.<br>e.g.,`5,6,7,8,13,15` Can also use ranges like this `5 to 8,13,15`<br> Tabs hidden with `hide_tabs` or `show_tabs` are automatically skipped.
+|swipe_skip|string||Comma seperated list of tabs to skip.<br>e.g.,`5,6,7,8,13,15` Can also use ranges like this `5 to 8,13,15`<br> Tabs hidden with `hide_tabs` or `show_tabs` are automatically skipped.
 |swipe_wrap|boolean|true|Toggle wrapping from first view to last and vice versa.
 |swipe_prevent_default|boolean|false|Toggle the prevention of the browsers default horizontal swipe actions. Some swipe actions, like swiping from screen edge in iOS/Safari, cannot be prevented.
+|swipe_skip_hidden|boolean|true|Automatically skip hidden tabs when swiping.
+|swipe_groups|string|Comma seperated ranges to define groups of tabs that can be swiped. Example:`swipe_groups: "2 to 4, 6 to 8"` will only swipe on tabs between 2-4 or 6-8 but not any other tab.

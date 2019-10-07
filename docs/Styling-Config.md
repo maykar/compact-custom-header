@@ -53,6 +53,32 @@ cch:
   date_locale: en-gb
 ```
 
+## <u>Advanced Styling</u>
+You can add custom CSS for buttons, tabs, header, time, date and view. Since this is directly editing the CSS of elements it could require a good bit of trial and error on the user’s part, not all elements will react the same or as expected.
+<br>
+The config options are as follows: `header_css:`, `tab_css:`, `button_css:`, `time_css:`, `date_css`, and `view_css:`. `view_css:` is the entire container under the header. It is mainly useful to adjust the padding between the header and view to account for any custom css to the header that changes it’s height.
+<br>
+<br>
+Example:<br>
+
+```yaml
+cch:
+  tab_indicator_color: transparent
+  background: black
+  header_css: "border-bottom: 1px dashed pink;"
+  view_css: "padding-top:63px;"
+  button_css:
+    menu: "margin-top: 17px; border-radius: 10px; padding-bottom: 20px; background: red; border: 1px dashed pink;"
+    options: "margin-top: 129px; border-radius: 0 0 10px 10px; padding-bottom: 20px; background: red;border: 1px dashed pink;"
+  tab_css:
+    0: "margin-left:15px;"
+    1: "border-right:1px dashed pink"
+  time_css: 'font-size: 19pt;font-weight:300'
+  date_css: 'font-weight:300'
+  
+```
+
+
 ## <u>Theme Variables</u>
 You can also style CCH from your HA theme's YAML to make it easier to share and lighter on your lovelace config. All styling options are available with the exception of single tab colors. Options set in the Lovelace config will override the themes values.
 <br>

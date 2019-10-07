@@ -20,10 +20,10 @@ Example:
   conditional_styles:
     - entity: input_boolean.boolean1    # entity to watch
       condition:                     
-        state: "off"                      # condition to match
+        state: "off"                    # condition to match
       button:                           # type of item to style
         menu:                           # item to style
-          color: "yellow"                 # what to style
+          color: yellow                 # what to style
 ```
 <br><br>
 **Entity:**
