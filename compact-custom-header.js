@@ -1,5 +1,5 @@
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.2     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.3     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
@@ -279,7 +279,7 @@ class CompactCustomHeader {
       window.hassConnection.then(({ conn }) => {
         conn.socket.onmessage = () => {
           if (this.cchConfig.conditional_styles && !this.editMode) {
-            conditionalStyling(tabs, this.header);
+            this.conditionalStyling(tabs, this.header);
           }
         };
       });
@@ -734,13 +734,13 @@ class CompactCustomHeader {
         if (!menu_items.querySelector(`#${id}`)) {
           const wrapper = document.createElement("paper-item");
           wrapper.setAttribute("id", id);
-          wrapper.innerText = getTranslation(button);
+          wrapper.innerText = this.getTranslation(button);
           wrapper.appendChild(this.buttons[button]);
           wrapper.addEventListener("click", () => {
             paperIconButton.click();
           });
           paperIconButton.style.pointerEvents = "none";
-          insertMenuItem(menu_items, wrapper);
+          this.insertMenuItem(menu_items, wrapper);
           if (button == "notifications" && !this.newSidebar) {
             let style = document.createElement("style");
             style.innerHTML = `
@@ -1323,11 +1323,11 @@ class CompactCustomHeader {
             if (styleTarget == "icon") {
               tabElement
                 .querySelector("ha-icon")
-                .setAttribute("icon", templateEval(tabTemplate, states));
+                .setAttribute("icon", this.templateEval(tabTemplate, states));
             } else if (styleTarget == "color") {
-              tabElement.style.color = templateEval(tabTemplate, states);
+              tabElement.style.color = this.templateEval(tabTemplate, states);
             } else if (styleTarget == "display") {
-              templateEval(tabTemplate, states) == "show"
+              this.templateEval(tabTemplate, states) == "show"
                 ? (tabElement.style.display = "")
                 : (tabElement.style.display = "none");
             }
@@ -1347,21 +1347,21 @@ class CompactCustomHeader {
               ? buttonElem.querySelector("paper-icon-button")
               : buttonElem.shadowRoot.querySelector("paper-icon-button");
             if (styleTarget == "icon") {
-              iconTarget.setAttribute("icon", templateEval(tempCond, states));
+              iconTarget.setAttribute("icon", this.templateEval(tempCond, states));
             } else if (styleTarget == "color") {
               let tar =
                 iconTarget.querySelector("iron-icon") ||
                 iconTarget.shadowRoot.querySelector("iron-icon");
-              tar.style.color = templateEval(tempCond, states);
+              tar.style.color = this.templateEval(tempCond, states);
             } else if (styleTarget == "display") {
-              templateEval(tempCond, states) == "show"
+              this.templateEval(tempCond, states) == "show"
                 ? (buttonElem.style.display = "")
                 : (buttonElem.style.display = "none");
             }
           });
         }
       } else if (condition == "background") {
-        style.background = templateEval(template[condition], states);
+        style.background = this.templateEval(template[condition], states);
       }
     }
   }
@@ -2141,7 +2141,7 @@ class CchConfigEditor extends cch.LitElement {
         !this.exception
           ? this.html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header &nbsp;₁.₄.₂
+              Compact Custom Header &nbsp;₁.₄.₃
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
