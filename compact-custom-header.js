@@ -1,5 +1,5 @@
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.3     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.5     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
@@ -431,7 +431,7 @@ class CompactCustomHeader {
     });
     if (this.cchConfig.tab_css) {
       for (let [key, value] of Object.entries(this.cchConfig.tab_css)) {
-        key = getViewIndex(key);
+        key = this.getViewIndex(key);
         value = value.replace(/: /g, ":").replace(/; /g, ";");
         let css = tabs[key].style.cssText
           .replace(/: /g, ":")
@@ -623,7 +623,7 @@ class CompactCustomHeader {
     // Add custom css.
     if (this.cchConfig.tab_css) {
       for (let [key, value] of Object.entries(this.cchConfig.tab_css)) {
-        key = getViewIndex(key);
+        key = this.getViewIndex(key);
         if (tabs[key]) tabs[key].style.cssText += value;
       }
     }
@@ -1171,7 +1171,7 @@ class CompactCustomHeader {
       if (template) {
         if (!template.length) template = [template];
         template.forEach(template => {
-          templates(template, tabs, _hass, this.header);
+          this.templates(template, tabs, _hass, this.header);
         });
       } else if (condition) {
         let entity = styling[i].entity;
@@ -1198,8 +1198,8 @@ class CompactCustomHeader {
 
         let tabIndex = styling[i].tab ? Object.keys(styling[i].tab)[0] : null;
         let tabCondition = styling[i].tab ? styling[i].tab[tabIndex] : null;
-        let tabElem = tabs[getViewIndex(tabIndex)];
-        let tabkey = `tab_${getViewIndex(tabIndex)}`;
+        let tabElem = tabs[this.getViewIndex(tabIndex)];
+        let tabkey = `tab_${this.getViewIndex(tabIndex)}`;
         let button = styling[i].button
           ? Object.keys(styling[i].button)[0]
           : null;
@@ -1316,7 +1316,7 @@ class CompactCustomHeader {
           let tempCond = template[condition][tab];
           if (!tempCond.length) tempCond = [tempCond];
           tempCond.forEach(templateObj => {
-            let tabIndex = getViewIndex(Object.keys(template[condition]));
+            let tabIndex = this.getViewIndex(Object.keys(template[condition]));
             let styleTarget = Object.keys(templateObj);
             let tabTemplate = templateObj[styleTarget];
             let tabElement = tabs[tabIndex];
@@ -2141,7 +2141,7 @@ class CchConfigEditor extends cch.LitElement {
         !this.exception
           ? this.html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header &nbsp;₁.₄.₃
+              Compact Custom Header &nbsp;₁.₄.₅
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
