@@ -50,7 +50,7 @@ class CompactCustomHeader {
     this.defaultConfig = {
       header: true,
       disable: false,
-      yaml_editor: true,
+      yaml_editor: false,
       menu: "show",
       voice: "show",
       notifications: "show",
@@ -538,7 +538,7 @@ class CompactCustomHeader {
         viewStyle.setAttribute("id", "cch_view_styling");
         viewStyle.innerHTML = `
         hui-view {
-          margin-top: -52px;
+          margin-top: -48.5px;
           padding-top: 52px;
           min-height: 100vh;
           ${this.cchConfig.view_css ? this.cchConfig.view_css : ""}
