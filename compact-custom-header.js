@@ -1,5 +1,5 @@
 console.info(
-  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.8     `,
+  `%c COMPACT-CUSTOM-HEADER \n%c     Version 1.4.9     `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );
@@ -315,6 +315,7 @@ class CompactCustomHeader {
     let marginRight = 0;
     let marginLeft = 15;
     for (const button in this.buttons) {
+      if (!this.buttons[button]) continue;
       let paperIconButton =
         this.buttons[button].querySelector("paper-icon-button") ||
         this.buttons[button].shadowRoot.querySelector("paper-icon-button");
@@ -807,7 +808,7 @@ class CompactCustomHeader {
       this.buttons.notifications.style.color =
         "var(--cch-button-color-notifications)";
     }
-    this.buttons.voice.style.color = "var(--cch-button-color-voice)";
+    if (this.buttons.voice) this.buttons.voice.style.color = "var(--cch-button-color-voice)";
     this.buttons.options.style.color = "var(--cch-button-color-options)";
     if (this.cchConfig.all_buttons_color) {
       this.root.querySelector("app-toolbar").style.color =
@@ -1016,6 +1017,7 @@ class CompactCustomHeader {
   }
 
   insertClock(button) {
+    if (!this.buttons[button]) return;
     const clock_button = this.buttons[button].querySelector("paper-icon-button")
       ? this.buttons[button]
       : this.buttons[button].shadowRoot;
@@ -2264,7 +2266,7 @@ class CchConfigEditor extends cch.LitElement {
         !this.exception
           ? this.html`
             <h1 style="margin-top:-20px;margin-bottom:0;" class="underline">
-              Compact Custom Header &nbsp;₁.₄.₈
+              Compact Custom Header &nbsp;₁.₄.₉
             </h1>
             <h4
               style="margin-top:-5px;padding-top:10px;font-size:12pt;"
