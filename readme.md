@@ -1,3 +1,7 @@
+
+## :warning: This project has been depreciated and replaced by [Custom Header](https://github.com/maykar/custom-header)
+
+
 # Compact Custom Header
 Customize the Home Assistant header and much more!<br><br>
 <a href="https://www.buymeacoffee.com/FgwNR2l" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/black_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
