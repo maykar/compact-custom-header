@@ -1,13 +1,7 @@
-{% if installed and version_installed < "1.1.0" %}
-## 1.1.0 Breaking changes:
-* CCH is no longer required to be a card and only needs added as a resource.
-* Configuration happens at the root of your lovelace config in `cch:` (see links below).
-* The UI editor can now be found in the options menu after selecting "Configure UI".
 
-<br>
+## :warning: This project has been depreciated and replaced by [Custom Header](https://github.com/maykar/custom-header)
 
-I've made a [quick guide](https://maykar.github.io/compact-custom-header/1_1_0_upgrade/) for the upgrade process and [updated the docs](https://maykar.github.io/compact-custom-header/) quite a bit and they can now accept PR's, so please contribute if anything is unclear or missing.
-{% endif %}
+
 ## Features:
 
 * Compact design that removes header text.
