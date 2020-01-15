@@ -1,3 +1,7 @@
+## :warning: This project has been depreciated and replaced by [Custom Header](https://github.com/maykar/custom-header)
+
+
+
 # **COMPACT CUSTOM HEADER**
 Customize the header and add enhancements to Lovelace.
 
